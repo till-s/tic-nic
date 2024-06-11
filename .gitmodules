@@ -1,0 +1,4 @@
+[submodule "kicad"]
+	path = kicad
+	url = git@github.com:till-s/trion-lqfp144-test
+	branch = sdram_test_v2
