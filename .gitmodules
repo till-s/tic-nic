@@ -2,3 +2,13 @@
 	path = kicad
 	url = git@github.com:till-s/trion-lqfp144-test
 	branch = sdram_test_v2
+[submodule "firmware/modules/mecatica-usb"]
+	path = firmware/modules/mecatica-usb
+	url = git@github.com:till-s/mecatica-usb
+[submodule "firmware/modules/acm-toolbox"]
+	path = firmware/modules/acm-toolbox
+	url = git@github.com:till-s/usbadc-support
+	branch = sample_buf
+[submodule "firmware/modules/eth-rmii-mac"]
+	path = firmware/modules/eth-rmii-mac
+	url = git@github.com:till-s/eth-rmii-mac.git
