@@ -107,7 +107,7 @@
         <efx:param name="blackbox-error" value="1" value_type="e_option"/>
         <efx:param name="blast_const_operand_adders" value="1" value_type="e_option"/>
         <efx:param name="bram_output_regs_packing" value="1" value_type="e_option"/>
-        <efx:param name="create-onehot-fsms" value="1" value_type="e_option"/>
+        <efx:param name="create-onehot-fsms" value="0" value_type="e_option"/>
         <efx:param name="fanout-limit" value="50" value_type="e_integer"/>
         <efx:param name="hdl-compile-unit" value="1" value_type="e_option"/>
         <efx:param name="infer-clk-enable" value="3" value_type="e_option"/>
