@@ -30,6 +30,7 @@
         <efx:design_file name="../modules/acm-toolbox/hdl/SynchronizerBit.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/WordSpiIF.vhd" version="default" library="default"/>
         <efx:design_file name="../hdl/design_top.vhd" version="default" library="default"/>
+        <efx:design_file name="../hdl/GitVersionPkg.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/eth-rmii-mac/hdl/EthMDIO.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/eth-rmii-mac/hdl/RMIIMac.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/eth-rmii-mac/hdl/RMIIMacPkg.vhd" version="default" library="default"/>

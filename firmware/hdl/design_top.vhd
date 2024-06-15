@@ -13,11 +13,9 @@ use     work.Usb2AppCfgPkg.all;
 use     work.CommandMuxPkg.all;
 use     work.BasicPkg.Slv8Array;
 use     work.RMIIMacPkg.all;
+use     work.GitVersionPkg.all;
 
 entity design_top is
-   generic (
-      GIT_VERSION_G     : std_logic_vector(31 downto 0) := x"0000_0000"
-   );
    port (
       sdram_clk         : in  std_logic := '0';
       sdram_smpl_clk    : in  std_logic := '0';
@@ -228,7 +226,7 @@ begin
 
    U_CMD : entity work.CommandWrapper
    generic map (
-      GIT_VERSION_G                => GIT_VERSION_G,
+      GIT_VERSION_G                => GIT_VERSION_C,
       FIFO_FREQ_G                  => 60.0E6,
       HAVE_SPI_CMD_G               => true,
       HAVE_REG_CMD_G               => false,
