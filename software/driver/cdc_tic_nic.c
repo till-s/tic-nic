@@ -309,8 +309,88 @@ int ncm_ptp_probe(struct usb_interface *udev, const struct usb_device_id *prod)
 	return st;
 }
 
-static const struct driver_info cdc_ncm_info = {
-	.description = "CDC NCM",
+STATIC
+void update_filter(struct usbnet *dev)
+{
+    struct net_device   *net = dev->net;
+    u16                  cdc_filter;
+	int                  st = 0;
+
+    cdc_filter = USB_CDC_PACKET_TYPE_DIRECTED | USB_CDC_PACKET_TYPE_BROADCAST;
+
+    /* filtering on the device is an optional feature and not worth
+     * the hassle so we just roughly care about snooping and if any
+     * multicast is requested, we take every multicast
+     */
+    if (net->flags & IFF_PROMISC) {
+        cdc_filter |= USB_CDC_PACKET_TYPE_PROMISCUOUS;
+    } else if (net->flags & IFF_ALLMULTI) {
+        cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
+    } else {
+
+		u8                    *mc_buf = 0;
+		unsigned               mc_cnt = 0;
+		struct netdev_hw_addr *ha;
+		u8                    *p;
+		unsigned               bufl;
+
+		mc_cnt = netdev_mc_count( net );			
+		bufl   = mc_cnt * ETH_ALEN;
+		if ( mc_cnt > 0 ) {
+			if ( ( mc_buf = kmalloc( bufl, GFP_KERNEL ) ) ) {
+				p = mc_buf;
+				netdev_for_each_mc_addr( ha, net ) {
+					memcpy( p, ha->addr, ETH_ALEN );
+					p += ETH_ALEN;
+				}
+			} else {
+				st = -1;
+			}
+		}
+
+		if ( 0 == st ) {
+			/* we also get here if we clear the list (mc_cnt == 0) */
+			st = usb_control_msg(dev->udev,
+					usb_sndctrlpipe(dev->udev, 0),
+					USB_CDC_SET_ETHERNET_MULTICAST_FILTERS,
+					USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+					mc_cnt,
+					dev->intf->cur_altsetting->desc.bInterfaceNumber,
+					mc_buf,
+					bufl,
+					USB_CTRL_SET_TIMEOUT
+					);
+
+			if ( st < (int)bufl ) {
+				netdev_warn( net, "Failed to set multicast filters (st = %d); falling back to allmulti\n", st );
+			}
+		}
+		if ( st ) {
+       		cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
+		}
+		if ( mc_buf ) {
+			kfree( mc_buf );
+		}
+	}
+
+	st = usb_control_msg(dev->udev,
+            usb_sndctrlpipe(dev->udev, 0),
+            USB_CDC_SET_ETHERNET_PACKET_FILTER,
+            USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+            cdc_filter,
+            dev->intf->cur_altsetting->desc.bInterfaceNumber,
+            NULL,
+            0,
+            USB_CTRL_SET_TIMEOUT
+        );
+
+	if ( st < 0 ) {
+		netdev_err( net, "Failed to set packet filters (st = %d); hope the device passes everything up\n", st);
+	}
+}
+
+static const struct driver_info cdc_ncm_ptp_info = {
+	.description = "CDC NCM with PTP Phy",
 	.flags = FLAG_POINTTOPOINT | FLAG_NO_SETINT | FLAG_MULTI_PACKET
 			| FLAG_LINK_INTR | FLAG_ETHER,
     .check_connect = NULL,
@@ -328,7 +408,7 @@ static const struct usb_device_id cdc_ncm_ptp_devs[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x1209, 0x0001,
 		USB_CLASS_COMM,
 		USB_CDC_SUBCLASS_NCM, USB_CDC_PROTO_NONE),
-		.driver_info = (unsigned long)&cdc_ncm_info,
+		.driver_info = (unsigned long)&cdc_ncm_ptp_info,
 	},
 	{
 	}

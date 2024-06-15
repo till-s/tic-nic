@@ -1,13 +1,8 @@
 # Example Kernel Module Makefile for linuxRT
-# Using BuildRoot
-# Will Build sis8300drv.ko
 
-mod-objs := cdc-ncm-ptp.o
+mod-objs := cdc-tic-nic.o
 # Kernel Module:
-obj-m := cdc_ncm_ptp.o
-#mod-objs := cdc-ncm.o
-# Kernel Module:
-#obj-m := cdc_ncm.o
+obj-m := cdc_tic_nic.o
 
 KERNELDIR := /lib/modules/$(shell uname -r)/build/
 
