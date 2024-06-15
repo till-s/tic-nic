@@ -86,7 +86,6 @@ STATIC int try_set_addr(struct usbnet *dev)
 
 	/* cdc_ncm unfortunately does not export cdc_ncm_flags :-( */
 	if ( ctx->func_desc && (ctx->func_desc->bmNetworkCapabilities & USB_CDC_NCM_NCAP_NET_ADDRESS) ) {
-		printk(KERN_INFO "TSILL try_set_addr found desc\n");
 		/* see if we would succeed; netdevice still holds our old address */
 		return set_addr( dev );	
 	}
@@ -302,7 +301,6 @@ int ncm_ptp_probe(struct usb_interface *udev, const struct usb_device_id *prod)
 		 */
 		dev = usb_get_intfdata(udev);
 		if ( usbnet_get_link(dev->net) ) {
-			printk(KERN_INFO "ncm_ptp_probe forcing link OK\n");
 			usbnet_link_change(dev, 1, 0);
 		}
 	}
@@ -316,7 +314,10 @@ void update_filter(struct usbnet *dev)
     u16                  cdc_filter;
 	int                  st = 0;
 
-    cdc_filter = USB_CDC_PACKET_TYPE_DIRECTED | USB_CDC_PACKET_TYPE_BROADCAST;
+	/* Enable all directed filters */
+    cdc_filter =    USB_CDC_PACKET_TYPE_DIRECTED 
+	              | USB_CDC_PACKET_TYPE_BROADCAST 
+	              | USB_CDC_PACKET_TYPE_MULTICAST;
 
     /* filtering on the device is an optional feature and not worth
      * the hassle so we just roughly care about snooping and if any
@@ -336,6 +337,8 @@ void update_filter(struct usbnet *dev)
 
 		mc_cnt = netdev_mc_count( net );			
 		bufl   = mc_cnt * ETH_ALEN;
+
+		st = 0;
 		if ( mc_cnt > 0 ) {
 			if ( ( mc_buf = kmalloc( bufl, GFP_KERNEL ) ) ) {
 				p = mc_buf;
@@ -365,14 +368,14 @@ void update_filter(struct usbnet *dev)
 				netdev_warn( net, "Failed to set multicast filters (st = %d); falling back to allmulti\n", st );
 			}
 		}
-		if ( st ) {
+		if ( st < 0 ) {
        		cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
 		}
 		if ( mc_buf ) {
 			kfree( mc_buf );
 		}
 	}
-
+ 
 	st = usb_control_msg(dev->udev,
             usb_sndctrlpipe(dev->udev, 0),
             USB_CDC_SET_ETHERNET_PACKET_FILTER,
@@ -400,7 +403,7 @@ static const struct driver_info cdc_ncm_ptp_info = {
 	.status = cdc_ncm_status,
 	.rx_fixup = cdc_ncm_rx_fixup,
 	.tx_fixup = cdc_ncm_tx_fixup,
-	.set_rx_mode = usbnet_cdc_update_filter,
+	.set_rx_mode = update_filter,
 };
 
 static const struct usb_device_id cdc_ncm_ptp_devs[] = {
@@ -416,7 +419,7 @@ static const struct usb_device_id cdc_ncm_ptp_devs[] = {
 MODULE_DEVICE_TABLE(usb, cdc_ncm_ptp_devs);
 
 static struct usb_driver cdc_ncm_ptp_driver = {
-	.name = "cdc_ncm_ptp",
+	.name = "cdc_tic_nic",
 	.id_table = cdc_ncm_ptp_devs,
 	.probe = ncm_ptp_probe,
 	.disconnect = usbnet_disconnect,
