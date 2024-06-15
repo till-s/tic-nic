@@ -2,3 +2,4 @@
 *.pt.sdc
 outflow/
 work_*/
+.lock
