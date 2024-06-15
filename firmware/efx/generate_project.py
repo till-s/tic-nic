@@ -66,3 +66,5 @@ design.save()
 # to be cleaned sometimes by efx...
 shutil.copy( '{}/outflow/{}.pt.sdc'.format(output_dir, project_name),
              '{}/{}.pt.sdc'.format(output_dir, project_name) )
+
+os.system('./update_git_version_pkg.sh')

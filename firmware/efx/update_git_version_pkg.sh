@@ -13,7 +13,7 @@ else
 fi
 echo "-- AUTOMATICALLY GENERATED; DO NOT EDIT"                                 >  $f
 echo "library ieee;"                                                           >> $f
-echo "use ieee.std_logic_1164.all"                                             >> $f
+echo "use ieee.std_logic_1164.all;"                                            >> $f
 echo ""                                                                        >> $f
 echo "package GitVersionPkg is"                                                >> $f
 echo "   constant GIT_VERSION_C : std_logic_vector(31 downto 0) := x\"$ver\";" >> $f
