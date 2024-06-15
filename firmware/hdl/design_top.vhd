@@ -61,7 +61,7 @@ entity design_top is
       spiCSb_OUT        : out   std_logic;
       spiCSb_OE         : out   std_logic := '1';
       spiCSb_IN         : in    std_logic;
-      
+
       rmii_clk          : in    std_logic;
       eth_rstb          : out   std_logic := '1';
       eth_pwrdwn_irq_IN : in    std_logic;
@@ -106,8 +106,7 @@ architecture rtl of design_top is
       0 => usb2CtlEpMkAgentConfig(
          recipient => USB2_REQ_TYP_RECIPIENT_IFC_C,
          index     => NCM_IFC_NUM_C,
-         -- agent filter reqType as it accepts class-requests as well as vendor ones.
-         reqType   => "XX"
+         reqType   => USB2_REQ_TYP_TYPE_VENDOR_C
       )
    );
 
@@ -162,7 +161,7 @@ architecture rtl of design_top is
    signal ncmFifoInpWen        : std_logic := '0';
 
    signal ncmCarrier           : std_logic := '1';
-   -- ECM, 6.2.4, Tbl-8: D(4): forward filtered (ordinary) mcst, 
+   -- ECM, 6.2.4, Tbl-8: D(4): forward filtered (ordinary) mcst,
    --                    D(3): forward (ordinary) bcst
    --                    D(2): forward (ordinary) ucst
    --                    D(1): forward all multicast
@@ -172,7 +171,15 @@ architecture rtl of design_top is
    signal ncmSpeed10           : std_logic;
    signal ncmMacAddr           : Usb2ByteArray(0 to 5);
 
-   signal ethMacMcFilter       : EthMulticastFilterType := ETH_MULTICAST_FILTER_INIT_C;
+   signal ncmMCFilter          : EthMulticastFilterType := ETH_MULTICAST_FILTER_ALL_C;
+   signal ncmMCFilterIn        : EthMulticastFilterType := ETH_MULTICAST_FILTER_ALL_C;
+   signal ncmMCFilterUpd       : std_logic              := '0';
+
+   signal ncmMCFilterDat       : Usb2ByteType;
+   signal ncmMCFilterVld       : std_logic;
+   signal ncmMCFilterDon       : std_logic;
+
+   signal ethMacMCFilter       : EthMulticastFilterType := ETH_MULTICAST_FILTER_ALL_C;
    signal ethMacAppendCrc      : std_logic := '1';
    signal ethMacRxRdy          : std_logic := '0';
    signal ethMacRxRst          : std_logic := '0';
@@ -183,9 +190,9 @@ architecture rtl of design_top is
    signal ethMacColl           : std_logic := '0';
    signal ethMacPromisc        : std_logic := '0';
    signal ethMacAllmulti       : std_logic := '1';
-   signal ethMacAddr           : std_logic_vector(47 downto 0);  
+   signal ethMacAddr           : std_logic_vector(47 downto 0);
 
-   signal usb2Ep0ReqParam      : Usb2CtlReqParamType;
+   signal usb2Ep0ReqParam      : Usb2CtlReqParamArray( EP0_AGENT_CFG_C'range );
    signal usb2Ep0ObExt         : Usb2EndpPairObType;
    signal usb2Ep0IbExt         : Usb2EndpPairIbArray( EP0_AGENT_CFG_C'range ) := (others => USB2_ENDP_PAIR_IB_INIT_C );
    signal usb2Ep0CtlExt        : Usb2CtlExtArray( EP0_AGENT_CFG_C'range ):= (others => USB2_CTL_EXT_NAK_C);
@@ -267,7 +274,7 @@ begin
       end if;
       LED(1) <= cnt(cnt'left);
    end process;
- 
+
    U_USB_DEV : entity work.Usb2ExampleDev
       generic map (
          ULPI_CLK_MODE_INP_G       => false,
@@ -338,7 +345,11 @@ begin
          ncmPacketFilter           => ncmPacketFilter,
          ncmSpeedInp               => ncmSpeed,
          ncmSpeedOut               => ncmSpeed,
-         ncmMacAddr                => ncmMacAddr
+         ncmMacAddr                => ncmMacAddr,
+         ncmMCFilterDat            => ncmMCFilterDat,
+         ncmMCFilterVld            => ncmMCFilterVld,
+         ncmMCFilterLst            => open,
+         ncmMCFilterDon            => ncmMCFilterDon
       );
 
    P_SPEED_SEL : process ( ncmSpeed10 ) is
@@ -365,10 +376,46 @@ begin
    G_SYNC_MAC_BYTE : for i in ncmMacAddr'range generate
       G_SYNC_MAC_BIT : for j in ncmMacAddr(0)'range generate
          U_SYNC : entity work.Usb2CCSync
-            port map ( clk => rmii_clk, d => ncmMacAddr(i)(j), q => ethMacAddr(8*i + j) );
+            generic map ( INIT_G => '1' )
+            port    map ( clk => rmii_clk, d => ncmMacAddr(i)(j), q => ethMacAddr(8*i + j) );
       end generate G_SYNC_MAC_BIT;
    end generate G_SYNC_MAC_BYTE;
-  
+
+   -- only instantiates logic if setting MC filters is enabled in the descriptors
+   U_SET_MC_FILT : entity work.Usb2SetMCFilter
+      generic map (
+         DESCRIPTORS_G    => USB2_APP_DESCRIPTORS_C
+      )
+      port map (
+         clk              => ulpiClk,
+         rst              => usb2Rst,
+
+         mcFilterStrmDat  => ncmMCFilterDat,
+         mcFilterStrmVld  => ncmMCFilterVld,
+         mcFilterStrmDon  => ncmMCFilterDon,
+
+         mcFilter         => ncmMCFilterIn,
+         mcFilterUpd      => ncmMCFilterUpd
+      );
+
+   G_SYNC_MC_FILT : for i in ncmMCFilter'range generate
+      U_SYNC : entity work.Usb2CCSync
+         port map ( clk => rmii_clk, d => ncmMCFilter(i), q => ethMacMCFilter(i) );
+   end generate G_SYNC_MC_FILT;
+
+   -- register MC filters
+   P_MC_REG : process ( ulpiClk ) is
+   begin
+      if ( rising_edge( ulpiClk ) ) then
+         if ( usb2Rst = '1' ) then
+            ncmMCFilter       <= ETH_MULTICAST_FILTER_ALL_C;
+         elsif ( ncmMCFilterUpd = '1' ) then
+            ncmMCFilter       <= ncmMCFilterIn;
+         end if;
+      end if;
+   end process P_MC_REG;
+
+
    process ( rmii_clk ) is
       variable cnt : integer range -1 to 49999998 := 49999998;
       variable tgl : std_logic := '0';
@@ -427,7 +474,7 @@ begin
          macAddr                      => ethMacAddr,
          promisc                      => ethMacPromisc,
          allmulti                     => ethMacAllmulti,
-         mcFilter                     => ethMacMcFilter,
+         mcFilter                     => ethMacMCFilter,
 
          -- misc
          speed10                      => ethMacSpeed10,
@@ -447,8 +494,8 @@ begin
          usb2Clk                      => ulpiClk,
          usb2Rst                      => usb2Rst,
 
- 
-         usb2CtlReqParam              => usb2Ep0ReqParam,
+
+         usb2CtlReqParam              => usb2Ep0ReqParam(0),
          usb2CtlExt                   => usb2Ep0CtlExt(0),
          usb2EpIb                     => usb2Ep0ObExt,
          usb2EpOb                     => usb2Ep0IbExt(0),
