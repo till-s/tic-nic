@@ -384,9 +384,9 @@ raw socket.
 Note, however, that `mcio_ctl` automatically takes over the
 device from the kernel driver when it runs but the udev machinery
 will immediately grab it back and re-bind it to `cdc_ncm` or
-`cdc_tic_nic` which means that changes you made with the tool
-may immediately be undone by the driver. If you want to work
-with the tool for a while you have to convice udev to leave
-the device alone (a simple hack is renaming the `cdc_ncm.ko`
-driver so that udev cannot find it; since `cdc_tic_nic` depends
-on the former this is enough).
+`cdc_tic_nic` after the program exits which means that changes
+you made with the tool may immediately be undone by the driver.
+If you want to work with the tool for a while you have to convince
+udev to leave the device alone (a simple hack is renaming the
+`cdc_ncm.ko` driver so that udev cannot find it; since `cdc_tic_nic`
+depends on the former this is enough).
