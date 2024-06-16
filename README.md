@@ -1,4 +1,4 @@
-# Tic-NIC -- A PTP-capable USB Ethernet Adapter with Hardware I/O
+# Tic-Nic -- A PTP-Capable USB Ethernet Adapter with Hardware I/O
 
 While there is certainly no lack of cheap USB-ethernet adapters
 and most modern laptops and networking cards feature PTP-capable
@@ -23,6 +23,10 @@ GPIO pins that can be controlled in a synchronous fashion.
  - Low cost (PHY plus FPGA are in the order of $20).
    Uses an Efinix Trion T8 or T20 (recommended) device.
  - Remaining FPGA logic and pins for user application.
+
+## Block Diagram
+
+![Block Diagram](kicad/block_diag.png)
 
 ## License
 
@@ -278,7 +282,7 @@ The recommended settings are summarized in this table
   | JP2                 | don't care                    | Enable control frames. Un-<br>used/-supported by fw |
   | JP3                 | *install pull-up*             | Enable RMII (*mandatory*)                           |
   | JP4                 | optional (use internal res.)  | Enable RMII master mode <br> (*mandatory*)          |
-  | R17, R18, R19       | install pull-up               | Enable autoneg. advertise <br> everything           |
+  | R17, R18, R19       | install pull-ups              | Enable autoneg. advertise <br> everything           |
   | JP5                 | user-defined                  | LED mode (see PHY datasheet)                        |
 
 Thus, the only strictly mandatory strap is JP3 which must be loaded
