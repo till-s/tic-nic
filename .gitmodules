@@ -1,7 +1,7 @@
 [submodule "kicad"]
 	path = kicad
 	url = ../trion-lqfp144-test
-	branch = sdram_test_v2
+	branch = tic_nic_v1
 [submodule "firmware/modules/mecatica-usb"]
 	path = firmware/modules/mecatica-usb
 	url = ../mecatica-usb
