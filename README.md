@@ -180,7 +180,7 @@ flash via USB using the firmware itself (see below).
 #### Programming
 
 In order to bootstrap the design you either need a JTAG programmer
-(you can [build one yourself](https://www.github.com/till-s/trion-8-test) or
+(you can [build one yourself](https://github.com/till-s/trion-lqfp144-test) or
 buy an [ftdi mini module](https://ftdichip.com/products/ft2232h-mini-module/);
 the DYI version has the advantage that it can work with any voltage of the
 JTAG bank; the mini-module, IIRC, requires additional level shifters if you
