@@ -272,8 +272,8 @@ The recommended settings are summarized in this table
 
   | Position  | Setting         | Function                     |
   |-----------|-----------------|------------------------------|
-  | R25,R26,  | optional (use   | Define PHY address           |
-  | R27,R28,  | internal res.)  | 00001 (expected by           |
+  | R25,R26,\  | optional (use\   | Define PHY address \          |
+  | R27,R28,\  | internal res.)  | 00001 (expected by  \         |
   | R11       |                 | firmware)                    |
   |-----------|-----------------|------------------------------|
   | R12       | optional (use   | Disable FX mode              |
