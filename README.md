@@ -26,7 +26,7 @@ GPIO pins that can be controlled in a synchronous fashion.
 
 ## Block Diagram
 
-![Block Diagram](../trion-lqfp144-test/blob/tic_nic_v1/block_diag.png)
+![Block Diagram](https://github.com/till-s/trion-lqfp144-test/blob/tic_nic_v1/block_diag.png)
 
 ## License
 
