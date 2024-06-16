@@ -270,32 +270,16 @@ but in practice this has not been a problem.
 
 The recommended settings are summarized in this table
 
-  | Position  | Setting         | Function                     |
-  |-----------|-----------------|------------------------------|
-  | R25,R26,<br> | optional (use\   | Define PHY address \          |
-  | R27,R28,<br>  | internal res.)  | 00001 (expected by  \         |
-  | R11       |                 | firmware)                    |
-  |-----------|-----------------|------------------------------|
-  | R12       | optional (use   | Disable FX mode              |
-  |           | (internal res.) |                              |
-  |-----------|-----------------|------------------------------|
-  | JP1       | user-defined    | Enable `CLK_OUT` on GPIO     |
-  |           |                 | (see PHY datasheet)          |
-  |-----------|-----------------|------------------------------|
-  | JP2       | don't care      | Enable control frames. Un-   |
-  |           |                 | used/unsupported by firmw.   |
-  |-----------|-----------------|------------------------------|
-  | JP3       | *install pull-* | Enable RMII (*mandatory*)    |
-  |           | *up*            |                              |
-  |-----------|-----------------|------------------------------|
-  | JP4       | optional (use   | Enable RMII master mode      |
-  |           | internal res.)  | (*mandatory*)                |
-  |-----------|-----------------|------------------------------|
-  | R17, R18, | install pull-up | Enable autoneg. advertise    |
-  | R19       |                 | everything                   |
-  |-----------|-----------------|------------------------------|
-  | JP5       | user-defined    | LED mode (see PHY datasheet) |
-  |-----------|-----------------|------------------------------|
+  | Position            | Setting                       | Function                                            |
+  |---------------------|-------------------------------|-----------------------------------------------------|
+  | R25,R26,R27,R28,R11 | optional (use internal res.)  | Define PHY address: 00001                           |
+  | R12                 | optional (use internal res.)  | Disable FX mode                                     |
+  | JP1                 | user-defined                  | Enable `CLK_OUT` on GPIO <br> see PHY datasheet     |
+  | JP2                 | don't care                    | Enable control frames. Un-<br>used/-supported by fw |
+  | JP3                 | *install pull-up*             | Enable RMII (*mandatory*)                           |
+  | JP4                 | optional (use internal res.)  | Enable RMII master mode <br> (*mandatory*)          |
+  | R17, R18, R19       | install pull-up               | Enable autoneg. advertise <br> everything           |
+  | JP5                 | user-defined                  | LED mode (see PHY datasheet)                        |
 
 Thus, the only strictly mandatory strap is JP3 which must be loaded
 with a 2k2 pull-up resistor. For most other settings the internal
