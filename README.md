@@ -244,7 +244,7 @@ but this is beyond the scope of this document.
 #### Optional and Unused Components
 
 The design features an SDRAM chip. This component is unused
-(I have used the same PCB design for a different project
+(I have employed the same PCB design for a different project
 which exercises this SDRAM). The SDRAM may safely be omitted.
 
 Likewise, the backup clock (X2) is optional and need not
