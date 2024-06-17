@@ -55,8 +55,6 @@ the sheet names are unfortunate and due to legacy reasons.
 
 Firmware is located in the `firmware/` folder.
 
-![Block Diagram](fw_block_diag.png)
-
 The top-level vhdl file along with the constraints
 and tool-specific project files are located under `hdl/`
 and `efx/`, respectively.
@@ -73,6 +71,11 @@ project. It provides an ACM interface and some software
 which allow accessing the configuration flash on the
 board. It could also be used as a side-channel to peek/poke
 at user FPGA resources.
+
+#### Firmware Block Diagram
+
+![Block Diagram](fw_block_diag.png)
+
 
 ### Software
 
