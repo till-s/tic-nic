@@ -55,6 +55,8 @@ the sheet names are unfortunate and due to legacy reasons.
 
 Firmware is located in the `firmware/` folder.
 
+[A block diagram](fw_block_diag.png)
+
 The top-level vhdl file along with the constraints
 and tool-specific project files are located under `hdl/`
 and `efx/`, respectively.
