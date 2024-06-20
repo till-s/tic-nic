@@ -22,7 +22,7 @@ GPIO pins that can be controlled in a synchronous fashion.
  - Fully open-source project (hard-, firm- and software).
  - Low cost (PHY plus FPGA are in the order of $20).
    Uses an Efinix Trion T8 or T20 (recommended) device.
- - Remaining FPGA logic and pins for user application.
+ - Remaining FPGA logic and pins available for user application.
 
 ## Block Diagram
 
