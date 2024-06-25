@@ -3,7 +3,7 @@
         {
             "name": "la0",
             "type": "la",
-            "uuid": "742f4b2221304ca599e70c1edc090057",
+            "uuid": "2f85e2130907453d8006f39e8ea76a93",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
@@ -11,61 +11,6 @@
             "data_depth": 1024,
             "input_pipeline": 1,
             "probes": [
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2RemoteWake",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[4].mstInp.vld",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[4].mstInp.don",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[3].mstInp.vld",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[3].mstInp.don",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[2].mstInp.vld",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[2].mstInp.don",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[1].mstInp.vld",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[1].mstInp.don",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[0].mstInp.vld",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/usb2EpIb[0].mstInp.don",
-                    "width": 1,
-                    "probe_type": 1
-                },
                 {
                     "name": "U_USB_DEV/U_USB2_CORE/devStatus.remWakeup",
                     "width": 1,
@@ -102,11 +47,6 @@
                     "probe_type": 1
                 },
                 {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/usb2Rx.rxCmd",
-                    "width": 8,
-                    "probe_type": 1
-                },
-                {
                     "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/usb2Rx.mst.err",
                     "width": 1,
                     "probe_type": 1
@@ -132,16 +72,6 @@
                     "probe_type": 1
                 },
                 {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/r.tmp",
-                    "width": 8,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/r.tmpVld",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
                     "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/r.tok",
                     "width": 4,
                     "probe_type": 1
@@ -154,11 +84,6 @@
                 {
                     "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/r.state",
                     "width": 4,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/r.retries",
-                    "width": 2,
                     "probe_type": 1
                 },
                 {
@@ -194,36 +119,6 @@
                 {
                     "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/r.dataTglOut",
                     "width": 5,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/epObDbg.mstCtl.vld",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/epObDbg.mstCtl.usr",
-                    "width": 4,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/epObDbg.mstOut.usr",
-                    "width": 4,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/epObDbg.mstCtl.err",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/epObDbg.mstOut.err",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/epObDbg.mstCtl.don",
-                    "width": 1,
                     "probe_type": 1
                 },
                 {
@@ -267,17 +162,7 @@
                     "probe_type": 1
                 },
                 {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/epIbDbg.stalledOut",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
                     "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/epIbDbg.mstInp.vld",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
-                    "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/epIbDbg.stalledInp",
                     "width": 1,
                     "probe_type": 1
                 },
@@ -323,6 +208,109 @@
                 },
                 {
                     "name": "U_USB_DEV/U_USB2_CORE/U_PKT_PROCESSOR/txDataMst.err",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/r.ulpiReq.dat",
+                    "width": 8,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/r.ulpiReq.vld",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/r.state",
+                    "width": 3,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/r.ulpiReq.err",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/r.isDat",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/r.don",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/r.nxtr",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/ulpiTxRep.nxt",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/ulpiTxRep.err",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/U_TX/ulpiTxRep.don",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/G_ULPI.U_ULPI_IO/ulpiRx.stp",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/G_ULPI.U_ULPI_IO/ulpiRx.nxt",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/G_ULPI.U_ULPI_IO/ulpiRx.dat",
+                    "width": 8,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/G_ULPI.U_ULPI_IO/ulpiRx.dir",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/U_USB2_CORE/G_ULPI.U_ULPI_IO/ulpiRx.trn",
+                    "width": 1,
+                    "probe_type": 1
+                }
+            ]
+        },
+        {
+            "name": "la1",
+            "type": "la",
+            "uuid": "f80ad946645f439396c9866c02d25ea2",
+            "trigin_en": false,
+            "trigout_en": false,
+            "auto_inserted": true,
+            "capture_control": false,
+            "data_depth": 1024,
+            "input_pipeline": 1,
+            "probes": [
+                {
+                    "name": "eth_crs_dv",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "eth_rx_dv",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "eth_tx_en",
                     "width": 1,
                     "probe_type": 1
                 }
@@ -457,94 +445,6 @@
                     },
                     {
                         "name": "la0_probe0",
-                        "net": "usb2RemoteWake",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe1",
-                        "net": "usb2EpIb[4].mstInp.vld",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe2",
-                        "net": "usb2EpIb[4].mstInp.don",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe3",
-                        "net": "usb2EpIb[3].mstInp.vld",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe4",
-                        "net": "usb2EpIb[3].mstInp.don",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe5",
-                        "net": "usb2EpIb[2].mstInp.vld",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe6",
-                        "net": "usb2EpIb[2].mstInp.don",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe7",
-                        "net": "usb2EpIb[1].mstInp.vld",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe8",
-                        "net": "usb2EpIb[1].mstInp.don",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe9",
-                        "net": "usb2EpIb[0].mstInp.vld",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe10",
-                        "net": "usb2EpIb[0].mstInp.don",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe11",
                         "net": "devStatus.remWakeup",
                         "path": [
                             "U_USB_DEV",
@@ -552,7 +452,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe12",
+                        "name": "la0_probe1",
                         "net": "devStatus.suspended",
                         "path": [
                             "U_USB_DEV",
@@ -560,7 +460,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[0]",
+                        "name": "la0_probe2[0]",
                         "net": "usb2Rx.pktHdr.tokDat[0]",
                         "path": [
                             "U_USB_DEV",
@@ -569,7 +469,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[1]",
+                        "name": "la0_probe2[1]",
                         "net": "usb2Rx.pktHdr.tokDat[1]",
                         "path": [
                             "U_USB_DEV",
@@ -578,7 +478,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[2]",
+                        "name": "la0_probe2[2]",
                         "net": "usb2Rx.pktHdr.tokDat[2]",
                         "path": [
                             "U_USB_DEV",
@@ -587,7 +487,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[3]",
+                        "name": "la0_probe2[3]",
                         "net": "usb2Rx.pktHdr.tokDat[3]",
                         "path": [
                             "U_USB_DEV",
@@ -596,7 +496,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[4]",
+                        "name": "la0_probe2[4]",
                         "net": "usb2Rx.pktHdr.tokDat[4]",
                         "path": [
                             "U_USB_DEV",
@@ -605,7 +505,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[5]",
+                        "name": "la0_probe2[5]",
                         "net": "usb2Rx.pktHdr.tokDat[5]",
                         "path": [
                             "U_USB_DEV",
@@ -614,7 +514,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[6]",
+                        "name": "la0_probe2[6]",
                         "net": "usb2Rx.pktHdr.tokDat[6]",
                         "path": [
                             "U_USB_DEV",
@@ -623,7 +523,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[7]",
+                        "name": "la0_probe2[7]",
                         "net": "usb2Rx.pktHdr.tokDat[7]",
                         "path": [
                             "U_USB_DEV",
@@ -632,7 +532,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[8]",
+                        "name": "la0_probe2[8]",
                         "net": "usb2Rx.pktHdr.tokDat[8]",
                         "path": [
                             "U_USB_DEV",
@@ -641,7 +541,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[9]",
+                        "name": "la0_probe2[9]",
                         "net": "usb2Rx.pktHdr.tokDat[9]",
                         "path": [
                             "U_USB_DEV",
@@ -650,7 +550,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[10]",
+                        "name": "la0_probe2[10]",
                         "net": "usb2Rx.pktHdr.tokDat[10]",
                         "path": [
                             "U_USB_DEV",
@@ -659,7 +559,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe14",
+                        "name": "la0_probe3",
                         "net": "usb2Rx.pktHdr.vld",
                         "path": [
                             "U_USB_DEV",
@@ -668,7 +568,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[0]",
+                        "name": "la0_probe4[0]",
                         "net": "usb2Rx.pktHdr.pid[0]",
                         "path": [
                             "U_USB_DEV",
@@ -677,7 +577,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[1]",
+                        "name": "la0_probe4[1]",
                         "net": "usb2Rx.pktHdr.pid[1]",
                         "path": [
                             "U_USB_DEV",
@@ -686,7 +586,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[2]",
+                        "name": "la0_probe4[2]",
                         "net": "usb2Rx.pktHdr.pid[2]",
                         "path": [
                             "U_USB_DEV",
@@ -695,7 +595,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[3]",
+                        "name": "la0_probe4[3]",
                         "net": "usb2Rx.pktHdr.pid[3]",
                         "path": [
                             "U_USB_DEV",
@@ -704,7 +604,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe16",
+                        "name": "la0_probe5",
                         "net": "usb2Rx.mst.vld",
                         "path": [
                             "U_USB_DEV",
@@ -713,7 +613,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[0]",
+                        "name": "la0_probe6[0]",
                         "net": "usb2Rx.mst.dat[0]",
                         "path": [
                             "U_USB_DEV",
@@ -722,7 +622,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[1]",
+                        "name": "la0_probe6[1]",
                         "net": "usb2Rx.mst.dat[1]",
                         "path": [
                             "U_USB_DEV",
@@ -731,7 +631,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[2]",
+                        "name": "la0_probe6[2]",
                         "net": "usb2Rx.mst.dat[2]",
                         "path": [
                             "U_USB_DEV",
@@ -740,7 +640,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[3]",
+                        "name": "la0_probe6[3]",
                         "net": "usb2Rx.mst.dat[3]",
                         "path": [
                             "U_USB_DEV",
@@ -749,7 +649,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[4]",
+                        "name": "la0_probe6[4]",
                         "net": "usb2Rx.mst.dat[4]",
                         "path": [
                             "U_USB_DEV",
@@ -758,7 +658,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[5]",
+                        "name": "la0_probe6[5]",
                         "net": "usb2Rx.mst.dat[5]",
                         "path": [
                             "U_USB_DEV",
@@ -767,7 +667,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[6]",
+                        "name": "la0_probe6[6]",
                         "net": "usb2Rx.mst.dat[6]",
                         "path": [
                             "U_USB_DEV",
@@ -776,7 +676,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[7]",
+                        "name": "la0_probe6[7]",
                         "net": "usb2Rx.mst.dat[7]",
                         "path": [
                             "U_USB_DEV",
@@ -785,79 +685,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe18[0]",
-                        "net": "usb2Rx.rxCmd[0]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe18[1]",
-                        "net": "usb2Rx.rxCmd[1]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe18[2]",
-                        "net": "usb2Rx.rxCmd[2]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe18[3]",
-                        "net": "usb2Rx.rxCmd[3]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe18[4]",
-                        "net": "usb2Rx.rxCmd[4]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe18[5]",
-                        "net": "usb2Rx.rxCmd[5]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe18[6]",
-                        "net": "usb2Rx.rxCmd[6]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe18[7]",
-                        "net": "usb2Rx.rxCmd[7]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe19",
+                        "name": "la0_probe7",
                         "net": "usb2Rx.mst.err",
                         "path": [
                             "U_USB_DEV",
@@ -866,7 +694,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe20",
+                        "name": "la0_probe8",
                         "net": "usb2Rx.isRxCmd",
                         "path": [
                             "U_USB_DEV",
@@ -875,7 +703,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe21",
+                        "name": "la0_probe9",
                         "net": "usb2Rx.pktHdr.sof",
                         "path": [
                             "U_USB_DEV",
@@ -884,7 +712,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe22",
+                        "name": "la0_probe10",
                         "net": "usb2Rx.rxActive",
                         "path": [
                             "U_USB_DEV",
@@ -893,7 +721,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe23",
+                        "name": "la0_probe11",
                         "net": "usb2Rx.mst.don",
                         "path": [
                             "U_USB_DEV",
@@ -902,88 +730,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe24[0]",
-                        "net": "r.tmp[0]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe24[1]",
-                        "net": "r.tmp[1]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe24[2]",
-                        "net": "r.tmp[2]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe24[3]",
-                        "net": "r.tmp[3]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe24[4]",
-                        "net": "r.tmp[4]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe24[5]",
-                        "net": "r.tmp[5]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe24[6]",
-                        "net": "r.tmp[6]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe24[7]",
-                        "net": "r.tmp[7]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe25",
-                        "net": "r.tmpVld",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe26[0]",
+                        "name": "la0_probe12[0]",
                         "net": "r.tok[0]",
                         "path": [
                             "U_USB_DEV",
@@ -992,7 +739,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe26[1]",
+                        "name": "la0_probe12[1]",
                         "net": "r.tok[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1001,7 +748,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe26[2]",
+                        "name": "la0_probe12[2]",
                         "net": "r.tok[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1010,7 +757,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe26[3]",
+                        "name": "la0_probe12[3]",
                         "net": "r.tok[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1019,7 +766,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[0]",
+                        "name": "la0_probe13[0]",
                         "net": "r.timer[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1028,7 +775,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[1]",
+                        "name": "la0_probe13[1]",
                         "net": "r.timer[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1037,7 +784,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[2]",
+                        "name": "la0_probe13[2]",
                         "net": "r.timer[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1046,7 +793,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[3]",
+                        "name": "la0_probe13[3]",
                         "net": "r.timer[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1055,7 +802,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[4]",
+                        "name": "la0_probe13[4]",
                         "net": "r.timer[4]",
                         "path": [
                             "U_USB_DEV",
@@ -1064,7 +811,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[5]",
+                        "name": "la0_probe13[5]",
                         "net": "r.timer[5]",
                         "path": [
                             "U_USB_DEV",
@@ -1073,7 +820,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[6]",
+                        "name": "la0_probe13[6]",
                         "net": "r.timer[6]",
                         "path": [
                             "U_USB_DEV",
@@ -1082,7 +829,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[7]",
+                        "name": "la0_probe13[7]",
                         "net": "r.timer[7]",
                         "path": [
                             "U_USB_DEV",
@@ -1091,7 +838,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[8]",
+                        "name": "la0_probe13[8]",
                         "net": "r.timer[8]",
                         "path": [
                             "U_USB_DEV",
@@ -1100,7 +847,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[9]",
+                        "name": "la0_probe13[9]",
                         "net": "r.timer[9]",
                         "path": [
                             "U_USB_DEV",
@@ -1109,7 +856,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[10]",
+                        "name": "la0_probe13[10]",
                         "net": "r.timer[10]",
                         "path": [
                             "U_USB_DEV",
@@ -1118,7 +865,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[11]",
+                        "name": "la0_probe13[11]",
                         "net": "r.timer[11]",
                         "path": [
                             "U_USB_DEV",
@@ -1127,7 +874,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[12]",
+                        "name": "la0_probe13[12]",
                         "net": "r.timer[12]",
                         "path": [
                             "U_USB_DEV",
@@ -1136,7 +883,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[13]",
+                        "name": "la0_probe13[13]",
                         "net": "r.timer[13]",
                         "path": [
                             "U_USB_DEV",
@@ -1145,7 +892,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[14]",
+                        "name": "la0_probe13[14]",
                         "net": "r.timer[14]",
                         "path": [
                             "U_USB_DEV",
@@ -1154,7 +901,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[15]",
+                        "name": "la0_probe13[15]",
                         "net": "r.timer[15]",
                         "path": [
                             "U_USB_DEV",
@@ -1163,7 +910,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[16]",
+                        "name": "la0_probe13[16]",
                         "net": "r.timer[16]",
                         "path": [
                             "U_USB_DEV",
@@ -1172,7 +919,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe27[17]",
+                        "name": "la0_probe13[17]",
                         "net": "r.timer[17]",
                         "path": [
                             "U_USB_DEV",
@@ -1181,7 +928,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe28[0]",
+                        "name": "la0_probe14[0]",
                         "net": "r.state[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1190,7 +937,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe28[1]",
+                        "name": "la0_probe14[1]",
                         "net": "r.state[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1199,7 +946,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe28[2]",
+                        "name": "la0_probe14[2]",
                         "net": "r.state[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1208,7 +955,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe28[3]",
+                        "name": "la0_probe14[3]",
                         "net": "r.state[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1217,25 +964,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe29[0]",
-                        "net": "r.retries[0]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe29[1]",
-                        "net": "r.retries[1]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe30[0]",
+                        "name": "la0_probe15[0]",
                         "net": "r.pid[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1244,7 +973,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe30[1]",
+                        "name": "la0_probe15[1]",
                         "net": "r.pid[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1253,7 +982,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe30[2]",
+                        "name": "la0_probe15[2]",
                         "net": "r.pid[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1262,7 +991,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe30[3]",
+                        "name": "la0_probe15[3]",
                         "net": "r.pid[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1271,7 +1000,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe31[0]",
+                        "name": "la0_probe16[0]",
                         "net": "r.nxtState[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1280,7 +1009,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe31[1]",
+                        "name": "la0_probe16[1]",
                         "net": "r.nxtState[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1289,7 +1018,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe31[2]",
+                        "name": "la0_probe16[2]",
                         "net": "r.nxtState[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1298,7 +1027,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe31[3]",
+                        "name": "la0_probe16[3]",
                         "net": "r.nxtState[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1307,7 +1036,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe32[0]",
+                        "name": "la0_probe17[0]",
                         "net": "r.lineState[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1316,7 +1045,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe32[1]",
+                        "name": "la0_probe17[1]",
                         "net": "r.lineState[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1325,7 +1054,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe33[0]",
+                        "name": "la0_probe18[0]",
                         "net": "r.epIdx[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1334,7 +1063,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe33[1]",
+                        "name": "la0_probe18[1]",
                         "net": "r.epIdx[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1343,7 +1072,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe33[2]",
+                        "name": "la0_probe18[2]",
                         "net": "r.epIdx[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1352,7 +1081,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe33[3]",
+                        "name": "la0_probe18[3]",
                         "net": "r.epIdx[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1361,7 +1090,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe34",
+                        "name": "la0_probe19",
                         "net": "r.donFlg",
                         "path": [
                             "U_USB_DEV",
@@ -1370,7 +1099,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe35[0]",
+                        "name": "la0_probe20[0]",
                         "net": "r.dataTglInp[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1379,7 +1108,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe35[1]",
+                        "name": "la0_probe20[1]",
                         "net": "r.dataTglInp[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1388,7 +1117,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe35[2]",
+                        "name": "la0_probe20[2]",
                         "net": "r.dataTglInp[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1397,7 +1126,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe35[3]",
+                        "name": "la0_probe20[3]",
                         "net": "r.dataTglInp[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1406,7 +1135,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe35[4]",
+                        "name": "la0_probe20[4]",
                         "net": "r.dataTglInp[4]",
                         "path": [
                             "U_USB_DEV",
@@ -1415,7 +1144,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe36[0]",
+                        "name": "la0_probe21[0]",
                         "net": "r.dataTglOut[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1424,7 +1153,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe36[1]",
+                        "name": "la0_probe21[1]",
                         "net": "r.dataTglOut[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1433,7 +1162,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe36[2]",
+                        "name": "la0_probe21[2]",
                         "net": "r.dataTglOut[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1442,7 +1171,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe36[3]",
+                        "name": "la0_probe21[3]",
                         "net": "r.dataTglOut[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1451,7 +1180,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe36[4]",
+                        "name": "la0_probe21[4]",
                         "net": "r.dataTglOut[4]",
                         "path": [
                             "U_USB_DEV",
@@ -1460,115 +1189,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe37",
-                        "net": "epObDbg.mstCtl.vld",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe38[0]",
-                        "net": "epObDbg.mstCtl.usr[0]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe38[1]",
-                        "net": "epObDbg.mstCtl.usr[1]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe38[2]",
-                        "net": "epObDbg.mstCtl.usr[2]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe38[3]",
-                        "net": "epObDbg.mstCtl.usr[3]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe39[0]",
-                        "net": "epObDbg.mstOut.usr[0]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe39[1]",
-                        "net": "epObDbg.mstOut.usr[1]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe39[2]",
-                        "net": "epObDbg.mstOut.usr[2]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe39[3]",
-                        "net": "epObDbg.mstOut.usr[3]",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe40",
-                        "net": "epObDbg.mstCtl.err",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe41",
-                        "net": "epObDbg.mstOut.err",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe42",
-                        "net": "epObDbg.mstCtl.don",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe43",
+                        "name": "la0_probe22",
                         "net": "epObDbg.subInp.rdy",
                         "path": [
                             "U_USB_DEV",
@@ -1577,7 +1198,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe44[0]",
+                        "name": "la0_probe23[0]",
                         "net": "epObDbg.mstOut.dat[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1586,7 +1207,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe44[1]",
+                        "name": "la0_probe23[1]",
                         "net": "epObDbg.mstOut.dat[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1595,7 +1216,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe44[2]",
+                        "name": "la0_probe23[2]",
                         "net": "epObDbg.mstOut.dat[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1604,7 +1225,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe44[3]",
+                        "name": "la0_probe23[3]",
                         "net": "epObDbg.mstOut.dat[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1613,7 +1234,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe44[4]",
+                        "name": "la0_probe23[4]",
                         "net": "epObDbg.mstOut.dat[4]",
                         "path": [
                             "U_USB_DEV",
@@ -1622,7 +1243,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe44[5]",
+                        "name": "la0_probe23[5]",
                         "net": "epObDbg.mstOut.dat[5]",
                         "path": [
                             "U_USB_DEV",
@@ -1631,7 +1252,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe44[6]",
+                        "name": "la0_probe23[6]",
                         "net": "epObDbg.mstOut.dat[6]",
                         "path": [
                             "U_USB_DEV",
@@ -1640,7 +1261,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe44[7]",
+                        "name": "la0_probe23[7]",
                         "net": "epObDbg.mstOut.dat[7]",
                         "path": [
                             "U_USB_DEV",
@@ -1649,7 +1270,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe45",
+                        "name": "la0_probe24",
                         "net": "epObDbg.mstOut.vld",
                         "path": [
                             "U_USB_DEV",
@@ -1658,7 +1279,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe46[0]",
+                        "name": "la0_probe25[0]",
                         "net": "epObDbg.mstCtl.dat[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1667,7 +1288,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe46[1]",
+                        "name": "la0_probe25[1]",
                         "net": "epObDbg.mstCtl.dat[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1676,7 +1297,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe46[2]",
+                        "name": "la0_probe25[2]",
                         "net": "epObDbg.mstCtl.dat[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1685,7 +1306,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe46[3]",
+                        "name": "la0_probe25[3]",
                         "net": "epObDbg.mstCtl.dat[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1694,7 +1315,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe46[4]",
+                        "name": "la0_probe25[4]",
                         "net": "epObDbg.mstCtl.dat[4]",
                         "path": [
                             "U_USB_DEV",
@@ -1703,7 +1324,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe46[5]",
+                        "name": "la0_probe25[5]",
                         "net": "epObDbg.mstCtl.dat[5]",
                         "path": [
                             "U_USB_DEV",
@@ -1712,7 +1333,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe46[6]",
+                        "name": "la0_probe25[6]",
                         "net": "epObDbg.mstCtl.dat[6]",
                         "path": [
                             "U_USB_DEV",
@@ -1721,7 +1342,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe46[7]",
+                        "name": "la0_probe25[7]",
                         "net": "epObDbg.mstCtl.dat[7]",
                         "path": [
                             "U_USB_DEV",
@@ -1730,7 +1351,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe47",
+                        "name": "la0_probe26",
                         "net": "epObDbg.mstOut.don",
                         "path": [
                             "U_USB_DEV",
@@ -1739,7 +1360,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe48",
+                        "name": "la0_probe27",
                         "net": "epIbDbg.bFramedInp",
                         "path": [
                             "U_USB_DEV",
@@ -1748,7 +1369,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe49",
+                        "name": "la0_probe28",
                         "net": "epIbDbg.mstInp.err",
                         "path": [
                             "U_USB_DEV",
@@ -1757,7 +1378,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe50[0]",
+                        "name": "la0_probe29[0]",
                         "net": "epIbDbg.mstInp.dat[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1766,7 +1387,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe50[1]",
+                        "name": "la0_probe29[1]",
                         "net": "epIbDbg.mstInp.dat[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1775,7 +1396,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe50[2]",
+                        "name": "la0_probe29[2]",
                         "net": "epIbDbg.mstInp.dat[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1784,7 +1405,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe50[3]",
+                        "name": "la0_probe29[3]",
                         "net": "epIbDbg.mstInp.dat[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1793,7 +1414,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe50[4]",
+                        "name": "la0_probe29[4]",
                         "net": "epIbDbg.mstInp.dat[4]",
                         "path": [
                             "U_USB_DEV",
@@ -1802,7 +1423,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe50[5]",
+                        "name": "la0_probe29[5]",
                         "net": "epIbDbg.mstInp.dat[5]",
                         "path": [
                             "U_USB_DEV",
@@ -1811,7 +1432,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe50[6]",
+                        "name": "la0_probe29[6]",
                         "net": "epIbDbg.mstInp.dat[6]",
                         "path": [
                             "U_USB_DEV",
@@ -1820,7 +1441,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe50[7]",
+                        "name": "la0_probe29[7]",
                         "net": "epIbDbg.mstInp.dat[7]",
                         "path": [
                             "U_USB_DEV",
@@ -1829,16 +1450,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe51",
-                        "net": "epIbDbg.stalledOut",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe52",
+                        "name": "la0_probe30",
                         "net": "epIbDbg.mstInp.vld",
                         "path": [
                             "U_USB_DEV",
@@ -1847,16 +1459,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe53",
-                        "net": "epIbDbg.stalledInp",
-                        "path": [
-                            "U_USB_DEV",
-                            "U_USB2_CORE",
-                            "U_PKT_PROCESSOR"
-                        ]
-                    },
-                    {
-                        "name": "la0_probe54",
+                        "name": "la0_probe31",
                         "net": "epIbDbg.subOut.rdy",
                         "path": [
                             "U_USB_DEV",
@@ -1865,7 +1468,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe55[0]",
+                        "name": "la0_probe32[0]",
                         "net": "epIbDbg.mstInp.usr[0]",
                         "path": [
                             "U_USB_DEV",
@@ -1874,7 +1477,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe55[1]",
+                        "name": "la0_probe32[1]",
                         "net": "epIbDbg.mstInp.usr[1]",
                         "path": [
                             "U_USB_DEV",
@@ -1883,7 +1486,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe55[2]",
+                        "name": "la0_probe32[2]",
                         "net": "epIbDbg.mstInp.usr[2]",
                         "path": [
                             "U_USB_DEV",
@@ -1892,7 +1495,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe55[3]",
+                        "name": "la0_probe32[3]",
                         "net": "epIbDbg.mstInp.usr[3]",
                         "path": [
                             "U_USB_DEV",
@@ -1901,7 +1504,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe56",
+                        "name": "la0_probe33",
                         "net": "epIbDbg.mstInp.don",
                         "path": [
                             "U_USB_DEV",
@@ -1910,7 +1513,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe57",
+                        "name": "la0_probe34",
                         "net": "txDataSub.rdy",
                         "path": [
                             "U_USB_DEV",
@@ -1919,7 +1522,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe58",
+                        "name": "la0_probe35",
                         "net": "txDataMst.don",
                         "path": [
                             "U_USB_DEV",
@@ -1928,7 +1531,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe59",
+                        "name": "la0_probe36",
                         "net": "txDataMst.vld",
                         "path": [
                             "U_USB_DEV",
@@ -1937,7 +1540,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe60",
+                        "name": "la0_probe37",
                         "net": "txDataSub.err",
                         "path": [
                             "U_USB_DEV",
@@ -1946,7 +1549,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe61",
+                        "name": "la0_probe38",
                         "net": "txDataSub.don",
                         "path": [
                             "U_USB_DEV",
@@ -1955,13 +1558,312 @@
                         ]
                     },
                     {
-                        "name": "la0_probe62",
+                        "name": "la0_probe39",
                         "net": "txDataMst.err",
                         "path": [
                             "U_USB_DEV",
                             "U_USB2_CORE",
                             "U_PKT_PROCESSOR"
                         ]
+                    },
+                    {
+                        "name": "la0_probe40[0]",
+                        "net": "r.ulpiReq.dat[0]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe40[1]",
+                        "net": "r.ulpiReq.dat[1]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe40[2]",
+                        "net": "r.ulpiReq.dat[2]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe40[3]",
+                        "net": "r.ulpiReq.dat[3]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe40[4]",
+                        "net": "r.ulpiReq.dat[4]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe40[5]",
+                        "net": "r.ulpiReq.dat[5]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe40[6]",
+                        "net": "r.ulpiReq.dat[6]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe40[7]",
+                        "net": "r.ulpiReq.dat[7]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe41",
+                        "net": "r.ulpiReq.vld",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe42[0]",
+                        "net": "r.state[0]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe42[1]",
+                        "net": "r.state[1]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe42[2]",
+                        "net": "r.state[2]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe43",
+                        "net": "r.ulpiReq.err",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe44",
+                        "net": "r.isDat",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe45",
+                        "net": "r.don",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe46",
+                        "net": "r.nxtr",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe47",
+                        "net": "ulpiTxRep.nxt",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe48",
+                        "net": "ulpiTxRep.err",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe49",
+                        "net": "ulpiTxRep.don",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "U_TX"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe50",
+                        "net": "ulpiRx.stp",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe51",
+                        "net": "ulpiRx.nxt",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe52[0]",
+                        "net": "ulpiRx.dat[0]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe52[1]",
+                        "net": "ulpiRx.dat[1]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe52[2]",
+                        "net": "ulpiRx.dat[2]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe52[3]",
+                        "net": "ulpiRx.dat[3]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe52[4]",
+                        "net": "ulpiRx.dat[4]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe52[5]",
+                        "net": "ulpiRx.dat[5]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe52[6]",
+                        "net": "ulpiRx.dat[6]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe52[7]",
+                        "net": "ulpiRx.dat[7]",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe53",
+                        "net": "ulpiRx.dir",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe54",
+                        "net": "ulpiRx.trn",
+                        "path": [
+                            "U_USB_DEV",
+                            "U_USB2_CORE",
+                            "G_ULPI.U_ULPI_IO"
+                        ]
+                    },
+                    {
+                        "name": "la1_clk",
+                        "net": "rmii_clk",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe0",
+                        "net": "eth_crs_dv",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe1",
+                        "net": "eth_rx_dv",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe2",
+                        "net": "eth_tx_en",
+                        "path": []
                     }
                 ]
             }
@@ -1978,127 +1880,6 @@
             "data_depth": 1024,
             "capture_control": false,
             "selected_nets": [
-                {
-                    "name": "usb2RemoteWake",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[4].mstInp.vld",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[4].mstInp.don",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[3].mstInp.vld",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[3].mstInp.don",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[2].mstInp.vld",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[2].mstInp.don",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[1].mstInp.vld",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[1].mstInp.don",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[0].mstInp.vld",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
-                {
-                    "name": "usb2EpIb[0].mstInp.don",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE"
-                    ]
-                },
                 {
                     "name": "devStatus.remWakeup",
                     "width": 1,
@@ -2188,20 +1969,6 @@
                     "net_idx_right": 0
                 },
                 {
-                    "name": "usb2Rx.rxCmd",
-                    "width": 8,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ],
-                    "net_idx_left": 7,
-                    "net_idx_right": 0
-                },
-                {
                     "name": "usb2Rx.mst.err",
                     "width": 1,
                     "clk_domain": "ulpiClk",
@@ -2262,32 +2029,6 @@
                     ]
                 },
                 {
-                    "name": "r.tmp",
-                    "width": 8,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ],
-                    "net_idx_left": 7,
-                    "net_idx_right": 0
-                },
-                {
-                    "name": "r.tmpVld",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ]
-                },
-                {
                     "name": "r.tok",
                     "width": 4,
                     "clk_domain": "ulpiClk",
@@ -2327,20 +2068,6 @@
                         "U_PKT_PROCESSOR"
                     ],
                     "net_idx_left": 3,
-                    "net_idx_right": 0
-                },
-                {
-                    "name": "r.retries",
-                    "width": 2,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ],
-                    "net_idx_left": 1,
                     "net_idx_right": 0
                 },
                 {
@@ -2438,82 +2165,6 @@
                     ],
                     "net_idx_left": 4,
                     "net_idx_right": 0
-                },
-                {
-                    "name": "epObDbg.mstCtl.vld",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ]
-                },
-                {
-                    "name": "epObDbg.mstCtl.usr",
-                    "width": 4,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ],
-                    "net_idx_left": 3,
-                    "net_idx_right": 0
-                },
-                {
-                    "name": "epObDbg.mstOut.usr",
-                    "width": 4,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ],
-                    "net_idx_left": 3,
-                    "net_idx_right": 0
-                },
-                {
-                    "name": "epObDbg.mstCtl.err",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ]
-                },
-                {
-                    "name": "epObDbg.mstOut.err",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ]
-                },
-                {
-                    "name": "epObDbg.mstCtl.don",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ]
                 },
                 {
                     "name": "epObDbg.subInp.rdy",
@@ -2618,31 +2269,7 @@
                     "net_idx_right": 0
                 },
                 {
-                    "name": "epIbDbg.stalledOut",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ]
-                },
-                {
                     "name": "epIbDbg.mstInp.vld",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": [
-                        "U_USB_DEV",
-                        "U_USB2_CORE",
-                        "U_PKT_PROCESSOR"
-                    ]
-                },
-                {
-                    "name": "epIbDbg.stalledInp",
                     "width": 1,
                     "clk_domain": "ulpiClk",
                     "selected_probe_type": "DATA AND TRIGGER",
@@ -2761,6 +2388,216 @@
                         "U_USB_DEV",
                         "U_USB2_CORE",
                         "U_PKT_PROCESSOR"
+                    ]
+                },
+                {
+                    "name": "eth_crs_dv",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "eth_rx_dv",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "eth_tx_en",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "r.ulpiReq.dat",
+                    "width": 8,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ],
+                    "net_idx_left": 7,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "r.ulpiReq.vld",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ]
+                },
+                {
+                    "name": "r.state",
+                    "width": 3,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ],
+                    "net_idx_left": 2,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "r.ulpiReq.err",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ]
+                },
+                {
+                    "name": "r.isDat",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ]
+                },
+                {
+                    "name": "r.don",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ]
+                },
+                {
+                    "name": "r.nxtr",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ]
+                },
+                {
+                    "name": "ulpiTxRep.nxt",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ]
+                },
+                {
+                    "name": "ulpiTxRep.err",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ]
+                },
+                {
+                    "name": "ulpiTxRep.don",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "U_TX"
+                    ]
+                },
+                {
+                    "name": "ulpiRx.stp",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "G_ULPI.U_ULPI_IO"
+                    ]
+                },
+                {
+                    "name": "ulpiRx.nxt",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "G_ULPI.U_ULPI_IO"
+                    ]
+                },
+                {
+                    "name": "ulpiRx.dat",
+                    "width": 8,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "G_ULPI.U_ULPI_IO"
+                    ],
+                    "net_idx_left": 7,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "ulpiRx.dir",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "G_ULPI.U_ULPI_IO"
+                    ]
+                },
+                {
+                    "name": "ulpiRx.trn",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "U_USB2_CORE",
+                        "G_ULPI.U_ULPI_IO"
                     ]
                 }
             ],
