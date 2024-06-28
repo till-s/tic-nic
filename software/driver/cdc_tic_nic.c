@@ -47,6 +47,7 @@
 #include <linux/ctype.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
+#include <linux/if_arp.h>
 #include <linux/mii.h>
 #include <linux/phy.h>
 #include <linux/phy_led_triggers.h>
@@ -61,6 +62,10 @@
 #define VEND_REQ_MDIO 0x01
 
 #define STATIC
+
+static bool random_mac_addr = 1;
+module_param(random_mac_addr, bool, 0);
+MODULE_PARM_DESC(random_mac_addr, "Use random MAC address (default == TRUE)");
 
 struct cdc_ncm_ptp_priv {
 	struct mii_bus     *mdiobus;
@@ -167,6 +172,7 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 	struct mii_bus          *mdiobus = NULL;
 	struct phy_device       *phydev  = NULL;
 	int                      st      = !ini ? 0 : -ENODEV;
+	struct sockaddr          sarnd;
 
 	if ( ini ) {
 
@@ -177,6 +183,19 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 		st = cdc_ncm_bind_common(dev, intf, CDC_NCM_DATA_ALTSETTING_NCM, 0);
 		if ( 0 != st ) {
 			goto not_bound;
+		}
+
+        /*
+         * The address from the descriptors might be generic (multiple firmwares
+         * with the same descriptors and hence MAC addr). Unless told otherwise
+         * by module parameter we randomize the address...
+		 */
+		if ( random_mac_addr ) {
+			sarnd.sa_family = ARPHRD_ETHER;
+			random_ether_addr( sarnd.sa_data );
+			if ( (st = dev_set_mac_address( dev->net, &sarnd, NULL )) < 0 ) {
+				netdev_err( dev->net, "Unable to set random MAC address: %d\n", st );
+			}
 		}
 
 		/* cdc_ncm does not (luckliy) seem to use driver_priv -- they attach
