@@ -90,7 +90,7 @@
         <efx:design_file name="../hdl/AppCfgPkgBody.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/eth-rmii-mac/hdl/Usb2SetMCFilter.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/ByteStuffer.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiIOBufV2.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiIOBuf.vhd" version="default" library="default"/>
         <efx:top_vhdl_arch name=""/>
     </efx:design_info>
     <efx:constraint_info>
