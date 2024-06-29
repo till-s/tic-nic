@@ -57,6 +57,7 @@
 #include <linux/usb/usbnet.h>
 #include <linux/usb/cdc.h>
 #include <linux/usb/cdc_ncm.h>
+#include <linux/rtnetlink.h>
 
 #define PHY_ID 1
 #define VEND_REQ_MDIO 0x01
@@ -132,7 +133,7 @@ STATIC int try_set_addr(struct usbnet *dev)
 	/* cdc_ncm unfortunately does not export cdc_ncm_flags :-( */
 	if ( ctx->func_desc && (ctx->func_desc->bmNetworkCapabilities & USB_CDC_NCM_NCAP_NET_ADDRESS) ) {
 		/* see if we would succeed; netdevice still holds our old address */
-		return set_addr( dev );	
+		return set_addr( dev );
 	}
 	return -ENOTSUPP;
 }
@@ -176,28 +177,6 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 
 	if ( ini ) {
 
-		/* The NCM data altsetting is fixed, so we hard-coded it.
-		 * Additionally, generic NCM devices are assumed to accept arbitrarily
-		 * placed NDP.
-		 */
-		st = cdc_ncm_bind_common(dev, intf, CDC_NCM_DATA_ALTSETTING_NCM, 0);
-		if ( 0 != st ) {
-			goto not_bound;
-		}
-
-        /*
-         * The address from the descriptors might be generic (multiple firmwares
-         * with the same descriptors and hence MAC addr). Unless told otherwise
-         * by module parameter we randomize the address...
-		 */
-		if ( random_mac_addr ) {
-			sarnd.sa_family = ARPHRD_ETHER;
-			random_ether_addr( sarnd.sa_data );
-			if ( (st = dev_set_mac_address( dev->net, &sarnd, NULL )) < 0 ) {
-				netdev_err( dev->net, "Unable to set random MAC address: %d\n", st );
-			}
-		}
-
 		/* cdc_ncm does not (luckliy) seem to use driver_priv -- they attach
 		 * their data to dev->data[0]!
 		 */
@@ -230,7 +209,7 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 				dev->udev->devnum,
 				intf->cur_altsetting->desc.bInterfaceNumber);
 
-		st = mdiobus_register(mdiobus); 
+		st = mdiobus_register(mdiobus);
 		if ( st ) {
 			netdev_err(dev->net, "Unable to register MDIO bus %d\n", st);
 			goto mdiobus_not_registered;
@@ -247,7 +226,7 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 		st = phy_attach_direct( dev->net, phydev, 0, PHY_INTERFACE_MODE_INTERNAL );
 		if ( st ) {
 			netdev_err(dev->net, "Unable to attach PHY to network adapter '%d'\n", st);
-			goto phy_not_attached;			
+			goto phy_not_attached;
 		}
 
 		st = register_netdevice_notifier( &cdc_ncm_ptp_notifier );
@@ -256,12 +235,38 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 			goto notifier_not_registered;
 		}
 
+        /*
+         * The address from the descriptors might be generic (multiple firmwares
+         * with the same descriptors and hence MAC addr). Unless told otherwise
+         * by module parameter we randomize the address...
+		 * Note that we need our 'cdc_ncm_ptp_notifier' installed for this to
+		 * work.
+		 */
+		if ( random_mac_addr ) {
+			sarnd.sa_family = ARPHRD_ETHER;
+			random_ether_addr( sarnd.sa_data );
+
+			rtnl_lock();
+			st = dev_set_mac_address( dev->net, &sarnd, NULL );
+			rtnl_unlock();
+			if ( st < 0 ) {
+				netdev_err( dev->net, "Unable to set random MAC address: %d\n", st );
+			} else {
+				netdev_info( dev->net, "Using a random MAC address\n");
+			}
+		}
+
 		return 0;
 
 	}
 
 	unregister_netdevice_notifier( &cdc_ncm_ptp_notifier );
 notifier_not_registered:
+	/* the dp83640 driver will complain:
+     *  'expected to find an attached netdevice'
+	 * but phy_detach deattaches the netdevice before it calls
+	 * the driver 'remove' function which will cause this message...
+	 */
 	phy_detach( priv->phydev );
 phy_not_attached:
 phy_not_found:
@@ -272,22 +277,18 @@ mdiobus_not_alloced:
 	kfree( dev->driver_priv );
 	dev->driver_priv = NULL;
 priv_not_alloced:
-	cdc_ncm_unbind( dev, intf );
-not_bound:
 	return st;
 }
 
 STATIC int cdc_ncm_ptp_bind(struct usbnet *dev, struct usb_interface *intf)
 {
-	return cdc_ncm_ptp_inifini(dev, intf, 1);
+	/* The NCM data altsetting is fixed, so we hard-coded it.
+	 * Additionally, generic NCM devices are assumed to accept arbitrarily
+	 * placed NDP.
+	 */
+	int rv = cdc_ncm_bind_common(dev, intf, CDC_NCM_DATA_ALTSETTING_NCM, 0);
+	return rv;
 }
-
-
-STATIC void cdc_ncm_ptp_unbind(struct usbnet *dev, struct usb_interface *intf)
-{
-	(void)cdc_ncm_ptp_inifini(dev, intf, 0);
-}
-
 
 /* Unfortunately not public :-( */
 STATIC void
@@ -346,24 +347,44 @@ STATIC void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
 	}
 }
 
-STATIC 
-int ncm_ptp_probe(struct usb_interface *udev, const struct usb_device_id *prod)
+STATIC
+int ncm_ptp_probe(struct usb_interface *intf, const struct usb_device_id *prod)
 {
 	struct usbnet *dev;
-	int st = usbnet_probe( udev, prod );
+	int st = usbnet_probe( intf, prod );
 	if ( 0 == st ) {
+		dev = usb_get_intfdata(intf);
+
+		st = cdc_ncm_ptp_inifini(dev, intf, 1);
+
+		if ( st < 0 ) {
+			usbnet_disconnect(intf);
+			return st;
+		}
+
 		/* we have FLAG_LINK_INTR set and usbnet_probe sets the initial link
 		 * status to 'down' - relying on the initial notification from the
 		 * endpoint. However, if e.g., the driver is re-bound then this
 		 * notification never happens. Hence we query the initial link state
 		 * here.
 		 */
-		dev = usb_get_intfdata(udev);
 		if ( usbnet_get_link(dev->net) ) {
 			usbnet_link_change(dev, 1, 0);
 		}
 	}
 	return st;
+}
+
+STATIC
+void ncm_ptp_disconnect(struct usb_interface *intf)
+{
+	struct usbnet *dev = usb_get_intfdata(intf);
+	if ( ! dev ) {
+		/* usbnet_disconnect has this test also */
+		return;
+	}
+	cdc_ncm_ptp_inifini(dev, intf, 0);
+	usbnet_disconnect(intf);
 }
 
 STATIC
@@ -374,8 +395,8 @@ void update_filter(struct usbnet *dev)
 	int                  st = 0;
 
 	/* Enable all directed filters */
-    cdc_filter =    USB_CDC_PACKET_TYPE_DIRECTED 
-	              | USB_CDC_PACKET_TYPE_BROADCAST 
+    cdc_filter =    USB_CDC_PACKET_TYPE_DIRECTED
+	              | USB_CDC_PACKET_TYPE_BROADCAST
 	              | USB_CDC_PACKET_TYPE_MULTICAST;
 
     /* filtering on the device is an optional feature and not worth
@@ -394,7 +415,7 @@ void update_filter(struct usbnet *dev)
 		u8                    *p;
 		unsigned               bufl;
 
-		mc_cnt = netdev_mc_count( net );			
+		mc_cnt = netdev_mc_count( net );
 		bufl   = mc_cnt * ETH_ALEN;
 
 		st = 0;
@@ -434,7 +455,7 @@ void update_filter(struct usbnet *dev)
 			kfree( mc_buf );
 		}
 	}
- 
+
 	st = usb_control_msg(dev->udev,
             usb_sndctrlpipe(dev->udev, 0),
             USB_CDC_SET_ETHERNET_PACKET_FILTER,
@@ -457,7 +478,7 @@ static const struct driver_info cdc_ncm_ptp_info = {
 			| FLAG_LINK_INTR | FLAG_ETHER,
     .check_connect = NULL,
 	.bind = cdc_ncm_ptp_bind,
-	.unbind = cdc_ncm_ptp_unbind,
+	.unbind = cdc_ncm_unbind,
 	.manage_power = usbnet_manage_power,
 	.status = cdc_ncm_status,
 	.rx_fixup = cdc_ncm_rx_fixup,
@@ -481,7 +502,7 @@ static struct usb_driver cdc_ncm_ptp_driver = {
 	.name = "cdc_tic_nic",
 	.id_table = cdc_ncm_ptp_devs,
 	.probe = ncm_ptp_probe,
-	.disconnect = usbnet_disconnect,
+	.disconnect = ncm_ptp_disconnect,
 	.suspend = usbnet_suspend,
 	.resume = usbnet_resume,
 	.reset_resume =	usbnet_resume,
