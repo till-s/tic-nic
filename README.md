@@ -402,7 +402,7 @@ the RJ45 connector -- information about the link status and activity.
 
 If the board is strapped for 'Mode 1' then `LED_ACT` blinks when there
 is link activity. The built-in LEDs signal the link speed and connectivity.
-Consult the datasheet for details an other modes.
+Consult the datasheet for details and other modes.
 
 LEDs `D2` through `D9` are controlled by the FPGA and the firmware
 uses them to indicate the following status.
