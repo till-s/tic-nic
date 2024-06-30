@@ -286,7 +286,7 @@ The recommended settings are summarized in this table
   | JP1                 | user-defined                  | Enable `CLK_OUT` on GPIO <br> see PHY datasheet     |
   | JP2                 | don't care                    | Enable control frames. Un-<br>used/-supported by fw |
   | JP3                 | *install pull-up*             | Enable RMII (*mandatory*)                           |
-  | JP4                 | optional (use internal res.)  | Enable RMII master mode <br> (*mandatory*)          |
+  | JP4                 | *install pull-up*             | Enable RMII master mode <br> (*mandatory*)          |
   | R17, R18, R19       | install pull-ups              | Enable autoneg. advertise <br> everything           |
   | JP5                 | user-defined                  | LED mode (see PHY datasheet)                        |
 
