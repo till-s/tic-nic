@@ -7,6 +7,8 @@ product that provides access to hardware pins that can be used
 to generate precisely synchronized events or capture PTP
 timestamps.
 
+<img src="./tic_nic.png" style="width: 70%; margin-left: auto; margin-right: auto">
+
 This is the niche the tic-nic tries to fill. It is a very portable
 USB gadget with a PTP PHY and clock providing a handfull of
 GPIO pins that can be controlled in a synchronous fashion.
