@@ -135,6 +135,8 @@ architecture rtl of design_top is
    signal ulpiForceStp         : std_logic := '0';
    signal usb2HiSpeedEn        : std_logic := '1';
    signal ulpiDirB             : std_logic;
+   signal ulpiClkBlink         : std_logic;
+   signal rmiiClkBlink         : std_logic;
 
    signal fifoRDat             : Usb2ByteType;
    signal fifoRRdy             : std_logic;
@@ -185,6 +187,7 @@ architecture rtl of design_top is
    signal ethMacTxRst          : std_logic := '0';
    signal ethMacSpeed10        : std_logic := '0';
    signal ethMacLinkOk         : std_logic := '1';
+   signal ethMacDuplexFull     : std_logic := '1';
    signal ethMacColl           : std_logic := '0';
    signal ethMacPromisc        : std_logic := '0';
    signal ethMacAllmulti       : std_logic := '1';
@@ -270,7 +273,7 @@ begin
       if ( rising_edge( ulpiClk ) ) then
          cnt := cnt + 1;
       end if;
-      LED(1) <= cnt(cnt'left);
+      ulpiClkBlink <= cnt(cnt'left);
    end process;
 
    U_USB_DEV : entity work.Usb2ExampleDev
@@ -426,7 +429,7 @@ begin
             cnt := cnt - 1;
          end if;
       end if;
-      -- can blink an LED here with 'tgl'
+      rmiiClkBlink <= tgl;
    end process;
 
    ncmFifoOutVld    <= not ncmFifoOutEmpty;
@@ -504,7 +507,7 @@ begin
          mdioDatInp                   => mdioDatInp,
 
          speed10                      => ethMacSpeed10,
-         duplexFull                   => open, -- out std_logic := '0';
+         duplexFull                   => ethMacDuplexFull,
          linkOk                       => ethMacLinkOk,
          -- full contents; above bits are for convenience
          statusRegPolled              => open
@@ -514,10 +517,10 @@ begin
    LED(7)        <= not ethMacPromisc;
    LED(6)        <= not ethMacAllMulti;
    LED(5)        <= not usb2DevStatus.suspended;
-   LED(4)        <= '1';
+   LED(4)        <= not ethMacDuplexFull;
    LED(3)        <= not ethMacSpeed10;
    LED(2)        <= not ethMacLinkOk;
-
-   LED(0)        <= not sdramPllLocked;
+   LED(1)        <=     sdramPllLocked; -- and rmiiClkBlink;
+   LED(0)        <= '1'; -- ulpiClkBlink;
 
 end architecture rtl;
