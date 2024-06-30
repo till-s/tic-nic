@@ -2,8 +2,8 @@
 
 While there is certainly no lack of cheap USB-ethernet adapters
 and most modern laptops and networking cards feature PTP-capable
-network adapters it is surprisingly difficult to find an affordable
-product that provides access to hardware pins that can be used
+network interfaces it is surprisingly difficult to find an affordable
+product which provides access to hardware pins that can be used
 to generate precisely synchronized events or capture PTP
 timestamps.
 
@@ -484,6 +484,13 @@ every time before the design is rebuilt with efinity. Note that
 if the state of the working-directory is not 'clean' the reported
 version is reset to `00000000`. You should thus commit your changes
 before running the aforementioned script and rebuilding.
+
+Note that every new synthesis/implementation run will modify the
+project XML (and debugger JSON) files by changing their UUID and
+dates. This is unfortunate and will cause `update_git_version_pkg.sh`
+to reset the version to all zeros. It is OK to just reset the
+mentioned files (`git reset --hard`) if you are certain that you
+have no local modifications.
 
 ### Software
 
