@@ -313,7 +313,7 @@ with a lower speed grade than C4 but YMMV.
 
 The board outline
 
-<img src="./conn_overview.svg">
+<img src="./conn_overview.svg" style="width: 100%; margin-left: auto; margin-right: auto">
 
 shows the pin-headers J3, J5, J6, J7 and LEDs D2..D9, D11.
 
