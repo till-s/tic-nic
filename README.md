@@ -317,6 +317,107 @@ The board outline
 
 shows the pin-headers J3, J5, J6, J7 and LEDs D2..D9, D11.
 
+##### J3 - FPGA JTAG Connector
+
+  |  Pin  | Function |  Pin  | Function |
+  | :---: | :------: | :---: | :------: |
+  |  1    | CSb      |   2   |    Gnd   |
+  |  3    | RSTb     |   4   |    Gnd   |
+  |  5    | TDI      |   6   |    Gnd   |
+  |  7    | TDO      |   8   |    Gnd   |
+  |  9    | TCK      |  10   |    Gnd   |
+  | 11    | TMS      |  12   |    Gnd   |
+  | 13    | Vref     |  14   |    N/C   |
+
+The `CSb` pin connects to the respective pin of the configuration
+flash and could be used to program the flash with a special programmer
+(note that `CSb` would have to be in high-Z state once the FPGA
+takes over control; for this reason it is best to leave this pin
+unconnected). The `Rstb`, `TDI`, `TDO`, `TCK` and `TMS` pins should
+be connected to the corresponding pins of a compatible JTAG
+programmer. `Vref` connects to the JTAG port's bank supply voltage
+via a 10k resistor and can be used by the programmer to sense the
+voltage for engaging suitable voltage shifters.
+
+##### J5 - PTP GPIO Connector
+
+This header makes the DP83640's GPIO pins which connect to
+PTP triggers and outputs accessible to the user.
+Consult the DP83640 datasheet for details.
+
+  |  Pin  | Function |  Pin  | Function |
+  | :---: | :------: | :---: | :------: |
+  |  1    | Gnd      |   2   |    3V3   |
+  |  3    | Gnd      |   4   |    GPIO1 |
+  |  5    | Gnd      |   6   |    GPIO2 |
+  |  7    | Gnd      |   8   |    GPIO3 |
+  |  9    | Gnd      |  10   |    GPIO4 |
+  | 11    | Gnd      |  12   |    GPIO8 |
+  | 13    | Gnd      |  14   |    GPIO9 |
+  | 15    | Gnd      |  16   |    Gnd   |
+  | 17    | Gnd      |  18   |   CLKOUT |
+  | 19    | Gnd      |  20   |    3V3   |
+
+The `GPIO9` pin is also connected to the FPGA (`GPIOB_CLKN0`)
+for optional use by the user (the default firmware does not
+use this connection).
+
+##### J6,J7 - FPGA GPIO Connectors
+
+These headers connect to spare pins of the FPGA and
+are available for user applications. J6 connects to bank 4B
+and J7 to bank B3. Both banks use a 3.3V supply voltage but
+have slightly different special features (consult the Trion
+datasheet for details).
+
+###### J6 Pinout
+
+  |  Pin  | Function |  Pin  | Function   |
+  | :---: | :------: | :---: | :--------: |
+  |  1    | Gnd      |   2   |    3V3     |
+  |  3    | Gnd      |   4   |    REF RES |
+  |  5    | Gnd      |   6   | GPIOB TXP00|
+  |  7    | Gnd      |   8   | GPIOB TXN00|
+  |  9    | Gnd      |  10   | GPIOB TXP02|
+  | 11    | Gnd      |  12   | GPIOB TXN02|
+  | 13    | Gnd      |  14   | GPIOB TXP04|
+  | 15    | Gnd      |  16   | GPIOB TXN04|
+  | 17    | Gnd      |  18   | GPIOB TXP06|
+  | 19    | Gnd      |  20   |    3V3     |
+
+###### J7 Pinout
+
+  |  Pin  | Function |  Pin  | Function   |
+  | :---: | :------: | :---: | :--------: |
+  |  1    | Gnd      |   2   | B3 IO 0    |
+  |  3    | Gnd      |   4   | B3 IO 1    |
+  |  5    | Gnd      |   6   | B3 IO 2    |
+  |  7    | Gnd      |   8   |    3V3     |
+
+##### LEDs
+
+The LED `D11` connects to the DP83640's `LED_ACT` output and
+conveys -- together with the other two LEDs which are built into
+the RJ45 connector -- information about the link status and activity.
+
+If the board is strapped for 'Mode 1' then `LED_ACT` blinks when there
+is link activity. The built-in LEDs signal the link speed and connectivity.
+Consult the datasheet for details an other modes.
+
+LEDs `D2` through `D9` are controlled by the FPGA and the firmware
+uses them to indicate the following status.
+
+  |  LED  | Function             |
+  | :---- | :------------------- |
+  |  D2   | Unused               |
+  |  D3   | RMII PLL not locked  |
+  |  D4   | Ethernet Link OK     |
+  |  D5   | Link speed 10Mbps    |
+  |  D6   | Full duplex          |
+  |  D7   | USB suspended        |
+  |  D8   | All-multicast        |
+  |  D9   | Promiscuous          |
+
 ### Firmware
 
 #### Programming the Flash Using the Tic-Nic Design Itself
