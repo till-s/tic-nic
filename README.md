@@ -34,7 +34,7 @@ GPIO pins that can be controlled in a synchronous fashion.
 
 ## License
 
-Tic-Nic is released under the [European-Union Public
+Tic-Nic is copyright of Till Straumann and released under the [European-Union Public
 License](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
 *with the exception of* the [ethernet driver](./software/driver/cdc_tic_nic.c)
 which is released under a [dual GPL/BSD license](./software/driver/LICENSE).
@@ -234,11 +234,11 @@ and you'll have to manually rebind it (as root):
 
   2. Unbind `cdc_ncm`:
 
-       echo '1-7:1.2' > /sys/bus/usb/drivers/cdc_ncm/unbind
+            echo '1-7:1.2' > /sys/bus/usb/drivers/cdc_ncm/unbind
 
   3. Bind to `cdc_tic_nic`:
 
-       echo '1-7:1.2' > /sys/bus/usb/drivers/cdc_tic_nic/bind
+            echo '1-7:1.2' > /sys/bus/usb/drivers/cdc_tic_nic/bind
 
 You should now be all ready to go!
 
@@ -294,8 +294,8 @@ The recommended settings are summarized in this table
   | R17, R18, R19       | install pull-ups              | Enable autoneg. advertise <br> everything           |
   | JP5                 | user-defined                  | LED mode (see PHY datasheet)                        |
 
-Thus, the only strictly mandatory strap is JP3 which must be loaded
-with a 2k2 pull-up resistor. For most other settings the internal
+Thus, the only strictly mandatory straps are JP3 and JP4 which must
+be loaded with 2k2 pull-up resistors. For most other settings the internal
 default resistors should be fine. Note that it is not possible to
 change the advertised link capabilities - this was a design choice
 to simplify the LED circuitry. However, the advertised capabilities
@@ -367,6 +367,9 @@ Consult the DP83640 datasheet for details.
 The `GPIO9` pin is also connected to the FPGA (`GPIOB_CLKN0`)
 for optional use by the user (the default firmware does not
 use this connection).
+
+Note that control of these pins is possible with standard
+linux tools and sysfs interfaces.
 
 ##### J6,J7 - FPGA GPIO Connectors
 
