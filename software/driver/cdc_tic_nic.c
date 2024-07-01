@@ -244,7 +244,7 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 		 */
 		if ( random_mac_addr ) {
 			sarnd.sa_family = ARPHRD_ETHER;
-			random_ether_addr( sarnd.sa_data );
+			eth_random_addr( sarnd.sa_data );
 
 			rtnl_lock();
 			st = dev_set_mac_address( dev->net, &sarnd, NULL );
