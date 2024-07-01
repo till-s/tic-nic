@@ -1,6 +1,4 @@
-#create_clock -name sdram_clk -period 6.000  [get_ports sdram_clk]
-#create_clock -name ulpiClk   -period 16.667 [get_ports ulpiClk]
-set_clock_groups -asynchronous -group [get_clocks sdram_clk] -group [get_clocks ulpiClk] -group [get_clocks adcClk] -group [get_clocks rmii_clk]
+set_clock_groups -asynchronous -group [get_clocks ulpiClk] -group [get_clocks rmii_clk]
 
 # USB3343 ULPI interface setup time min: 5.0ns, hold time min: 0.0ns.
 # USB3343 ULPI interface output delay min: 1.5ns, max: 6 ns;

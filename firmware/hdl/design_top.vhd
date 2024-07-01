@@ -17,25 +17,6 @@ use     work.GitVersionPkg.all;
 
 entity design_top is
    port (
-      sdram_clk         : in  std_logic := '0';
-      sdram_smpl_clk    : in  std_logic := '0';
-      -- create 180-deg out of phase clock with DDIO
-      sdram_clkout_HI   : out std_logic := '1';
-      sdram_clkout_LO   : out std_logic := '0';
-
-      sdram_CSb         : out std_logic := '1';
-      sdram_CKE         : out std_logic := '0';
-      sdram_DQML        : out std_logic := '0';
-      sdram_DQMH        : out std_logic := '0';
-      sdram_WEb         : out std_logic := '1';
-      sdram_CASb        : out std_logic := '1';
-      sdram_RASb        : out std_logic := '1';
-      sdram_A           : out std_logic_vector(12 downto 0) := (others => '0');
-      sdram_BA          : out std_logic_vector( 1 downto 0) := (others => '0');
-      sdram_DQ_IN       : in  std_logic_vector(15 downto 0) := (others => '0');
-      sdram_DQ_OUT      : out std_logic_vector(15 downto 0) := (others => '0');
-      sdram_DQ_OE       : out std_logic_vector(15 downto 0) := (others => '0');
-
       ulpiClk           : in    std_logic;
       -- NOTE    : unfortunately, the ulpiClk stops while ulpiRstb is asserted...
       ulpiRstb          : out   std_logic                    := '1';
@@ -49,9 +30,7 @@ entity design_top is
       ulpiStp_OE        : out   std_logic                    := '0';
       LED               : out   std_logic_vector(7 downto 0) := (others => '1');
       ulpiPllLocked     : in    std_logic;
-      sdramPllLocked    : in    std_logic := '0';
-
-      adcClk            : in    std_logic := '0';
+      rmiiPllLocked     : in    std_logic := '0';
 
       spiSClk           : out   std_logic;
       spiMOSI           : out   std_logic;
@@ -520,7 +499,7 @@ begin
    LED(4)        <= not ethMacDuplexFull;
    LED(3)        <= not ethMacSpeed10;
    LED(2)        <= not ethMacLinkOk;
-   LED(1)        <=     sdramPllLocked; -- and rmiiClkBlink;
+   LED(1)        <=     rmiiPllLocked; -- and rmiiClkBlink;
    LED(0)        <= '1'; -- ulpiClkBlink;
 
 end architecture rtl;

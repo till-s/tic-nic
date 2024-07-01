@@ -3,13 +3,13 @@
         {
             "name": "la0",
             "type": "la",
-            "uuid": "2f85e2130907453d8006f39e8ea76a93",
+            "uuid": "0b7ccadc510d4bac8b54f84dacce4081",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
             "capture_control": false,
             "data_depth": 1024,
-            "input_pipeline": 1,
+            "input_pipeline": 2,
             "probes": [
                 {
                     "name": "U_USB_DEV/U_USB2_CORE/devStatus.remWakeup",
@@ -291,13 +291,13 @@
         {
             "name": "la1",
             "type": "la",
-            "uuid": "f80ad946645f439396c9866c02d25ea2",
+            "uuid": "e4ca4a92fc9845749ee07e2a70220e73",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
             "capture_control": false,
             "data_depth": 1024,
-            "input_pipeline": 1,
+            "input_pipeline": 2,
             "probes": [
                 {
                     "name": "eth_crs_dv",
@@ -2605,7 +2605,7 @@
             "db_checksum": "ba5fce12098a2c03e7bae2e9a172d1842464edfca8e284870b3519e987537970",
             "src": "elaborate",
             "jtag_user": "USER1",
-            "input_pipeline": 1
+            "input_pipeline": 2
         }
     }
 }
