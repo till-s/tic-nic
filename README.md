@@ -202,7 +202,7 @@ deviate from 3.3V) or a pre-programmed flash device.
 Follow these steps after making sure you have all the necessary
 packages installed that your distribution requires to build kernel
 modules (check that you have at least gcc and the infrastructure
-under `/lib/modules/`uname -r`/build/`):
+under `/lib/modules/``uname -r``/build/`):
 
 Note that building and using this driver requires your kernel
 to already support `usbnet` and `cdc_ncm`. All of these were
