@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efx:project name="tic_nic" description="" last_change="1719868012" sw_version="2023.2.307.2.17" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="true" design_ood="sync" place_ood="sync" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+<efx:project name="tic_nic" description="" last_change="1726693367" sw_version="2024.1.163.1.8" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="true" design_ood="sync" place_ood="sync" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
     <efx:device_info>
         <efx:family name="Trion"/>
         <efx:device name="T20Q144"/>
@@ -91,6 +91,12 @@
         <efx:design_file name="../modules/eth-rmii-mac/hdl/Usb2SetMCFilter.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/ByteStuffer.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiIOBuf.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/UART-controller/hdl/UartRx.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/UART-controller/hdl/UartWrapper.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/UART-controller/hdl/RateGenerator.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/UART-controller/hdl/LongDivider.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/UART-controller/hdl/UartTx.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/UART-controller/hdl/UartPkg.vhd" version="default" library="default"/>
         <efx:top_vhdl_arch name=""/>
     </efx:design_info>
     <efx:constraint_info>
@@ -130,6 +136,7 @@
         <efx:param name="mult-auto-pipeline" value="0" value_type="e_option"/>
         <efx:param name="use-logic-for-small-mem" value="64" value_type="e_integer"/>
         <efx:param name="use-logic-for-small-rom" value="64" value_type="e_integer"/>
+        <efx:param name="bram-push-tco-outreg" value="0" value_type="e_option"/>
     </efx:synthesis>
     <efx:place_and_route tool_name="efx_pnr">
         <efx:param name="work_dir" value="work_pnr" value_type="e_string"/>

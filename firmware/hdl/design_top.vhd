@@ -14,8 +14,12 @@ use     work.CommandMuxPkg.all;
 use     work.BasicPkg.Slv8Array;
 use     work.RMIIMacPkg.all;
 use     work.GitVersionPkg.all;
+use     work.UartPkg.all;
 
 entity design_top is
+   generic (
+      USE_UART_G        : boolean := true
+   );
    port (
       ulpiClk           : in    std_logic;
       -- NOTE    : unfortunately, the ulpiClk stops while ulpiRstb is asserted...
@@ -57,7 +61,10 @@ entity design_top is
       eth_crs_dv        : in    std_logic;
       eth_rx_col        : in    std_logic;
       eth_rx_err        : in    std_logic;
-      eth_rxd           : in    std_logic_vector(3 downto 0)
+      eth_rxd           : in    std_logic_vector(3 downto 0);
+
+      uartRx            : in    std_logic;
+      uartTx            : out   std_logic
    );
 end entity design_top;
 
@@ -100,8 +107,20 @@ architecture rtl of design_top is
    signal acmFifoLocal         : std_logic    := '1';
 
    signal acmDTR               : std_logic;
+   signal acmRTS               : std_logic;
    signal acmRate              : unsigned(31 downto 0);
+   signal acmStopBits          : unsigned( 1 downto 0);
+   signal acmDataBits          : unsigned( 4 downto 0);
    signal acmParity            : unsigned( 2 downto 0);
+
+   signal acmLineBreak         : std_logic := '0';
+   signal acmOverRun           : std_logic := '0';
+   signal acmParityError       : std_logic := '0';
+   signal acmFramingError      : std_logic := '0';
+   signal acmRingDetect        : std_logic := '0';
+   signal acmBreakState        : std_logic := '0';
+
+
    signal acmFifoRst           : std_logic    := '0';
 
    signal usb2Rst              : std_logic    := '0';
@@ -181,6 +200,8 @@ architecture rtl of design_top is
    signal mdioDatInp           : std_logic;
    signal mdioDatHiZ           : std_logic;
 
+   signal uartRxSync           : std_logic;
+
 begin
 
    P_INI : process ( ulpiClk ) is
@@ -198,13 +219,121 @@ begin
       usb2Rst      <= rst(0);
    end process P_INI;
 
-   fifoRDat      <= acmFifoOutDat;
-   fifoRVld      <= not acmFifoOutEmpty;
-   acmFifoOutRen <= fifoRRdy;
+   G_NO_UART : if ( not USE_UART_G ) generate
 
-   acmFifoInpDat <= fifoWDat;
-   acmFifoInpWen <= fifoWVld;
-   fifoWRdy      <= not acmFifoInpFull;
+      fifoRDat      <= acmFifoOutDat;
+      fifoRVld      <= not acmFifoOutEmpty;
+      acmFifoOutRen <= fifoRRdy;
+
+      acmFifoInpDat <= fifoWDat;
+      acmFifoInpWen <= fifoWVld;
+      fifoWRdy      <= not acmFifoInpFull;
+
+   end generate G_NO_UART;
+
+   G_UART : if ( USE_UART_G ) generate
+      constant LD_RATE_C     : natural := 22;
+      constant ULPI_FREQ_C   : natural := 60000000;
+      signal   acmFifoOutVld : std_logic;
+      signal   cfgParity     : UartParityType;
+      signal   cfgStopBits   : UartStopBitType;
+      signal   cfgNumBits    : natural range 1 to 8;
+   begin
+
+      P_COMB : process ( acmParity, acmStopBits, acmDataBits ) is
+      begin
+         case ( to_integer(acmParity) ) is
+            when 1      => cfgParity <= ODD;
+            when 2      => cfgParity <= EVEN;
+            when 3      => cfgParity <= MARK;
+            when 4      => cfgParity <= SPACE;
+            when others => cfgParity <= NONE;
+         end case;
+         case ( to_integer(acmDataBits) ) is
+            when 5 | 6 | 7 => cfgNumBits <= to_integer(acmDataBits);
+            when others    => cfgNumBits <= 8;
+         end case;
+         case ( to_integer(acmStopBits) ) is
+            when 1      => cfgStopBits <= ONEP5;
+            when 2      => cfgStopBits <= TWO;
+            when others => cfgStopBits <= ONE;
+         end case;
+      end process P_COMB;
+
+      acmFifoOutVld <= not acmFifoOutEmpty;
+
+      U_UART : entity work.UartWrapper
+         generic map (
+            -- main clock frequency
+            CLOCK_FREQ_G   => ULPI_FREQ_C,
+            -- max # of bits of rate
+            LD_RATE_G      => LD_RATE_C,
+            -- max. data width
+            DATA_WIDTH_G   => 8,
+            DEBOUNCE_G     => 0
+         )
+         port map (
+            clk            => ulpiClk,
+            rst            => acmFifoRst,
+
+            rxData         => acmFifoInpDat,
+            -- data are consumed when (rxDataVld and rxDataRdy) = '1'
+            rxDataRdy      => '1',
+            rxDataVld      => acmFifoInpWen,
+            -- asserted while a break condition is present
+            rxBreak        => acmBreakState,
+            -- asserted when a parity error is detected (dataVld is not asserted)
+            -- cleared when 'clearErrors' is asserted or at the next start bit.
+            rxParityErr    => acmParityError,
+            -- asserted when a framing error is detected (dataVld is not asserted)
+            -- cleared when 'clearErrors' is asserted or at the next start bit.
+            -- A break condition will also result in a framing error.
+            rxFramingErr   => acmFramingError,
+            -- asserted when an overrun is detected, i.e. when new data are
+            -- shifted in while dataRdy is asserted. Old data are discarded
+            -- and the new data are latched (which eventually results in
+            -- both, 'dataVld' as well as 'overrunErr' being asserted). The
+            -- 'overrunErr' simply means that previous data were lost; the
+            -- data marked as 'dataVld' are still good.
+            -- Cleared when 'clearErrors' is asserted or at the next start bit
+            -- (i.e., at the start of the frame following the one which caused
+            -- the overrun).
+            rxOverrunErr   => acmOverRun,
+
+            txData         => acmFifoOutDat,
+            -- data are consumed during cycle with (txDataVld and txDataRdy) = '1'
+            txDataVld      => acmFifoOutVld,
+            txDataRdy      => acmFifoOutRen,
+            -- send break
+            txBreak        => acmLineBreak,
+            -- expected data format (parity, stop bits etc.)
+            cfgParity      => cfgParity,
+            cfgStopBits    => cfgStopBits,
+            cfgNumBits     => cfgNumBits,
+
+            cfgBitRateHz   => acmRate(LD_RATE_C - 1 downto 0),
+            -- clear errors; may be permanently asserted which causes all
+            -- error flags to be asserted for a single cycle.
+            clearErrors    => '1',
+
+            -- serial data input; NOTE: no internal synchronizer present
+            rxSerial       => uartRxSync,
+            -- serial data output
+            txSerial       => uartTx
+         );
+
+      U_RX_SYNC : entity work.Usb2CCSync
+         generic map (
+            STAGES_G       => 3,
+            INIT_G         => '1'
+         )
+         port map (
+            clk            => ulpiClk,
+            rst            => acmFifoRst,
+            d              => uartRx,
+            q              => uartRxSync
+         );
+   end generate G_UART;
 
    U_CMD : entity work.CommandWrapper
    generic map (
@@ -303,8 +432,20 @@ begin
          acmFifoLocal              => acmFifoLocal,
 
          acmDTR                    => acmDTR,
+         acmRTS                    => acmRTS,
+
          acmRate                   => acmRate,
+         acmStopBits               => acmStopBits,
          acmParity                 => acmParity,
+         acmDataBits               => acmDataBits,
+
+         acmLineBreak              => acmLineBreak,
+         acmOverRun                => acmOverRun,
+         acmParityError            => acmParityError,
+         acmFramingError           => acmFramingError,
+         acmRingDetect             => acmRingDetect,
+         acmBreakState             => acmBreakState,
+
 
          ncmFifoClk                => rmii_clk,
          ncmFifoOutDat             => ncmFifoOutDat,
