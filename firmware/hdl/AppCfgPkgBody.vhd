@@ -5,7 +5,7 @@
 
 -- THIS FILE WAS AUTOMATICALLY GENERATED; DO NOT EDIT!
 
--- Generated with: genAppCfgPkgBody.py -p 0x0001 -N 02deadbeef31 -a -S -Lbreak -Lstate -f AppCfgPkgBody.vhd -m 0x8020
+-- Generated with: genAppCfgPkgBody.py -p 0x0001 -N 02deadbeef31 -a -S -f AppCfgPkgBody.vhd -m 0x8020
 
 library ieee;
 use     ieee.std_logic_1164.all;
@@ -95,7 +95,7 @@ package body Usb2AppCfgPkg is
        64 => x"04",  -- bLength
        65 => x"24",  -- bDescriptorType
        66 => x"02",  -- bDescriptorSubtype
-       67 => x"00",  -- bmCapabilities
+       67 => x"06",  -- bmCapabilities
       -- Usb2CDCFuncUnionDesc
        68 => x"05",  -- bLength
        69 => x"24",  -- bDescriptorType
@@ -109,7 +109,7 @@ package body Usb2AppCfgPkg is
        76 => x"03",  -- bmAttributes
        77 => x"08",  -- wMaxPacketSize
        78 => x"00",
-       79 => x"ff",  -- bInterval
+       79 => x"10",  -- bInterval
       -- Usb2InterfaceDesc
        80 => x"09",  -- bLength
        81 => x"04",  -- bDescriptorType
@@ -310,7 +310,7 @@ package body Usb2AppCfgPkg is
       254 => x"04",  -- bLength
       255 => x"24",  -- bDescriptorType
       256 => x"02",  -- bDescriptorSubtype
-      257 => x"00",  -- bmCapabilities
+      257 => x"06",  -- bmCapabilities
       -- Usb2CDCFuncUnionDesc
       258 => x"05",  -- bLength
       259 => x"24",  -- bDescriptorType
@@ -324,7 +324,7 @@ package body Usb2AppCfgPkg is
       266 => x"03",  -- bmAttributes
       267 => x"08",  -- wMaxPacketSize
       268 => x"00",
-      269 => x"10",  -- bInterval
+      269 => x"08",  -- bInterval
       -- Usb2InterfaceDesc
       270 => x"09",  -- bLength
       271 => x"04",  -- bDescriptorType
