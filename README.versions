@@ -1,0 +1,3 @@
+V1.0: smaller board, no GPS receiver
+V2.x: 80mmx100mm board with GPS receiver and coaxial connectors; all
+      components placed so that an extruded-enclosure could be used.
