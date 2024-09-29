@@ -235,10 +235,10 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 			goto notifier_not_registered;
 		}
 
-        /*
-         * The address from the descriptors might be generic (multiple firmwares
-         * with the same descriptors and hence MAC addr). Unless told otherwise
-         * by module parameter we randomize the address...
+		/*
+		 * The address from the descriptors might be generic (multiple firmwares
+		 * with the same descriptors and hence MAC addr). Unless told otherwise
+		 * by module parameter we randomize the address...
 		 * Note that we need our 'cdc_ncm_ptp_notifier' installed for this to
 		 * work.
 		 */
@@ -263,7 +263,7 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 	unregister_netdevice_notifier( &cdc_ncm_ptp_notifier );
 notifier_not_registered:
 	/* the dp83640 driver will complain:
-     *  'expected to find an attached netdevice'
+	 *  'expected to find an attached netdevice'
 	 * but phy_detach deattaches the netdevice before it calls
 	 * the driver 'remove' function which will cause this message...
 	 */
@@ -280,6 +280,19 @@ priv_not_alloced:
 	return st;
 }
 
+static const struct net_device_ops netdev_ops = {
+        .ndo_open            = usbnet_open,
+        .ndo_stop            = usbnet_stop,
+	.ndo_eth_ioctl       = phy_do_ioctl,
+        .ndo_start_xmit      = usbnet_start_xmit,
+        .ndo_tx_timeout      = usbnet_tx_timeout,
+        .ndo_set_rx_mode     = usbnet_set_rx_mode,
+        .ndo_get_stats64     = dev_get_tstats64,
+        .ndo_change_mtu      = cdc_ncm_change_mtu,
+        .ndo_set_mac_address = eth_mac_addr,
+        .ndo_validate_addr   = eth_validate_addr,
+};
+
 STATIC int cdc_ncm_ptp_bind(struct usbnet *dev, struct usb_interface *intf)
 {
 	/* The NCM data altsetting is fixed, so we hard-coded it.
@@ -287,6 +300,9 @@ STATIC int cdc_ncm_ptp_bind(struct usbnet *dev, struct usb_interface *intf)
 	 * placed NDP.
 	 */
 	int rv = cdc_ncm_bind_common(dev, intf, CDC_NCM_DATA_ALTSETTING_NCM, 0);
+	if ( 0 == rv ) {
+		dev->net->netdev_ops = &netdev_ops;
+	}
 	return rv;
 }
 
@@ -390,24 +406,24 @@ void ncm_ptp_disconnect(struct usb_interface *intf)
 STATIC
 void update_filter(struct usbnet *dev)
 {
-    struct net_device   *net = dev->net;
-    u16                  cdc_filter;
+	struct net_device   *net = dev->net;
+	u16                  cdc_filter;
 	int                  st = 0;
 
 	/* Enable all directed filters */
-    cdc_filter =    USB_CDC_PACKET_TYPE_DIRECTED
-	              | USB_CDC_PACKET_TYPE_BROADCAST
-	              | USB_CDC_PACKET_TYPE_MULTICAST;
+	cdc_filter =    USB_CDC_PACKET_TYPE_DIRECTED
+		| USB_CDC_PACKET_TYPE_BROADCAST
+		| USB_CDC_PACKET_TYPE_MULTICAST;
 
-    /* filtering on the device is an optional feature and not worth
-     * the hassle so we just roughly care about snooping and if any
-     * multicast is requested, we take every multicast
-     */
-    if (net->flags & IFF_PROMISC) {
-        cdc_filter |= USB_CDC_PACKET_TYPE_PROMISCUOUS;
-    } else if (net->flags & IFF_ALLMULTI) {
-        cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
-    } else {
+	/* filtering on the device is an optional feature and not worth
+	 * the hassle so we just roughly care about snooping and if any
+	 * multicast is requested, we take every multicast
+	 */
+	if (net->flags & IFF_PROMISC) {
+		cdc_filter |= USB_CDC_PACKET_TYPE_PROMISCUOUS;
+	} else if (net->flags & IFF_ALLMULTI) {
+		cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
+	} else {
 
 		u8                    *mc_buf = 0;
 		unsigned               mc_cnt = 0;
@@ -449,7 +465,7 @@ void update_filter(struct usbnet *dev)
 			}
 		}
 		if ( st < 0 ) {
-       		cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
+			cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
 		}
 		if ( mc_buf ) {
 			kfree( mc_buf );
@@ -457,15 +473,15 @@ void update_filter(struct usbnet *dev)
 	}
 
 	st = usb_control_msg(dev->udev,
-            usb_sndctrlpipe(dev->udev, 0),
-            USB_CDC_SET_ETHERNET_PACKET_FILTER,
-            USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-            cdc_filter,
-            dev->intf->cur_altsetting->desc.bInterfaceNumber,
-            NULL,
-            0,
-            USB_CTRL_SET_TIMEOUT
-        );
+			usb_sndctrlpipe(dev->udev, 0),
+			USB_CDC_SET_ETHERNET_PACKET_FILTER,
+			USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+			cdc_filter,
+			dev->intf->cur_altsetting->desc.bInterfaceNumber,
+			NULL,
+			0,
+			USB_CTRL_SET_TIMEOUT
+			);
 
 	if ( st < 0 ) {
 		netdev_err( net, "Failed to set packet filters (st = %d); hope the device passes everything up\n", st);

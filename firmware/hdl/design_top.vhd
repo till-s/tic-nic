@@ -14,6 +14,7 @@ use     work.CommandMuxPkg.all;
 use     work.BasicPkg.Slv8Array;
 use     work.RMIIMacPkg.all;
 use     work.GitVersionPkg.all;
+use     work.UartPkg.all;
 
 entity design_top is
    port (
@@ -57,7 +58,10 @@ entity design_top is
       eth_crs_dv        : in    std_logic;
       eth_rx_col        : in    std_logic;
       eth_rx_err        : in    std_logic;
-      eth_rxd           : in    std_logic_vector(3 downto 0)
+      eth_rxd           : in    std_logic_vector(3 downto 0);
+
+      uartRx            : in    std_logic;
+      uartTx            : out   std_logic
    );
 end entity design_top;
 
@@ -68,6 +72,10 @@ architecture rtl of design_top is
    -- must cover bulk max pkt size
    constant LD_FIFO_OUT_C      : natural :=  9;
    constant LD_FIFO_INP_C      : natural :=  9;
+
+   constant LD_RATE_C          : natural := 22;
+   constant ULPI_FREQ_C        : natural := 60000000;
+   constant UART_MAX_BITS_C    : natural := 8;
 
    constant NCM_IF_ASSOC_IDX_C : integer := usb2NextIfcAssocDescriptor(
       USB2_APP_DESCRIPTORS_C,
@@ -90,6 +98,7 @@ architecture rtl of design_top is
    signal acmFifoOutDat        : Usb2ByteType;
    signal acmFifoOutEmpty      : std_logic;
    signal acmFifoOutRen        : std_logic    := '1';
+   signal acmFifoOutVld        : std_logic    := '0';
    signal acmFifoInpDat        : Usb2ByteType := (others => '0');
    signal acmFifoInpFull       : std_logic;
    signal acmFifoInpWen        : std_logic    := '0';
@@ -100,8 +109,37 @@ architecture rtl of design_top is
    signal acmFifoLocal         : std_logic    := '1';
 
    signal acmDTR               : std_logic;
+   signal acmRTS               : std_logic;
    signal acmRate              : unsigned(31 downto 0);
+   signal acmStopBits          : unsigned( 1 downto 0);
+   signal acmDataBits          : unsigned( 4 downto 0);
    signal acmParity            : unsigned( 2 downto 0);
+
+   signal acmLineBreak         : std_logic := '0';
+   signal acmOverRun           : std_logic := '0';
+   signal acmParityError       : std_logic := '0';
+   signal acmFramingError      : std_logic := '0';
+   signal acmRingDetect        : std_logic := '0';
+   signal acmBreakState        : std_logic := '0';
+
+   signal uartRst              : std_logic := '0';
+
+   signal uartRxDat            : std_logic_vector(UART_MAX_BITS_C - 1 downto 0) := (others => '0');
+   signal uartRxDatVld         : std_logic := '0';
+   signal uartTxDat            : std_logic_vector(UART_MAX_BITS_C - 1 downto 0) := (others => '0');
+   signal uartTxDatVld         : std_logic := '0';
+   signal uartTxDatRdy         : std_logic := '0';
+
+   signal uartLineBreak        : std_logic := '0';
+   signal uartOverRun          : std_logic := '0';
+   signal uartParityError      : std_logic := '0';
+   signal uartFramingError     : std_logic := '0';
+   signal uartBreakState       : std_logic := '0';
+
+   signal uartCfgParity        : UartParityType;
+   signal uartCfgStopBits      : UartStopBitType;
+   signal uartCfgNumBits       : natural range 1 to UART_MAX_BITS_C;
+
    signal acmFifoRst           : std_logic    := '0';
 
    signal usb2Rst              : std_logic    := '0';
@@ -181,6 +219,8 @@ architecture rtl of design_top is
    signal mdioDatInp           : std_logic;
    signal mdioDatHiZ           : std_logic;
 
+   signal uartRxSync           : std_logic;
+
 begin
 
    P_INI : process ( ulpiClk ) is
@@ -198,13 +238,119 @@ begin
       usb2Rst      <= rst(0);
    end process P_INI;
 
-   fifoRDat      <= acmFifoOutDat;
-   fifoRVld      <= not acmFifoOutEmpty;
-   acmFifoOutRen <= fifoRRdy;
+   acmFifoOutVld <= not acmFifoOutEmpty;
 
-   acmFifoInpDat <= fifoWDat;
-   acmFifoInpWen <= fifoWVld;
-   fifoWRdy      <= not acmFifoInpFull;
+   fifoRDat      <= acmFifoOutDat;
+   uartTxDat     <= acmFifoOutDat;
+
+   P_UART_MUX : process (
+      acmDTR,
+      acmFifoOutVld,
+      acmFifoInpFull,
+      fifoRRdy,
+      fifoWDat,
+      fifoWVld,
+      uartRxDat,
+      uartRxDatVld,
+      uartTxDatRdy,
+      acmFifoRst,
+      acmLineBreak
+   ) is
+   begin
+      if ( acmDTR = '0' ) then
+         fifoRVld      <= acmFifoOutVld;
+         uartTxDatVld  <= '0';
+         acmFifoOutRen <= fifoRRdy;
+
+         acmFifoInpDat <= fifoWDat;
+         acmFifoInpWen <= fifoWVld;
+         fifoWRdy      <= not acmFifoInpFull;
+
+         uartLineBreak <= '0';
+         uartRst       <= '1';
+      else
+         fifoRVld      <= '0';
+         uartTxDatVld  <= acmFifoOutVld;
+         acmFifoOutRen <= uartTxDatRdy;
+
+         acmFifoInpDat <= uartRxDat;
+         acmFifoInpWen <= uartRxDatVld;
+         fifoWRdy      <= '0';
+
+         uartLineBreak <= acmLineBreak;
+         uartRst       <= acmFifoRst;
+      end if;
+   end process P_UART_MUX;
+      
+   P_UART_CFG_COMB : process ( acmParity, acmStopBits, acmDataBits ) is
+   begin
+      case ( to_integer(acmParity) ) is
+         when 1      => uartCfgParity <= ODD;
+         when 2      => uartCfgParity <= EVEN;
+         when 3      => uartCfgParity <= MARK;
+         when 4      => uartCfgParity <= SPACE;
+         when others => uartCfgParity <= NONE;
+      end case;
+      case ( to_integer(acmDataBits) ) is
+         when 5 | 6 | 7 => uartCfgNumBits <= to_integer(acmDataBits);
+         when others    => uartCfgNumBits <= 8;
+      end case;
+      case ( to_integer(acmStopBits) ) is
+         when 1      => uartCfgStopBits <= ONEP5;
+         when 2      => uartCfgStopBits <= TWO;
+         when others => uartCfgStopBits <= ONE;
+      end case;
+   end process P_UART_CFG_COMB;
+
+   U_UART : entity work.UartWrapper
+      generic map (
+         -- main clock frequency
+         CLOCK_FREQ_G   => ULPI_FREQ_C,
+         -- max # of bits of rate
+         LD_RATE_G      => LD_RATE_C,
+         -- max. data width
+         DATA_WIDTH_G   => UART_MAX_BITS_C,
+         DEBOUNCE_G     => 0
+      )
+      port map (
+         clk            => ulpiClk,
+         rst            => uartRst,
+
+         rxData         => uartRxDat,
+         rxDataRdy      => '1',
+         rxDataVld      => uartRxDatVld,
+         rxBreak        => uartBreakState,
+         rxParityErr    => uartParityError,
+         rxFramingErr   => uartFramingError,
+         rxOverrunErr   => uartOverRun,
+
+         txData         => uartTxDat,
+         txDataVld      => uartTxDatVld,
+         txDataRdy      => uartTxDatRdy,
+         txBreak        => uartLineBreak,
+
+         cfgParity      => uartCfgParity,
+         cfgStopBits    => uartCfgStopBits,
+         cfgNumBits     => uartCfgNumBits,
+
+         cfgBitRateHz   => acmRate(LD_RATE_C - 1 downto 0),
+         clearErrors    => '1',
+
+         rxSerial       => uartRxSync,
+         txSerial       => uartTx
+      );
+
+   U_RX_SYNC : entity work.Usb2CCSync
+      generic map (
+         STAGES_G       => 3,
+         INIT_G         => '1'
+      )
+      port map (
+         clk            => ulpiClk,
+         rst            => acmFifoRst,
+         d              => uartRx,
+         q              => uartRxSync
+      );
 
    U_CMD : entity work.CommandWrapper
    generic map (
@@ -303,8 +449,20 @@ begin
          acmFifoLocal              => acmFifoLocal,
 
          acmDTR                    => acmDTR,
+         acmRTS                    => acmRTS,
+
          acmRate                   => acmRate,
+         acmStopBits               => acmStopBits,
          acmParity                 => acmParity,
+         acmDataBits               => acmDataBits,
+
+         acmLineBreak              => acmLineBreak,
+         acmOverRun                => acmOverRun,
+         acmParityError            => acmParityError,
+         acmFramingError           => acmFramingError,
+         acmRingDetect             => acmRingDetect,
+         acmBreakState             => acmBreakState,
+
 
          ncmFifoClk                => rmii_clk,
          ncmFifoOutDat             => ncmFifoOutDat,
