@@ -3,7 +3,7 @@
         {
             "name": "la0",
             "type": "la",
-            "uuid": "067da2356e5b4eb6975d0d31e237a516",
+            "uuid": "6af055e2a7f5425fa7f446f8cbe0a311",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
@@ -67,11 +67,6 @@
                     "probe_type": 1
                 },
                 {
-                    "name": "uartTx",
-                    "width": 1,
-                    "probe_type": 1
-                },
-                {
                     "name": "uartRxSync",
                     "width": 1,
                     "probe_type": 1
@@ -109,6 +104,11 @@
                 {
                     "name": "U_USB_DEV/G_EP_CDCACM.U_CDCACM/G_LINE_BREAK.U_BRK/r.buf[5]",
                     "width": 8,
+                    "probe_type": 1
+                },
+                {
+                    "name": "gpsRx",
+                    "width": 1,
                     "probe_type": 1
                 }
             ]
@@ -487,16 +487,11 @@
                     },
                     {
                         "name": "la0_probe11",
-                        "net": "uartTx",
-                        "path": []
-                    },
-                    {
-                        "name": "la0_probe12",
                         "net": "uartRxSync",
                         "path": []
                     },
                     {
-                        "name": "la0_probe13[0]",
+                        "name": "la0_probe12[0]",
                         "net": "r.buf[2][0]",
                         "path": [
                             "U_USB_DEV",
@@ -505,7 +500,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[1]",
+                        "name": "la0_probe12[1]",
                         "net": "r.buf[2][1]",
                         "path": [
                             "U_USB_DEV",
@@ -514,7 +509,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[2]",
+                        "name": "la0_probe12[2]",
                         "net": "r.buf[2][2]",
                         "path": [
                             "U_USB_DEV",
@@ -523,7 +518,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[3]",
+                        "name": "la0_probe12[3]",
                         "net": "r.buf[2][3]",
                         "path": [
                             "U_USB_DEV",
@@ -532,7 +527,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[4]",
+                        "name": "la0_probe12[4]",
                         "net": "r.buf[2][4]",
                         "path": [
                             "U_USB_DEV",
@@ -541,7 +536,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[5]",
+                        "name": "la0_probe12[5]",
                         "net": "r.buf[2][5]",
                         "path": [
                             "U_USB_DEV",
@@ -550,7 +545,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[6]",
+                        "name": "la0_probe12[6]",
                         "net": "r.buf[2][6]",
                         "path": [
                             "U_USB_DEV",
@@ -559,7 +554,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe13[7]",
+                        "name": "la0_probe12[7]",
                         "net": "r.buf[2][7]",
                         "path": [
                             "U_USB_DEV",
@@ -568,7 +563,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe14[0]",
+                        "name": "la0_probe13[0]",
                         "net": "r.buf[4][0]",
                         "path": [
                             "U_USB_DEV",
@@ -577,7 +572,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe14[1]",
+                        "name": "la0_probe13[1]",
                         "net": "r.buf[4][1]",
                         "path": [
                             "U_USB_DEV",
@@ -586,7 +581,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe14[2]",
+                        "name": "la0_probe13[2]",
                         "net": "r.buf[4][2]",
                         "path": [
                             "U_USB_DEV",
@@ -595,7 +590,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe14[3]",
+                        "name": "la0_probe13[3]",
                         "net": "r.buf[4][3]",
                         "path": [
                             "U_USB_DEV",
@@ -604,7 +599,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe14[4]",
+                        "name": "la0_probe13[4]",
                         "net": "r.buf[4][4]",
                         "path": [
                             "U_USB_DEV",
@@ -613,7 +608,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe14[5]",
+                        "name": "la0_probe13[5]",
                         "net": "r.buf[4][5]",
                         "path": [
                             "U_USB_DEV",
@@ -622,7 +617,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe14[6]",
+                        "name": "la0_probe13[6]",
                         "net": "r.buf[4][6]",
                         "path": [
                             "U_USB_DEV",
@@ -631,7 +626,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe14[7]",
+                        "name": "la0_probe13[7]",
                         "net": "r.buf[4][7]",
                         "path": [
                             "U_USB_DEV",
@@ -640,7 +635,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[0]",
+                        "name": "la0_probe14[0]",
                         "net": "r.buf[0][0]",
                         "path": [
                             "U_USB_DEV",
@@ -649,7 +644,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[1]",
+                        "name": "la0_probe14[1]",
                         "net": "r.buf[0][1]",
                         "path": [
                             "U_USB_DEV",
@@ -658,7 +653,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[2]",
+                        "name": "la0_probe14[2]",
                         "net": "r.buf[0][2]",
                         "path": [
                             "U_USB_DEV",
@@ -667,7 +662,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[3]",
+                        "name": "la0_probe14[3]",
                         "net": "r.buf[0][3]",
                         "path": [
                             "U_USB_DEV",
@@ -676,7 +671,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[4]",
+                        "name": "la0_probe14[4]",
                         "net": "r.buf[0][4]",
                         "path": [
                             "U_USB_DEV",
@@ -685,7 +680,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[5]",
+                        "name": "la0_probe14[5]",
                         "net": "r.buf[0][5]",
                         "path": [
                             "U_USB_DEV",
@@ -694,7 +689,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[6]",
+                        "name": "la0_probe14[6]",
                         "net": "r.buf[0][6]",
                         "path": [
                             "U_USB_DEV",
@@ -703,7 +698,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe15[7]",
+                        "name": "la0_probe14[7]",
                         "net": "r.buf[0][7]",
                         "path": [
                             "U_USB_DEV",
@@ -712,7 +707,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe16[0]",
+                        "name": "la0_probe15[0]",
                         "net": "r.buf[1][0]",
                         "path": [
                             "U_USB_DEV",
@@ -721,7 +716,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe16[1]",
+                        "name": "la0_probe15[1]",
                         "net": "r.buf[1][1]",
                         "path": [
                             "U_USB_DEV",
@@ -730,7 +725,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe16[2]",
+                        "name": "la0_probe15[2]",
                         "net": "r.buf[1][2]",
                         "path": [
                             "U_USB_DEV",
@@ -739,7 +734,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe16[3]",
+                        "name": "la0_probe15[3]",
                         "net": "r.buf[1][3]",
                         "path": [
                             "U_USB_DEV",
@@ -748,7 +743,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe16[4]",
+                        "name": "la0_probe15[4]",
                         "net": "r.buf[1][4]",
                         "path": [
                             "U_USB_DEV",
@@ -757,7 +752,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe16[5]",
+                        "name": "la0_probe15[5]",
                         "net": "r.buf[1][5]",
                         "path": [
                             "U_USB_DEV",
@@ -766,7 +761,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe16[6]",
+                        "name": "la0_probe15[6]",
                         "net": "r.buf[1][6]",
                         "path": [
                             "U_USB_DEV",
@@ -775,7 +770,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe16[7]",
+                        "name": "la0_probe15[7]",
                         "net": "r.buf[1][7]",
                         "path": [
                             "U_USB_DEV",
@@ -784,7 +779,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[0]",
+                        "name": "la0_probe16[0]",
                         "net": "r.buf[6][0]",
                         "path": [
                             "U_USB_DEV",
@@ -793,7 +788,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[1]",
+                        "name": "la0_probe16[1]",
                         "net": "r.buf[6][1]",
                         "path": [
                             "U_USB_DEV",
@@ -802,7 +797,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[2]",
+                        "name": "la0_probe16[2]",
                         "net": "r.buf[6][2]",
                         "path": [
                             "U_USB_DEV",
@@ -811,7 +806,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[3]",
+                        "name": "la0_probe16[3]",
                         "net": "r.buf[6][3]",
                         "path": [
                             "U_USB_DEV",
@@ -820,7 +815,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[4]",
+                        "name": "la0_probe16[4]",
                         "net": "r.buf[6][4]",
                         "path": [
                             "U_USB_DEV",
@@ -829,7 +824,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[5]",
+                        "name": "la0_probe16[5]",
                         "net": "r.buf[6][5]",
                         "path": [
                             "U_USB_DEV",
@@ -838,7 +833,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[6]",
+                        "name": "la0_probe16[6]",
                         "net": "r.buf[6][6]",
                         "path": [
                             "U_USB_DEV",
@@ -847,7 +842,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe17[7]",
+                        "name": "la0_probe16[7]",
                         "net": "r.buf[6][7]",
                         "path": [
                             "U_USB_DEV",
@@ -856,7 +851,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe18[0]",
+                        "name": "la0_probe17[0]",
                         "net": "r.buf[3][0]",
                         "path": [
                             "U_USB_DEV",
@@ -865,7 +860,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe18[1]",
+                        "name": "la0_probe17[1]",
                         "net": "r.buf[3][1]",
                         "path": [
                             "U_USB_DEV",
@@ -874,7 +869,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe18[2]",
+                        "name": "la0_probe17[2]",
                         "net": "r.buf[3][2]",
                         "path": [
                             "U_USB_DEV",
@@ -883,7 +878,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe18[3]",
+                        "name": "la0_probe17[3]",
                         "net": "r.buf[3][3]",
                         "path": [
                             "U_USB_DEV",
@@ -892,7 +887,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe18[4]",
+                        "name": "la0_probe17[4]",
                         "net": "r.buf[3][4]",
                         "path": [
                             "U_USB_DEV",
@@ -901,7 +896,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe18[5]",
+                        "name": "la0_probe17[5]",
                         "net": "r.buf[3][5]",
                         "path": [
                             "U_USB_DEV",
@@ -910,7 +905,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe18[6]",
+                        "name": "la0_probe17[6]",
                         "net": "r.buf[3][6]",
                         "path": [
                             "U_USB_DEV",
@@ -919,7 +914,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe18[7]",
+                        "name": "la0_probe17[7]",
                         "net": "r.buf[3][7]",
                         "path": [
                             "U_USB_DEV",
@@ -928,7 +923,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe19[0]",
+                        "name": "la0_probe18[0]",
                         "net": "r.buf[5][0]",
                         "path": [
                             "U_USB_DEV",
@@ -937,7 +932,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe19[1]",
+                        "name": "la0_probe18[1]",
                         "net": "r.buf[5][1]",
                         "path": [
                             "U_USB_DEV",
@@ -946,7 +941,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe19[2]",
+                        "name": "la0_probe18[2]",
                         "net": "r.buf[5][2]",
                         "path": [
                             "U_USB_DEV",
@@ -955,7 +950,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe19[3]",
+                        "name": "la0_probe18[3]",
                         "net": "r.buf[5][3]",
                         "path": [
                             "U_USB_DEV",
@@ -964,7 +959,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe19[4]",
+                        "name": "la0_probe18[4]",
                         "net": "r.buf[5][4]",
                         "path": [
                             "U_USB_DEV",
@@ -973,7 +968,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe19[5]",
+                        "name": "la0_probe18[5]",
                         "net": "r.buf[5][5]",
                         "path": [
                             "U_USB_DEV",
@@ -982,7 +977,7 @@
                         ]
                     },
                     {
-                        "name": "la0_probe19[6]",
+                        "name": "la0_probe18[6]",
                         "net": "r.buf[5][6]",
                         "path": [
                             "U_USB_DEV",
@@ -991,13 +986,18 @@
                         ]
                     },
                     {
-                        "name": "la0_probe19[7]",
+                        "name": "la0_probe18[7]",
                         "net": "r.buf[5][7]",
                         "path": [
                             "U_USB_DEV",
                             "G_EP_CDCACM.U_CDCACM",
                             "G_LINE_BREAK.U_BRK"
                         ]
+                    },
+                    {
+                        "name": "la0_probe19",
+                        "net": "gpsRx",
+                        "path": []
                     }
                 ]
             }
@@ -1111,14 +1111,6 @@
                     "net_idx_right": 0
                 },
                 {
-                    "name": "uartTx",
-                    "width": 1,
-                    "clk_domain": "ulpiClk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": []
-                },
-                {
                     "name": "uartRxSync",
                     "width": 1,
                     "clk_domain": "ulpiClk",
@@ -1223,6 +1215,14 @@
                     ],
                     "net_idx_left": 7,
                     "net_idx_right": 0
+                },
+                {
+                    "name": "gpsRx",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
                 }
             ],
             "top_module": "design_top",
