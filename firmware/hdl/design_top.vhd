@@ -52,16 +52,24 @@ entity design_top is
       eth_mdio_OE       : out   std_logic := '0';
 
       eth_tx_en         : out   std_logic := '0';
-      eth_txd           : out   std_logic_vector(3 downto 0) := (others => '0');
+      eth_txd           : out   std_logic_vector(1 downto 0) := (others => '0');
 
       eth_rx_dv         : in    std_logic;
       eth_crs_dv        : in    std_logic;
       eth_rx_col        : in    std_logic;
       eth_rx_err        : in    std_logic;
-      eth_rxd           : in    std_logic_vector(3 downto 0);
+      eth_rxd           : in    std_logic_vector(1 downto 0);
+      
+      gpsPps            : in    std_logic;
+      gpsRstb           : out   std_logic := '1';
 
-      uartRx            : in    std_logic;
-      uartTx            : out   std_logic
+      -- note: fpgaGpio[0] *not* available on V2.0 board (only starting with 2.1)
+      fpgaGpio_IN       : in    std_logic_vector(7 downto 0) := (others => '0');
+      fpgaGpio_OUT      : out   std_logic_vector(7 downto 0) := (others => '0');
+      fpgaGpio_OE       : out   std_logic_vector(7 downto 0) := (others => '0');
+
+      gpsRx             : out   std_logic;
+      gpsTx             : in    std_logic
    );
 end entity design_top;
 
@@ -337,7 +345,7 @@ begin
          clearErrors    => '1',
 
          rxSerial       => uartRxSync,
-         txSerial       => uartTx
+         txSerial       => gpsRx
       );
 
    U_RX_SYNC : entity work.Usb2CCSync
@@ -348,7 +356,7 @@ begin
       port map (
          clk            => ulpiClk,
          rst            => acmFifoRst,
-         d              => uartRx,
+         d              => gpsTx,
          q              => uartRxSync
       );
 
