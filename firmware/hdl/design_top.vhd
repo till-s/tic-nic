@@ -100,8 +100,32 @@ architecture rtl of design_top is
          recipient => USB2_REQ_TYP_RECIPIENT_IFC_C,
          index     => NCM_IFC_NUM_C,
          reqType   => USB2_REQ_TYP_TYPE_VENDOR_C
+      ),
+      1 => usb2CtlEpMkAgentConfig(
+         recipient => USB2_REQ_TYP_RECIPIENT_DEV_C,
+         index     => 0,
+         reqType   => USB2_REQ_TYP_TYPE_VENDOR_C
       )
    );
+
+   constant EP0_DEV_AGENT_REQS_C : Usb2EpGenericReqDefArray := (
+      0 => usb2MkEpGenericReqDef(
+         dev2Host  => '0',
+         request   => x"01",
+         dataSize  => 2
+      ),
+      1 => usb2MkEpGenericReqDef(
+         dev2Host  => '1',
+         request   => x"01",
+         dataSize  => 2
+      )
+   );
+
+   signal ep0DevAgentParmsIb   : Usb2ByteArray(0 to maxParamSize(EP0_DEV_AGENT_REQS_C) - 1) := (others => (others =>'0'));
+   signal ep0DevAgentParmsOb   : Usb2ByteArray(0 to maxParamSize(EP0_DEV_AGENT_REQS_C) - 1);
+   signal ep0DevAgentParmsVld  : std_logic_vector(EP0_DEV_AGENT_REQS_C'range);
+   signal ep0DevAgentParmsAck  : std_logic := '1';
+   signal ep0DevAgentParmsErr  : std_logic := '0';
 
    signal acmFifoOutDat        : Usb2ByteType;
    signal acmFifoOutEmpty      : std_logic;
@@ -228,6 +252,9 @@ architecture rtl of design_top is
    signal mdioDatHiZ           : std_logic;
 
    signal uartRxSync           : std_logic;
+
+   signal ledDiagRegs          : Usb2ByteArray(0 to 1) := (others => (others => '0'));
+   signal ledIn                : std_logic_vector(LED'range);
 
 begin
 
@@ -381,10 +408,10 @@ begin
       vldOb                        => fifoWVld,
       rdyOb                        => fifoWRdy,
 
-      spiSClk                      => spiSClk, --: out std_logic;
-      spiMOSI                      => spiMOSI, --: out std_logic;
-      spiCSb                       => spiCSb_OUT,  --: out std_logic;
-      spiMISO                      => spiMISO  --: in  std_logic := '0';
+      spiSClk                      => spiSClk,
+      spiMOSI                      => spiMOSI,
+      spiCSb                       => spiCSb_OUT,
+      spiMISO                      => spiMISO
    );
 
    ulpiDat_OUT   <= ulpiOb.dat;
@@ -658,14 +685,54 @@ begin
          statusRegPolled              => open
       );
 
+   U_EP0_DEV_CTL : entity work.Usb2EpGenericCtl
+      generic map (
+         HANDLE_REQUESTS_G            => EP0_DEV_AGENT_REQS_C
+      )
+      port map (
+         usb2Clk                      => ulpiClk,
+         usb2Rst                      => usb2Rst,
+
+         usb2CtlReqParam              => usb2Ep0ReqParam(1),
+         usb2CtlExt                   => usb2Ep0CtlExt(1),
+         usb2EpIb                     => usb2Ep0ObExt,
+         usb2EpOb                     => usb2Ep0IbExt(1),
+
+         ctlReqVld                    => ep0DevAgentParmsVld,
+         ctlReqAck                    => ep0DevAgentParmsAck,
+         ctlReqErr                    => ep0DevAgentParmsErr,
+
+         paramIb                      => ep0DevAgentParmsIb,
+         paramOb                      => ep0DevAgentParmsOb
+      );
+
+   P_EP0_DEV_REG_OB : process ( ulpiClk ) is
+   begin
+      if ( rising_edge( ulpiClk ) ) then
+         if ( ep0DevAgentParmsVld(0) = '1' ) then
+            ledDiagRegs <= ep0DevAgentParmsOb(ledDiagRegs'range);
+         end if;
+      end if;
+   end process P_EP0_DEV_REG_OB;
+
+   P_EP0_DEV_REG_IB : process ( ep0DevAgentParmsVld, ledDiagRegs ) is
+   begin
+      ep0DevAgentParmsIb  <= (others => (others => '0'));
+      ep0DevAgentParmsAck <= '1';
+      ep0DevAgentParmsErr <= '0';
+      ep0DevAgentParmsIb(ledDiagRegs'range) <= ledDiagRegs;
+   end process P_EP0_DEV_REG_IB;
+
+   ledIn(7)      <= ethMacPromisc;
+   ledIn(6)      <= ethMacAllMulti;
+   ledIn(5)      <= usb2DevStatus.suspended;
+   ledIn(4)      <= ethMacDuplexFull;
+   ledIn(3)      <= ethMacSpeed10;
+   ledIn(2)      <= ethMacLinkOk;
+   ledIn(1)      <= not rmiiPllLocked; -- and rmiiClkBlink;
+   ledIn(0)      <= gpsPps;
+
    -- LEDs are active low
-   LED(7)        <= not ethMacPromisc;
-   LED(6)        <= not ethMacAllMulti;
-   LED(5)        <= not usb2DevStatus.suspended;
-   LED(4)        <= not ethMacDuplexFull;
-   LED(3)        <= not ethMacSpeed10;
-   LED(2)        <= not ethMacLinkOk;
-   LED(1)        <=     rmiiPllLocked; -- and rmiiClkBlink;
-   LED(0)        <= '1'; -- ulpiClkBlink;
+   LED           <= not ((ledIn and not ledDiagRegs(1)) or (ledDiagRegs(1) and ledDiagRegs(0))) ;
 
 end architecture rtl;
