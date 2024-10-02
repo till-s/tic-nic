@@ -24,13 +24,16 @@ GPIO pins that can be controlled in a synchronous fashion.
    between PHY and MAC (most PTP-capable adapters implement
    it in the MAC).
  - Fully open-source project (hard-, firm- and software).
- - Low cost (PHY plus FPGA are in the order of $20).
+ - Low cost (PHY plus FPGA are in the order of $20, GPS receiver
+   adds another $10, plus cost of connectors and other components).
    Uses an Efinix Trion T8 or T20 (recommended) device.
  - Remaining FPGA logic and pins available for user application.
+ - GPS Receiver (optional) to convert the tic-nic into a PTP
+   master clock.
 
 ## Block Diagram
 
-![Block Diagram](https://github.com/till-s/trion-lqfp144-test/blob/tic_nic_v1/block_diag.png)
+![Block Diagram](https://github.com/till-s/trion-lqfp144-test/blob/tic_nic_gps_v2/block_diag.png)
 
 ## License
 
@@ -52,8 +55,8 @@ firmware written in VHDL and software.
 ### Hardware Design
 
 The kicad design files are located in the `kicad` subdirectory.
-Note that the project name (`trion-8-test.pro`) and some of
-the sheet names are unfortunate and due to legacy reasons.
+Note that some of the sheet names are unfortunate and due to legacy
+reasons.
 
 ### Firmware
 
@@ -68,20 +71,33 @@ are attached as submodules under `firmware/modules`.
 
 We find the `mecatica-usb` and `eth-rmii-mac` modules
 which provide the usb device and endpoint implementation
-and the ethernet MAC functionality.
+and the ethernet MAC functionality. The `UART-controller`
+module provides an UART and bit-rate generator to connect
+the ACM endpoint to the GPS receiver.
 
-The third module `acm-toolbox` is borrowed from another
-project. It provides an ACM interface and some software
+The fourth module `acm-toolbox` is borrowed from another
+project. It provides an FIFO interface and some software
 which allow accessing the configuration flash on the
 board. It could also be used as a side-channel to peek/poke
 at user FPGA resources.
+
+The ACM endpoint is multiplexed between the UART and the
+FIFO interface (the aforementioned side-channel) using the
+DTR modem signal. During normal sessions DTR is asserted
+and the ACM endoint is connected to the UART and receives
+NMEA data from the GPS receiver.
+
+The `bbcli` software from the `acm-toolbox` deasserts DTR
+to switch the ACM endpoint to the FIFO and can thus access
+special diagnostic features (e.g., the SPI-flash programmer).
 
 #### Firmware Block Diagram
 
 ![Block Diagram](fw_block_diag.png)
 
-
 ### Software
+
+#### Ethernet/PTP
 
 The most important software component is the linux driver
 which builds on top of the vanilla `cdc_ncm` USB class
@@ -94,6 +110,11 @@ further ado.
 
 Some useful helper programs are not found in the `software`
 directory but reside in the submodules.
+
+#### GPS Receiver
+
+Access to the GPS receiver is possible with any standard
+software since it appears as a regular `tty` device.
 
 ## Building the Device
 
@@ -254,17 +275,18 @@ but this is beyond the scope of this document.
 
 The design features an SDRAM chip. This component is unused
 (I have employed the same PCB design for a different project
-which exercises this SDRAM). The SDRAM may safely be omitted.
+which exercises this SDRAM). The SDRAM may safely be omitted
+(along with its associated de-coupling capacitors and ferrite
+bead).
 
 Likewise, the backup clock (X2) is optional and need not
 to be loaded on the PCB.
 
-Due to their close spacing the diagnostic LEDs can be difficult
-to distinguish. It is recommended to load them in an alternating
-pattern of different colors, e.g., red-green-red...
-
-The secondary JTAG connector (J2) connects to the PHY chip
-(only) and is optional.
+Loading the battery backup supply for the GPS receiver is
+optional as is the GPS receiver itself. If you are not interested
+in having a PPS signal and NMEA information then you can
+omit the GPS ciruitry - the firmware and the driver work without
+modifications.
 
 #### Straps
 
@@ -321,7 +343,7 @@ The board outline
 <img src="./conn_overview.svg" style="width: 100%">
 </p>
 
-shows the pin-headers J3, J5, J6, J7 and LEDs D2..D9, D11.
+shows the pin-headers J3, J5, J6, J2 and LEDs D1..D4, D11.
 
 ##### J3 - FPGA JTAG Connector
 
@@ -360,22 +382,22 @@ Consult the DP83640 datasheet for details.
   |  9    | Gnd      |  10   |    GPIO4 |
   | 11    | Gnd      |  12   |    GPIO8 |
   | 13    | Gnd      |  14   |    GPIO9 |
-  | 15    | Gnd      |  16   |    Gnd   |
+  | 15    | Gnd      |  16   |    GPIO10|
   | 17    | Gnd      |  18   |   CLKOUT |
   | 19    | Gnd      |  20   |    3V3   |
 
-The `GPIO9` pin is also connected to the FPGA (`GPIOB_CLKN0`)
-for optional use by the user (the default firmware does not
+The `GPIO`, `GPIO2` and `GPIO9` pins are also connected to the
+FPGA for optional use by the user (the default firmware does not
 use this connection).
 
 Note that control of these pins is possible with standard
 linux tools and sysfs interfaces.
 
-##### J6,J7 - FPGA GPIO Connectors
+##### J6 - FPGA GPIO Connectors
 
 These headers connect to spare pins of the FPGA and
-are available for user applications. J6 connects to bank 4B
-and J7 to bank B3. Both banks use a 3.3V supply voltage but
+are available for user applications. J6 connects to banks 1A
+(GPIOL 04) and 4B (others). Both banks use a 3.3V supply voltage but
 have slightly different special features (consult the Trion
 datasheet for details).
 
@@ -384,24 +406,15 @@ datasheet for details).
   |  Pin  | Function |  Pin  | Function   |
   | :---: | :------: | :---: | :--------: |
   |  1    | Gnd      |   2   |    3V3     |
-  |  3    | Gnd      |   4   |    REF RES |
+  |  3    | Gnd      |   4   | GPIOL 04   |
   |  5    | Gnd      |   6   | GPIOB TXP00|
   |  7    | Gnd      |   8   | GPIOB TXN00|
   |  9    | Gnd      |  10   | GPIOB TXP02|
   | 11    | Gnd      |  12   | GPIOB TXN02|
-  | 13    | Gnd      |  14   | GPIOB TXP04|
-  | 15    | Gnd      |  16   | GPIOB TXN04|
-  | 17    | Gnd      |  18   | GPIOB TXP06|
+  | 13    | Gnd      |  14   | GPIOB TXN11|
+  | 15    | Gnd      |  16   | GPIOB RXP00|
+  | 17    | Gnd      |  18   | GPIOB RXN07|
   | 19    | Gnd      |  20   |    3V3     |
-
-###### J7 Pinout
-
-  |  Pin  | Function |  Pin  | Function   |
-  | :---: | :------: | :---: | :--------: |
-  |  1    | Gnd      |   2   | B3 IO 0    |
-  |  3    | Gnd      |   4   | B3 IO 1    |
-  |  5    | Gnd      |   6   | B3 IO 2    |
-  |  7    | Gnd      |   8   |    3V3     |
 
 ##### LEDs
 
@@ -413,19 +426,19 @@ If the board is strapped for 'Mode 1' then `LED_ACT` blinks when there
 is link activity. The built-in LEDs signal the link speed and connectivity.
 Consult the datasheet for details and other modes.
 
-LEDs `D2` through `D9` are controlled by the FPGA and the firmware
+LEDs `D1` through `D4` are controlled by the FPGA and the firmware
 uses them to indicate the following status.
 
-  |  LED  | Function             |
-  | :---- | :------------------- |
-  |  D2   | Unused               |
-  |  D3   | RMII PLL not locked  |
-  |  D4   | Ethernet Link OK     |
-  |  D5   | Link speed 10Mbps    |
-  |  D6   | Full duplex          |
-  |  D7   | USB suspended        |
-  |  D8   | All-multicast        |
-  |  D9   | Promiscuous          |
+  |  LED     | Function             |
+  | :------- | :------------------- |
+  |  D1 GRN  | Unused               |
+  |  D1 RED  | RMII PLL not locked  |
+  |  D2 GRN  | Ethernet Link OK     |
+  |  D2 RED  | Link speed 10Mbps    |
+  |  D3 GRN  | Full duplex          |
+  |  D3 RED  | USB suspended        |
+  |  D4 GRN  | All-multicast        |
+  |  D4 RED  | Promiscuous          |
 
 ### Firmware
 
@@ -439,6 +452,9 @@ flash-programming functionality:
    2. build the `bbcli` utility:
 
           make bbcli
+
+NOTE: make sure the ACM tty device is not in use by any
+GPS software before running `bbcli`!
 
 The `bbcli` utility can be used for
 
