@@ -9,96 +9,25 @@
 
 static void usage(const char *nm)
 {
-	printf("usage: %s [-hi] [-m <mask>] [-v <value>]\n", nm);
+	printf("usage: %s [-h] [-p <product_id>] [-m <mask>] [-v <value>]\n", nm);
 }
 
 struct Handle {
 	libusb_context       *ctx;
 	libusb_device_handle *dev;
-	uint8_t               bb_state;
 };
 
-#define CSEL_BIT (1<<3)
-#define SCLK_BIT (1<<2)
-#define MOSI_BIT (1<<1)
-#define MISO_BIT (1<<0)
-
-static int xf(struct Handle *h, int val) {
-	uint8_t buf[2];
-	buf[0] = val;
-	buf[1] = 0x00;
-	int st = libusb_control_transfer(
-			h->dev,
-			(val < 0 ? LIBUSB_ENDPOINT_IN : LIBUSB_ENDPOINT_OUT) | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE,
-			val < 0 ? 0x02 : 0x01,
-			0x00,
-			0x00,
-			buf,
-			sizeof(buf),
-			1000
-	);
-	return st >= 0 ? buf[0] : st;
-}
-
-/* assume CS asserted */
-static int bit(struct Handle *h, int val) {
-	int st;
-	h->bb_state &= ~(SCLK_BIT | MOSI_BIT);
-	if ( val ) {
-		h->bb_state |= MOSI_BIT;
-	}
-	if ( xf(h, h->bb_state) < 0 ) {
-		return -1;
-	} 
-	h->bb_state |= SCLK_BIT;
-	if ( xf(h, h->bb_state) < 0 ) {
-		return -1;
-	} 
-	st = xf(h, -1);
-	return st < 0 ? st : !! (st & MISO_BIT);
-}
-
-static int byte(struct Handle *h, uint8_t val) {
-	int i,st;
-	int rv = 0;
-	for ( i = 0x80; i; i>>=1 ) {
-		st = bit(h, !!(val&i));	
-		if ( st < 0 ) {
-			return st;
-		}
-		rv = (rv<<1) | (st ? 1 : 0);
-	} 
-	return rv;
-}
-
-static int vec(struct Handle *h, uint8_t *val, size_t sz) {
-	int i, st;
-	h->bb_state = 0;
-	if ( xf(h, h->bb_state) < 0 ) {
-		return -1;
-	}
-	h->bb_state = CSEL_BIT;
-	if ( xf(h, h->bb_state) < 0 ) {
-		return -1;
-	}
-	for (i = 0; i < sz; i++) {
-		if ( (st = byte(h, val[i])) < 0 ) {
-			goto bail;
-		}
-		val[i] = st;
-	}
-	st = 0;
-bail:
-	h->bb_state = CSEL_BIT;
-	if ( xf(h, h->bb_state) < 0 ) {
-		return -1;
-	}
-	h->bb_state = 0;
-	if ( xf(h, h->bb_state) < 0 ) {
-		return -1;
-	}
-	return st;
-}
+/* This request transfers two bytes; a value and a mask.
+ * These can be used to control the LEDs (for testing).
+ * The LEDs obey the logic:
+ *
+ *    LED <= (fpga_logic_value and not mask) or (mask and value);
+ *
+ * I.e., the LEDs with a mask value of '0' are controlled by
+ * the FPGA design and where mask is '1' the value is controlled
+ * by the software-programmable 'value' register.
+ */
+#define REQ_LED 0x01
 
 int
 main(int argc, char **argv) 
@@ -114,17 +43,14 @@ int                   val = -1;
 int                   opt;
 int                  *i_p;
 int                   rd;
-int                   id = 0;
-int                   rst = 0;
 
-	while ( (opt = getopt(argc, argv, "m:v:ir")) > 0 ) {
+	while ( (opt = getopt(argc, argv, "m:v:h")) > 0 ) {
 		i_p = 0;
 		switch ( opt ) {
 			case 'h': usage(argv[0]); return 0;
 			case 'm': i_p = &msk;     break;
 			case 'v': i_p = &val;     break;
-			case 'i': id = 1;         break;
-            case 'r': rst = 1;        break;
+			case 'p': i_p = &pid;     break;
 			default:  fprintf(stderr, "unknown option -%c\n", opt);
 				return -1;
 		}
@@ -151,48 +77,27 @@ int                   rst = 0;
 		goto bail;
 	}
 
-	if ( id ) {
-		uint8_t idmsg[] = { 0x9f, 0xff, 0xff, 0xff, 0xff, 0xff };
-		int i;
-		if ( vec(h, idmsg, sizeof(idmsg)) < 0 ) {
-			fprintf(stderr,"Sending bit-banged vector failed\n");
-			goto bail;
-		}
-		printf("ID:");
-		for ( i = 0; i < sizeof(idmsg); ++i ) {
-			printf(" 0x%02x", idmsg[i]);
-		}
-		printf("\n");
-	} else if ( rst ) {
-		uint8_t msg[] = { 0xAB };
-		if ( vec(h, msg, sizeof(msg)) < 0 ) {
-			fprintf(stderr,"Sending bit-banged vector failed\n");
-			goto bail;
-		}
-	} else {
+	rd = (val < 0 && msk < 0);
 
-		rd = (val < 0 && msk < 0);
+	buf[0] = val;
+	buf[1] = msk;
+	st = libusb_control_transfer(
+			h->dev,
+			(rd ? LIBUSB_ENDPOINT_IN : LIBUSB_ENDPOINT_OUT) | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE,
+			REQ_LED,
+			0x00,
+			0x00,
+			buf,
+			sizeof(buf),
+			1000
+			);
+	if ( st < 0 ) {
+		fprintf(stderr, "Error - libusb_control_transfer failed: %s\n", libusb_error_name(st));
+		goto bail;
+	}
 
-		buf[0] = val;
-		buf[1] = msk;
-		st = libusb_control_transfer(
-				h->dev,
-				(rd ? LIBUSB_ENDPOINT_IN : LIBUSB_ENDPOINT_OUT) | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE,
-				rd ? 0x02 : 0x01,
-				0x00,
-				0x00,
-				buf,
-				sizeof(buf),
-				1000
-				);
-		if ( st < 0 ) {
-			fprintf(stderr, "Error - libusb_control_transfer failed: %s\n", libusb_error_name(st));
-			goto bail;
-		}
-
-		if ( rd ) {
-			printf("Response: val 0x%02x - mask 0x%02x\n", buf[0], buf[1]);
-		}
+	if ( rd ) {
+		printf("Response: val 0x%02x - mask 0x%02x\n", buf[0], buf[1]);
 	}
 
 	rv = 0;
