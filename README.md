@@ -24,9 +24,7 @@ GPIO pins that can be controlled in a synchronous fashion.
    between PHY and MAC (most PTP-capable adapters implement
    it in the MAC).
  - Fully open-source project (hard-, firm- and software).
- - Low cost (PHY plus FPGA are in the order of $20, GPS receiver
-   adds another $10, plus cost of connectors and other components).
-   Uses an Efinix Trion T8 or T20 (recommended) device.
+ - Low cost. Uses an Efinix Trion T8 or T20 (recommended) device.
  - Remaining FPGA logic and pins available for user application.
  - GPS Receiver (optional) to convert the tic-nic into a PTP
    master clock.
@@ -115,6 +113,12 @@ directory but reside in the submodules.
 
 Access to the GPS receiver is possible with any standard
 software since it appears as a regular `tty` device.
+The PPS output of the GPS receiver is directly connected
+to `GPIO11` of the PHY to capture a PHC timestamp. This
+very important feature enables us to synchronize the PHC
+clock in the PHY precisely to the GPS. The NMEA data received
+over UART/USB merely provides the context (time-of-day) associated
+with the precision PPS.
 
 ## Building the Device
 
@@ -250,8 +254,8 @@ class device the `cdc_ncm` driver grabs it by default
 and you'll have to manually rebind it (as root):
 
   1. Look under `/sys/bus/usb/drivers/cdc_ncm`; the tic-nic
-     device should be sym-linked from there. Remember it's id
-     (let's say it was `1-7:1.2`).
+     device should be sym-linked from there. Remember one of
+     it's ids (there are two interfaces); let's say it was `1-7:1.2`.
 
   2. Unbind `cdc_ncm`:
 
@@ -282,11 +286,21 @@ bead).
 Likewise, the backup clock (X2) is optional and need not
 to be loaded on the PCB.
 
+The GPS is normally connected via UART. However, the module
+provides also an I2C interface (I have not tested this). To switch
+the connection to I2C you need to remove R29 and R38 and instead
+populate R14, R15, R16 and R20. This also requires the FPGA logic
+to be modified.
+
 Loading the battery backup supply for the GPS receiver is
-optional as is the GPS receiver itself. If you are not interested
-in having a PPS signal and NMEA information then you can
-omit the GPS ciruitry - the firmware and the driver work without
-modifications.
+optional (if you omit U4 and R39 then you have to replace
+D12 with a solder-bridge) as is the GPS receiver itself.
+If you are not interested in having a PPS signal and NMEA information
+then you can omit the GPS ciruitry - the firmware and the driver work
+without modifications.
+
+When the battery is installed the GPS module should find satellites
+faster after having been powered off.
 
 #### Straps
 
@@ -335,6 +349,35 @@ design should work with either device.
 It might be difficult to meet timing on the ULPI interface
 with a lower speed grade than C4 but YMMV.
 
+#### Jumpers
+
+There are two headers: JP6 and JP7 which *must* be jumpered
+correctly for the board to work.
+
+JP6 provides power to an external LNA built into an active
+antenna (consult the LC76G datasheet for compatible antennas).
+
+    | JP6 State  | Description           |
+    | :--------: | :-------------------: |
+    | installed  | J8 has 3v3 DC applied |
+    | off        | J8 AC coupled         |
+
+Thus, when using an active antenna which is compatible with
+the Quectel LC76G you have to install a jumper on J8. When using
+a passive antenna the jumper should be removed. *Make sure there
+is no short circuit when J8 is installed!*
+
+JP7 controls the backup-power supply of the GPS receiver module:
+
+    | JP7 State      | Description                                              |
+    | :------------: | :------------------------------------------------------: |
+    | installed 2-3  | battery unused backup power connected to 3V3 supply      |
+    | installed 2-1  | backup power connected to battery when 3V3 is not preset |
+
+Note that a jumper *must* be installed on JP7. Connect 2-3 if there is no battery.
+When the jumper is installed between 1-2 the analog switch will connect the GPS'
+backup power input to the battery when the normal power goes down.
+
 #### Connectors and LEDs
 
 The board outline
@@ -343,7 +386,26 @@ The board outline
 <img src="./conn_overview.svg" style="width: 100%">
 </p>
 
-shows the pin-headers J3, J5, J6, J2 and LEDs D1..D4, D11.
+shows the connectors J1, J4, J8, J10, J11, J12, J13, J14, J15, J15
+the pin-headers J3, J5, J6, J2, J9 and LEDs D1..D4, D11.
+
+##### Board-Edge Connectors
+
+The footprints of the connectors J10-J16 can be loaded either with
+SMA (Molex 732515460) or LEMO connectors.
+
+  |  Connector  |  Type    |    Function    |
+  | :---------: | :------: | :------------: |
+  |  J1         | RJ-45    | Ethernet       |
+  |  J4         | USB-C    | USB            |
+  |  J8         | SMA      | GPS Antenna    |
+  |  J10        | SMA/LEMO | PPS Out        |
+  |  J11        | SMA/LEMO | PHY GPIO1      |
+  |  J12        | SMA/LEMO | PHY GPIO2      |
+  |  J13        | SMA/LEMO | PHY GPIO3      |
+  |  J14        | SMA/LEMO | PHY GPIO4      |
+  |  J15        | SMA/LEMO | PHY GPIO8      |
+  |  J16        | SMA/LEMO | PHY CLKOUT     |
 
 ##### J3 - FPGA JTAG Connector
 
@@ -416,7 +478,41 @@ datasheet for details).
   | 17    | Gnd      |  18   | GPIOB RXN07|
   | 19    | Gnd      |  20   |    3V3     |
 
+##### J2 and J9 - GPS Headers
+
+Some of the GPS module's signals are available
+at these headers. For details about these signals
+consult the GPS module datasheet.
+
+###### J2 Pinout
+
+Note that the PPS signal is also available at board-edge
+connector J10 and in the FPGA.
+
+  |  Pin  | Function |  Pin  | Function   |
+  | :---: | :------: | :---: | :--------: |
+  |  1    | Gnd      |   2   | JAM IND    |
+  |  3    | Gnd      |   4   | 3D FIX     |
+  |  5    | Gnd      |   6   | PPS        |
+  |  7    | Gnd      |   8   | 3V3        |
+
+###### J9 Pinout
+
+  |  Pin  | Function |  Pin  | Function   |
+  | :---: | :------: | :---: | :--------: |
+  |  1    | Gnd      |   2   | GEOFENCE   |
+
+
 ##### LEDs
+
+The LED `D5` serves as a power-OK indicator and also shows the FPGA
+configuration status:
+
+  |  LED  |            State              |
+  | :---: | :---------------------------: |
+  | off   | no power                      |
+  | red   | power OK, FPGA not configured |
+  | green | power OK, FPGA configured OK  |
 
 The LED `D11` connects to the DP83640's `LED_ACT` output and
 conveys -- together with the other two LEDs which are built into
@@ -431,7 +527,7 @@ uses them to indicate the following status.
 
   |  LED     | Function             |
   | :------- | :------------------- |
-  |  D1 GRN  | Unused               |
+  |  D1 GRN  | PPS                  |
   |  D1 RED  | RMII PLL not locked  |
   |  D2 GRN  | Ethernet Link OK     |
   |  D2 RED  | Link speed 10Mbps    |
@@ -472,11 +568,11 @@ Since the utility was copied from another design it has many
 options that are unsupported by tic-nic.
 
 `bbcli -h` gives online help (including many unsupported features;
- relevant are `-d`, `-h`, `-a`, `-f`, `-S`, `-!`, `-?`).
+ relevant are `-d`, `-h`, `-V`, `-a`, `-f`, `-S`, `-!`, `-?`).
 
 Reprogramming the flash can be done with the command
 
-      bbcli -d /dev/ttyACM0 -a 0 -f tic_nic.hex.bin -SWena,Erase,Prog -!
+      bbcli -d /dev/ttyACM0 -a 0 -f tic_nic.hex.bin -SResume,Wena,Erase,Prog -!
 
 assuming you are in the `firmware/efx/outflow` directory; otherwise
 the `-f` argument must be modified accordingly.
