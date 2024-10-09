@@ -51,6 +51,16 @@ entity design_top is
       eth_mdio_OUT      : out   std_logic := '1';
       eth_mdio_OE       : out   std_logic := '0';
 
+      eth_gpio_1_IN     : in    std_logic;
+      eth_gpio_1_OUT    : out   std_logic := '0';
+      eth_gpio_1_OE     : out   std_logic := '0';
+      eth_gpio_2_IN     : in    std_logic;
+      eth_gpio_2_OUT    : out   std_logic := '0';
+      eth_gpio_2_OE     : out   std_logic := '0';
+      eth_gpio_9_IN     : in    std_logic;
+      eth_gpio_9_OUT    : out   std_logic := '0';
+      eth_gpio_9_OE     : out   std_logic := '0';
+
       eth_tx_en         : out   std_logic := '0';
       eth_txd           : out   std_logic_vector(1 downto 0) := (others => '0');
 
@@ -113,15 +123,33 @@ architecture rtl of design_top is
       )
    );
 
+   constant REQ_LED_CTL_C     : Usb2CtlRequestCodeType := x"01";
+   constant REQ_GPIO_CTL_C    : Usb2CtlRequestCodeType := x"02";
+
+   constant REQ_LED_WR_IDX_C  : natural                := 0;
+   constant REQ_LED_RD_IDX_C  : natural                := 1;
+   constant REQ_GPIO_WR_IDX_C : natural                := 2;
+   constant REQ_GPIO_RD_IDX_C : natural                := 3;
+
    constant EP0_DEV_AGENT_REQS_C : Usb2EpGenericReqDefArray := (
-      0 => usb2MkEpGenericReqDef(
+      REQ_LED_WR_IDX_C => usb2MkEpGenericReqDef(
          dev2Host  => '0',
-         request   => x"01",
+         request   => REQ_LED_CTL_C,
          dataSize  => 2
       ),
-      1 => usb2MkEpGenericReqDef(
+      REQ_LED_RD_IDX_C => usb2MkEpGenericReqDef(
          dev2Host  => '1',
-         request   => x"01",
+         request   => REQ_LED_CTL_C,
+         dataSize  => 2
+      ),
+      REQ_GPIO_WR_IDX_C => usb2MkEpGenericReqDef(
+         dev2Host  => '0',
+         request   => REQ_GPIO_CTL_C,
+         dataSize  => 2
+      ),
+      REQ_GPIO_RD_IDX_C => usb2MkEpGenericReqDef(
+         dev2Host  => '1',
+         request   => REQ_GPIO_CTL_C,
          dataSize  => 2
       )
    );
@@ -263,6 +291,8 @@ architecture rtl of design_top is
 
    signal ledDiagRegs          : Usb2ByteArray(0 to 1) := (others => (others => '0'));
    signal ledIn                : std_logic_vector(LED'range);
+   signal gpioRegs             : Usb2ByteArray(0 to 1) := (others => (others => '0'));
+   signal gpioIn               : std_logic_vector(7 downto 0);
 
 begin
 
@@ -732,19 +762,32 @@ begin
    P_EP0_DEV_REG_OB : process ( ulpiClk ) is
    begin
       if ( rising_edge( ulpiClk ) ) then
-         if ( ep0DevAgentParmsVld(0) = '1' ) then
+         if ( ep0DevAgentParmsVld(REQ_LED_WR_IDX_C) = '1' ) then
             ledDiagRegs <= ep0DevAgentParmsOb(ledDiagRegs'range);
+         elsif ( ep0DevAgentParmsVld(REQ_GPIO_WR_IDX_C) = '1' ) then
+            gpioRegs    <= ep0DevAgentParmsOb(ledDiagRegs'range);
          end if;
       end if;
    end process P_EP0_DEV_REG_OB;
 
-   P_EP0_DEV_REG_IB : process ( ep0DevAgentParmsVld, ledDiagRegs ) is
+   P_EP0_DEV_REG_IB : process ( ep0DevAgentParmsVld, ledDiagRegs, gpioIn ) is
    begin
       ep0DevAgentParmsIb  <= (others => (others => '0'));
       ep0DevAgentParmsAck <= '1';
       ep0DevAgentParmsErr <= '0';
       ep0DevAgentParmsIb(ledDiagRegs'range) <= ledDiagRegs;
+      if ( ep0DevAgentParmsVld(REQ_GPIO_RD_IDX_C) = '1' ) then
+         ep0DevAgentParmsIb(0) <= gpioIn;
+         ep0DevAgentParmsIb(1) <= gpioRegs(1);
+      end if;
    end process P_EP0_DEV_REG_IB;
+
+   gpioIn      (7 downto 1)  <= fpgaGpio_IN (7 downto 1);
+   fpgaGpio_OUT(7 downto 1)  <= gpioRegs(0) (7 downto 1);
+   fpgaGpio_OE (7 downto 1)  <= gpioRegs(1) (7 downto 1);
+   gpioIn      (         0)  <= eth_gpio_9_IN;
+   eth_gpio_9_OUT            <= gpioRegs(0) (         0);
+   eth_gpio_9_OE             <= gpioRegs(1) (         0);
 
    ledIn(7)      <= ethMacPromisc;
    ledIn(6)      <= ethMacAllMulti;
