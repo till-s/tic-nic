@@ -105,6 +105,11 @@ architecture rtl of design_top is
          recipient => USB2_REQ_TYP_RECIPIENT_DEV_C,
          index     => 0,
          reqType   => USB2_REQ_TYP_TYPE_VENDOR_C
+      ),
+      2 => usb2CtlEpMkAgentConfig(
+         recipient => USB2_REQ_TYP_RECIPIENT_DEV_C,
+         index     => 1,
+         reqType   => USB2_REQ_TYP_TYPE_VENDOR_C
       )
    );
 
@@ -250,6 +255,9 @@ architecture rtl of design_top is
    signal mdioDatOut           : std_logic;
    signal mdioDatInp           : std_logic;
    signal mdioDatHiZ           : std_logic;
+   signal mdioEp0ReqParam      : Usb2CtlReqParamType;
+   signal mdioEp0IbExt         : Usb2EndpPairIbType;
+   signal mdioEp0CtlExt        : Usb2CtlExtType;
 
    signal uartRxSync           : std_logic;
 
@@ -668,10 +676,10 @@ begin
          usb2Rst                      => usb2Rst,
 
 
-         usb2CtlReqParam              => usb2Ep0ReqParam(0),
-         usb2CtlExt                   => usb2Ep0CtlExt(0),
+         usb2CtlReqParam              => mdioEp0ReqParam,
+         usb2CtlExt                   => mdioEp0CtlExt,
          usb2EpIb                     => usb2Ep0ObExt,
-         usb2EpOb                     => usb2Ep0IbExt(0),
+         usb2EpOb                     => mdioEp0IbExt,
 
          mdioClk                      => mdioClk,
          mdioDatOut                   => mdioDatOut,
@@ -684,6 +692,21 @@ begin
          -- full contents; above bits are for convenience
          statusRegPolled              => open
       );
+
+   -- mux the MDIO control endpoint between interface (driver use) and device (user/diagnostic)
+   usb2Ep0CtlExt(0) <= mdioEp0CtlExt;
+   usb2Ep0CtlExt(2) <= mdioEp0CtlExt;
+   usb2Ep0IbExt(0)  <= mdioEp0IbExt;
+   usb2Ep0IbExt(2)  <= mdioEp0IbExt;
+
+   P_MDIO_CTL_MUX : process ( usb2Ep0ReqParam ) is
+   begin
+      if ( usb2Ep0ReqParam(2).vld = '1' ) then
+         mdioEp0ReqParam <= usb2Ep0ReqParam(2);
+      else
+         mdioEp0ReqParam <= usb2Ep0ReqParam(0);
+      end if;
+   end process P_MDIO_CTL_MUX;
 
    U_EP0_DEV_CTL : entity work.Usb2EpGenericCtl
       generic map (
