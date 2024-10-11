@@ -275,6 +275,11 @@ architecture rtl of design_top is
    signal ethMacAllmulti       : std_logic := '1';
    signal ethMacAddr           : std_logic_vector(47 downto 0);
 
+   -- ethMacLinkOk may be forced on (otherwise linux does not receive the
+   -- DP83640 status frames!
+   -- ethPhyLinkOk is the status of the physical link
+   signal ethPhyLinkOk         : std_logic := '1';
+
    signal usb2Ep0ReqParam      : Usb2CtlReqParamArray( EP0_AGENT_CFG_C'range );
    signal usb2Ep0ObExt         : Usb2EndpPairObType;
    signal usb2Ep0IbExt         : Usb2EndpPairIbArray( EP0_AGENT_CFG_C'range ) := (others => USB2_ENDP_PAIR_IB_INIT_C );
@@ -699,7 +704,11 @@ begin
 
    U_MDIO_CTL : entity work.Usb2Ep0MDIOCtl
       generic map (
-         MDC_PRESCALER_G              => 3
+         MDC_PRESCALER_G              => 3,
+         -- must force link status to 'always on'; otherwise,
+         -- if there is no cable plugged in linux will ignore
+         -- the DP83640 status frames!
+         LINK_ALWAYS_ON_G             => '1'
       )
       port map (
          usb2Clk                      => ulpiClk,
@@ -719,6 +728,7 @@ begin
          speed10                      => ethMacSpeed10,
          duplexFull                   => ethMacDuplexFull,
          linkOk                       => ethMacLinkOk,
+         physicalLinkOk               => ethPhyLinkOk,
          -- full contents; above bits are for convenience
          statusRegPolled              => open
       );
@@ -794,7 +804,7 @@ begin
    ledIn(5)      <= usb2DevStatus.suspended;
    ledIn(4)      <= ethMacDuplexFull;
    ledIn(3)      <= ethMacSpeed10;
-   ledIn(2)      <= ethMacLinkOk;
+   ledIn(2)      <= ethPhyLinkOk;
    ledIn(1)      <= not rmiiPllLocked; -- and rmiiClkBlink;
    ledIn(0)      <= gpsPps;
 
