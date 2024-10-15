@@ -474,6 +474,19 @@ void ncm_ptp_disconnect(struct usb_interface *intf)
  * a negative return value is an error; this
  * means a positive value would mean 'no connection'
  * but no read or other error...
+ *
+ * NOTE: without our 'check_connect' method usbnet would
+ *       fall-back to determining the link state using MDIO
+ *       to talk to the BMCR in the PHY. We need to avoid this
+ *       from happening since we want the link to always be
+ *       ON in order to receive status frames. It is not enough
+ *       for the NCM to always send 'carrier on' notifications -
+ *       usbnet_get_link() would still use the MDIO method *unless*
+ *       we provide a check_connect().
+ *       Since we force the link state obtaining a reading from
+ *       the vendor register is not strictly necessary - we could
+ *       simply always report an OK link but this is more
+ *       illustrative...
  */
 STATIC
 int check_connect(struct usbnet *dev)
