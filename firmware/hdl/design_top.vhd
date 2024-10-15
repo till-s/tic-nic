@@ -704,11 +704,7 @@ begin
 
    U_MDIO_CTL : entity work.Usb2Ep0MDIOCtl
       generic map (
-         MDC_PRESCALER_G              => 3,
-         -- must force link status to 'always on'; otherwise,
-         -- if there is no cable plugged in linux will ignore
-         -- the DP83640 status frames!
-         LINK_ALWAYS_ON_G             => '1'
+         MDC_PRESCALER_G              => 3
       )
       port map (
          usb2Clk                      => ulpiClk,
