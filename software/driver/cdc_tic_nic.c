@@ -61,6 +61,9 @@
 
 #define PHY_ID 1
 #define VEND_REQ_MDIO 0x01
+#define VEND_REQ_LINK 0x02
+#define VEND_REQ_LINK_STATUS          (1<<0)
+#define VEND_REQ_LINK_FORCE_ALWAYS_ON (1<<1)
 
 #define STATIC
 
@@ -71,6 +74,7 @@ MODULE_PARM_DESC(random_mac_addr, "Use random MAC address (default == TRUE)");
 struct cdc_ncm_ptp_priv {
 	struct mii_bus     *mdiobus;
 	struct phy_device  *phydev;
+	unsigned char       origLinkReg;
 };
 
 STATIC int cdc_ncm_ptp_mdio_read(struct mii_bus *bus, int phy_id, int idx)
@@ -137,6 +141,52 @@ STATIC int try_set_addr(struct usbnet *dev)
 	}
 	return -ENOTSUPP;
 }
+
+/*
+ * read vendor-specific link register
+ *
+ * RETURN: contents or negative error code
+ */
+STATIC int read_vendor_link_reg(struct usbnet *dev)
+{
+	int err;
+
+	u8 buf[1];
+
+	u8 cmd     = VEND_REQ_LINK;
+	u8 reqtype = USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_INTERFACE;
+	u16 value  = 0;
+	u16 index  = dev->intf->cur_altsetting->desc.bInterfaceNumber;
+
+	err = usbnet_read_cmd( dev, cmd, reqtype, value, index, buf, sizeof(buf) );
+	if ( err < 0 ) {
+		return err;
+	}
+	if ( err < 1 ) {
+		return -EIO;
+	}
+
+	return buf[0];
+}
+
+/*
+ * write vendor-specific link register
+ *
+ * RETURN: negative error code on failure
+ */
+STATIC int write_vendor_link_reg(struct usbnet *dev, u16 value)
+{
+	/* pure write (instead of RMW which would require some kind of synchronization)
+	 * works here since ATM no other writeable bits are available.
+	 */
+
+	u8 cmd     = VEND_REQ_LINK;
+	u8 reqtype = USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_INTERFACE;
+	u16 index  = dev->intf->cur_altsetting->desc.bInterfaceNumber;
+
+	return usbnet_write_cmd( dev, cmd, reqtype, value, index, NULL, 0 );
+}
+
 
 STATIC int ndev_handler(struct notifier_block *nblk, unsigned long event, void *closure)
 {
@@ -256,9 +306,26 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 			}
 		}
 
+		if ( ( st = read_vendor_link_reg( dev ) ) < 0 ) {
+			netdev_err( dev->net, "Failed to read 'force-link-always on bit': %d\n", st );
+			goto force_link_failed;
+		}
+
+		priv->origLinkReg = st;
+
+		if ( ( st = write_vendor_link_reg( dev, (priv->origLinkReg | VEND_REQ_LINK_FORCE_ALWAYS_ON) ) ) < 0 ) {
+			netdev_err( dev->net, "Failed to set 'force-link-always on bit': %d\n", st );
+			// if the write failed it doesn't make much sense to write the original value back...
+			goto force_link_failed;
+		}
+
 		return 0;
 
 	}
+
+	write_vendor_link_reg( dev, priv->origLinkReg );
+
+force_link_failed:
 
 	unregister_netdevice_notifier( &cdc_ncm_ptp_notifier );
 notifier_not_registered:
@@ -281,16 +348,16 @@ priv_not_alloced:
 }
 
 static const struct net_device_ops netdev_ops = {
-        .ndo_open            = usbnet_open,
-        .ndo_stop            = usbnet_stop,
+	.ndo_open            = usbnet_open,
+	.ndo_stop            = usbnet_stop,
 	.ndo_eth_ioctl       = phy_do_ioctl,
-        .ndo_start_xmit      = usbnet_start_xmit,
-        .ndo_tx_timeout      = usbnet_tx_timeout,
-        .ndo_set_rx_mode     = usbnet_set_rx_mode,
-        .ndo_get_stats64     = dev_get_tstats64,
-        .ndo_change_mtu      = cdc_ncm_change_mtu,
-        .ndo_set_mac_address = eth_mac_addr,
-        .ndo_validate_addr   = eth_validate_addr,
+	.ndo_start_xmit      = usbnet_start_xmit,
+	.ndo_tx_timeout      = usbnet_tx_timeout,
+	.ndo_set_rx_mode     = usbnet_set_rx_mode,
+	.ndo_get_stats64     = dev_get_tstats64,
+	.ndo_change_mtu      = cdc_ncm_change_mtu,
+	.ndo_set_mac_address = eth_mac_addr,
+	.ndo_validate_addr   = eth_validate_addr,
 };
 
 STATIC int cdc_ncm_ptp_bind(struct usbnet *dev, struct usb_interface *intf)
@@ -403,6 +470,18 @@ void ncm_ptp_disconnect(struct usb_interface *intf)
 	usbnet_disconnect(intf);
 }
 
+/* return value 0 means the connection is OK,
+ * a negative return value is an error; this
+ * means a positive value would mean 'no connection'
+ * but no read or other error...
+ */
+STATIC
+int check_connect(struct usbnet *dev)
+{
+	/* OK status -> return value 0 */
+	return ! (read_vendor_link_reg( dev ) & VEND_REQ_LINK_STATUS);
+}
+
 STATIC
 void update_filter(struct usbnet *dev)
 {
@@ -492,7 +571,7 @@ static const struct driver_info cdc_ncm_ptp_info = {
 	.description = "CDC NCM with PTP Phy",
 	.flags = FLAG_POINTTOPOINT | FLAG_NO_SETINT | FLAG_MULTI_PACKET
 			| FLAG_LINK_INTR | FLAG_ETHER,
-    .check_connect = NULL,
+    .check_connect = check_connect,
 	.bind = cdc_ncm_ptp_bind,
 	.unbind = cdc_ncm_unbind,
 	.manage_power = usbnet_manage_power,
