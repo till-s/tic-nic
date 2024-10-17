@@ -35,7 +35,8 @@ GPIO pins that can be controlled in a synchronous fashion.
 
 ## License
 
-Tic-Nic is copyright of Till Straumann and released under the [European-Union Public
+Tic-Nic (hard-, firm- and software) is copyright of Till Straumann and
+released under the [European-Union Public
 License](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
 *with the exception of* the [ethernet driver](./software/driver/cdc_tic_nic.c)
 which is released under a [dual GPL/BSD license](./software/driver/LICENSE).
