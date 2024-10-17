@@ -16,6 +16,28 @@ use     work.RMIIMacPkg.all;
 use     work.GitVersionPkg.all;
 use     work.UartPkg.all;
 
+-- differences to V1
+--
+--       V2.1         V1         PIN      Comments (using design on V1 board)
+--   fpgaGpio(5)    eth_txd(3)    54      dont' use
+--   fpgaGpio(6)    eth_txd(2)    55      dont' use
+--   fpgaGpio(7)    eth_rxd(2)    65      dont' use
+--   gpsRstb        eth_rxd(3)    66      open or pull-up
+--   gpsPps         fpgaGpio(7)   45      [3]
+--   gpsRx          fpgaGpio(5)   42      UART RX on fpgaGpio(5) (fpga OUT)
+--   gpsTx          fpgaGpio(6)   43      UART TX on fpgaGpio(6) (fpga INP)
+--   N/C [1]        fpgaGpio(0)   36      don't use
+--   fpgaGpio(0)    N/C [2]       32      don't use
+--   eth_gpio_1     fpga_b3_io_2  89      don't use
+--   eth_gpio_2     fpga_b3_io_1  90      don't use
+--   eth_clk_out    fpga_b3_io_0  93      don't use
+--
+-- NOTES:
+--   [1] connected to fpgaGpio(0) on V2.0
+--   [2] N/C on V2.0
+--   [3] pulldown on this pin not supported; if spurious LED signal
+--       is a problem then strap fpgaGpio(7) to GND (V1 board).
+--
 entity design_top is
    port (
       ulpiClk           : in    std_logic;
@@ -69,9 +91,15 @@ entity design_top is
       eth_rx_col        : in    std_logic;
       eth_rx_err        : in    std_logic;
       eth_rxd           : in    std_logic_vector(1 downto 0);
-      
+
       gpsPps            : in    std_logic;
-      gpsRstb           : out   std_logic := '1';
+      -- to be compatible with V1 board leave Rstb floating or
+      -- pulled-up.
+      -- If the output is activated the FW should no longer be
+      -- used on V1 hardware.
+      gpsRstb_IN        : in    std_logic;
+      gpsRstb_OUT       : out   std_logic := '0';
+      gpsRstb_OE        : out   std_logic := '0';
 
       -- note: fpgaGpio[0] *not* available on V2.0 board (only starting with 2.1)
       fpgaGpio_IN       : in    std_logic_vector(7 downto 0) := (others => '0');
@@ -359,7 +387,7 @@ begin
          uartRst       <= acmFifoRst;
       end if;
    end process P_UART_MUX;
-      
+
    P_UART_CFG_COMB : process ( acmParity, acmStopBits, acmDataBits ) is
    begin
       case ( to_integer(acmParity) ) is
