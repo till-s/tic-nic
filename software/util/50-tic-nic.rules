@@ -1,0 +1,37 @@
+# udev rules to load and bind the tic-nic driver. We assume it has been installed in the standard
+# module directories and can be found automatically.
+#
+# The problem is that the tic-nic driver builds on top of the cdc_ncm module/driver. Because the
+# latter must be loaded first the kernel binds *it* to the tic-nic device instead of the desired driver.
+#
+# We can prevent cdc_ncm from binding to the tic-nic by resorting to a hack: if we add the
+# tic-nic's vendor/product ID as a dynamical ID to the cdc_ncm driver (via the sysfs' new_id attribute
+# of the cdc_ncm driver) then this effectively *blacklists* the tic-nic; this is because the cdc_ncm
+# refuses to bind to a device which does not provide a 'struct driver_info*' pointer associated with
+# the VID/PID pair -- and luckily the ID's added with this method set this pointer to NULL (obviously
+# the info cannot be pulled out of thin air). This quirk is really helpful to us.
+#
+# Note that this rule will prevent cdc_ncm to be bound to tic-nic any time *after* the module has
+# been loaded (e.g., when you unplug and re-plug the usb cable). Note that it is executed only
+# once, namely when the driver is added to the system.
+#
+ACTION=="add", SUBSYSTEM=="drivers", ENV{DEVPATH}=="/bus/usb/drivers/cdc_ncm", ATTR{new_id}="1209 0001"
+
+# However, if the cdc_ncm module was just auto-loaded in response to the first-time the tic-nic is
+# added to the system then at the time the previous rule sets the 'new_id' the cdc_ncm driver has already
+# been bound (by the kernel). The next rule force-unbinds the cdc_ncm driver by effectively removing the
+# device by setting the 'authorized' property to 0. Note that while it is possible to unbind the driver
+# just from the NCM interface (by setting the interface's 'authorized' to 0) *rebinding* the interface
+# to a new driver (the proper tic-nic driver) is not possible by setting 'authorized' to 1 on the interface.
+# This just re-enables the interface but does not trigger a driver search, alas.
+ACTION=="bind", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ENV{PRODUCT}=="1209/1/*", ENV{DRIVER}=="cdc_ncm", RUN+="/usr/bin/env bash -c 'echo 0 > $sys$devpath/../authorized'"
+
+# This rule re-authorizes the tic-nic device which results in a re-attachment that causes all drivers
+# to be re-bound. Since the tic-nic is now blacklisted from the cdc_ncm driver this will result in the
+# tic-nic driver to be bound.
+#
+# None of these rules do anything beyond the very first time the tic-nic is connected to the system.
+ACTION=="change", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{PRODUCT}=="1209/1/*", ATTR{authorized}=="0", RUN+="/usr/bin/env bash -c 'echo 1 > $sys$devpath/authorized'"
+
+# Change the permissions so allow access to the tic-nic by utilities as non-root (substitute the applicable user/group/mode)
+# SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_VENDOR_ID}=="1209", ENV{ID_MODEL_ID}=="0001", USER=<user>, GROUP=<group>, MODE=<mode>
