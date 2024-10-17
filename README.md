@@ -384,7 +384,7 @@ backup power input to the battery when the normal power goes down.
 The board outline
 
 <p align="center">
-<img src="./conn_overview.svg">
+<img src="./conn_overview.svg" style="width: 90%">
 </p>
 
 shows the connectors J1, J4, J8, J10, J11, J12, J13, J14, J15, J15
