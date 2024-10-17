@@ -1,1 +1,4 @@
+# For these filters to work they must be installed;
+# use the software/util/install-git-filters.sh script
 tic_nic.xml filter=xml_last_change
+firmware/efx/debug_profile.wizard.json filter=debug_profile_uuid
