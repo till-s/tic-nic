@@ -3,7 +3,7 @@
         {
             "name": "la0",
             "type": "la",
-            "uuid": "a60908cf8143402c92fba34a6e020444",
+            "uuid": "c18ad341ec2c447b9fc432ee524b1dd6",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
@@ -108,6 +108,139 @@
                 },
                 {
                     "name": "gpsRx",
+                    "width": 1,
+                    "probe_type": 1
+                }
+            ]
+        },
+        {
+            "name": "la1",
+            "type": "la",
+            "uuid": "4656db92385344cd917c993ef92e92f2",
+            "trigin_en": false,
+            "trigout_en": false,
+            "auto_inserted": true,
+            "capture_control": false,
+            "data_depth": 1024,
+            "input_pipeline": 2,
+            "probes": [
+                {
+                    "name": "eth_tx_en",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "eth_txd",
+                    "width": 2,
+                    "probe_type": 1
+                },
+                {
+                    "name": "eth_rx_dv",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "eth_rxd",
+                    "width": 2,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ncmFifoInpDat",
+                    "width": 8,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ncmFifoInpLast",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ncmFifoInpWen",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ncmFifoOutLast",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ncmFifoOutVld",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ncmFifoOutRen",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ncmFifoOutDat",
+                    "width": 8,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_MAC_RX/r.cnt",
+                    "width": 6,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_MAC_RX/r.isBcst",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_MAC_RX/r.isUcst",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_MAC_RX/r.phase",
+                    "width": 2,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_MAC_RX/r.state",
+                    "width": 3,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_MAC_RX/promisc",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_MAC_RX/allmulti",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_MAC_RX/r.mcHash",
+                    "width": 6,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ncmFifoInpBusy",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ncmFifoInpFull",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_MAC_RX/r.presc",
+                    "width": 5,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ethMacRxAbrt",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "ethMacRxRst",
                     "width": 1,
                     "probe_type": 1
                 }
@@ -998,6 +1131,348 @@
                         "name": "la0_probe19",
                         "net": "gpsRx",
                         "path": []
+                    },
+                    {
+                        "name": "la1_clk",
+                        "net": "rmii_clk",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe0",
+                        "net": "eth_tx_en",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe1[0]",
+                        "net": "eth_txd[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe1[1]",
+                        "net": "eth_txd[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe2",
+                        "net": "eth_rx_dv",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe3[0]",
+                        "net": "eth_rxd[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe3[1]",
+                        "net": "eth_rxd[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe4[0]",
+                        "net": "ncmFifoInpDat[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe4[1]",
+                        "net": "ncmFifoInpDat[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe4[2]",
+                        "net": "ncmFifoInpDat[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe4[3]",
+                        "net": "ncmFifoInpDat[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe4[4]",
+                        "net": "ncmFifoInpDat[4]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe4[5]",
+                        "net": "ncmFifoInpDat[5]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe4[6]",
+                        "net": "ncmFifoInpDat[6]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe4[7]",
+                        "net": "ncmFifoInpDat[7]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe5",
+                        "net": "ncmFifoInpLast",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe6",
+                        "net": "ncmFifoInpWen",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe7",
+                        "net": "ncmFifoOutLast",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe8",
+                        "net": "ncmFifoOutVld",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe9",
+                        "net": "ncmFifoOutRen",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe10[0]",
+                        "net": "ncmFifoOutDat[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe10[1]",
+                        "net": "ncmFifoOutDat[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe10[2]",
+                        "net": "ncmFifoOutDat[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe10[3]",
+                        "net": "ncmFifoOutDat[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe10[4]",
+                        "net": "ncmFifoOutDat[4]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe10[5]",
+                        "net": "ncmFifoOutDat[5]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe10[6]",
+                        "net": "ncmFifoOutDat[6]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe10[7]",
+                        "net": "ncmFifoOutDat[7]",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe11[0]",
+                        "net": "r.cnt[0]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe11[1]",
+                        "net": "r.cnt[1]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe11[2]",
+                        "net": "r.cnt[2]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe11[3]",
+                        "net": "r.cnt[3]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe11[4]",
+                        "net": "r.cnt[4]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe11[5]",
+                        "net": "r.cnt[5]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe12",
+                        "net": "r.isBcst",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe13",
+                        "net": "r.isUcst",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe14[0]",
+                        "net": "r.phase[0]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe14[1]",
+                        "net": "r.phase[1]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe15[0]",
+                        "net": "r.state[0]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe15[1]",
+                        "net": "r.state[1]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe15[2]",
+                        "net": "r.state[2]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe16",
+                        "net": "promisc",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe17",
+                        "net": "allmulti",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe18[0]",
+                        "net": "r.mcHash[0]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe18[1]",
+                        "net": "r.mcHash[1]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe18[2]",
+                        "net": "r.mcHash[2]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe18[3]",
+                        "net": "r.mcHash[3]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe18[4]",
+                        "net": "r.mcHash[4]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe18[5]",
+                        "net": "r.mcHash[5]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe19",
+                        "net": "ncmFifoInpBusy",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe20",
+                        "net": "ncmFifoInpFull",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe21[0]",
+                        "net": "r.presc[0]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe21[1]",
+                        "net": "r.presc[1]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe21[2]",
+                        "net": "r.presc[2]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe21[3]",
+                        "net": "r.presc[3]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe21[4]",
+                        "net": "r.presc[4]",
+                        "path": [
+                            "U_MAC_RX"
+                        ]
+                    },
+                    {
+                        "name": "la1_probe22",
+                        "net": "ethMacRxAbrt",
+                        "path": []
+                    },
+                    {
+                        "name": "la1_probe23",
+                        "net": "ethMacRxRst",
+                        "path": []
                     }
                 ]
             }
@@ -1220,6 +1695,234 @@
                     "name": "gpsRx",
                     "width": 1,
                     "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "eth_tx_en",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "eth_txd",
+                    "width": 2,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 1,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "eth_rx_dv",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "eth_rxd",
+                    "width": 2,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 1,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "ncmFifoInpDat",
+                    "width": 8,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 7,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "ncmFifoInpLast",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "ncmFifoInpWen",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "ncmFifoOutLast",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "ncmFifoOutVld",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "ncmFifoOutRen",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "ncmFifoOutDat",
+                    "width": 8,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 7,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "r.cnt",
+                    "width": 6,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_MAC_RX"
+                    ],
+                    "net_idx_left": 5,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "r.isBcst",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_MAC_RX"
+                    ]
+                },
+                {
+                    "name": "r.isUcst",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_MAC_RX"
+                    ]
+                },
+                {
+                    "name": "r.phase",
+                    "width": 2,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_MAC_RX"
+                    ],
+                    "net_idx_left": 1,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "r.state",
+                    "width": 3,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_MAC_RX"
+                    ],
+                    "net_idx_left": 2,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "promisc",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_MAC_RX"
+                    ]
+                },
+                {
+                    "name": "allmulti",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_MAC_RX"
+                    ]
+                },
+                {
+                    "name": "r.mcHash",
+                    "width": 6,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_MAC_RX"
+                    ],
+                    "net_idx_left": 5,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "ncmFifoInpBusy",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "ncmFifoInpFull",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "r.presc",
+                    "width": 5,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_MAC_RX"
+                    ],
+                    "net_idx_left": 4,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "ethMacRxAbrt",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "ethMacRxRst",
+                    "width": 1,
+                    "clk_domain": "rmii_clk",
                     "selected_probe_type": "DATA AND TRIGGER",
                     "child": [],
                     "path": []
