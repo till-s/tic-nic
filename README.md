@@ -8,7 +8,7 @@ to generate precisely synchronized events or capture PTP
 timestamps.
 
 <p align="center">
-<img src="./tic_nic.png" style="width: 70%">
+<img src="./tic_nic.png" alt="[TODO] Picture goes here" style="width: 70%">
 </p>
 
 This is the niche the tic-nic tries to fill. It is a very portable
