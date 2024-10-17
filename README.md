@@ -144,7 +144,7 @@ might be paranoid.
 
 To build the firmware you need to install the efinity software from
 [efinix](https://www.efinixinc.com). At the time of this writing I'm
-using version 2023.2.
+using version 2024.1.
 
 The software is decent; the most serious draw-back is that it does not
 support scripting and that their constraint language is quite limited when
