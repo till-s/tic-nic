@@ -271,8 +271,8 @@ and you'll have to manually rebind it (as root):
 You should now be all ready to go!
 
 You can use proper udev magic to avoid having to manually
-load and rebind the driver (every time you replug the tic-nic)
-but this is beyond the scope of this document.
+load and rebind the driver (every time you replug the tic-nic).
+An example udev rules file can be found in `software/util`.
 
 ## Detailed Comments
 
@@ -381,6 +381,10 @@ Note that a jumper *must* be installed on JP7. Connect 2-3 if there is no batter
 When the jumper is installed between 1-2 the analog switch will connect the GPS'
 backup power input to the battery when the normal power goes down.
 
+If you don't use the tic-nic for longer periods of time then you are
+recommended to move the jumper to 2-3 which completely open-circuits
+the battery.
+
 #### Connectors and LEDs
 
 The board outline
@@ -452,8 +456,9 @@ Consult the DP83640 datasheet for details.
   | 19    | Gnd      |  20   |    3V3   |
 
 The `GPIO`, `GPIO2` and `GPIO9` pins are also connected to the
-FPGA for optional use by the user (the default firmware does not
-use this connection).
+FPGA for optional use by the user. The default firmware allows
+the FPGA pin connected to GPIO9 to be controlled (use the 
+`tic_nic_ctl` utility) - this can be useful to test event generation.
 
 Note that control of these pins is possible with standard
 linux tools and sysfs interfaces.
@@ -538,6 +543,12 @@ uses them to indicate the following status.
   |  D3 RED  | USB suspended        |
   |  D4 GRN  | All-multicast        |
   |  D4 RED  | Promiscuous          |
+
+#### Enclosure
+
+The tic-nic should fit into a Hammond 1455L801 extruded aluminum enclosure.
+Alternatively, we recommend to install Essentra FSR-1 feet and cover the
+battery holder with some tape to avoid short-circuits.
 
 ### Firmware
 
