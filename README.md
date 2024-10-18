@@ -14,6 +14,8 @@ timestamps.
 This is the niche the tic-nic tries to fill. It is a very portable
 USB gadget with a PTP PHY and clock providing a handfull of
 GPIO pins that can be controlled in a synchronous fashion.
+(Not all the connectors have been populated on the device shown in
+the picture.)
 
 ## Features
 
