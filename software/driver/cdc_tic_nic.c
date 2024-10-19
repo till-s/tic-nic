@@ -77,6 +77,22 @@ struct cdc_ncm_ptp_priv {
 	unsigned char       origLinkReg;
 };
 
+STATIC int cdc_ncm_ptp_mdio_read(struct mii_bus *bus, int phy_id, int idx);
+STATIC int cdc_ncm_ptp_mdio_write(struct mii_bus *bus, int phy_id, int idx, u16 regval);
+STATIC int set_addr(struct usbnet *dev);
+STATIC int try_set_addr(struct usbnet *dev);
+STATIC int read_vendor_link_reg(struct usbnet *dev);
+STATIC int write_vendor_link_reg(struct usbnet *dev, u16 value);
+STATIC int ndev_handler(struct notifier_block *nblk, unsigned long event, void *closure);
+STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, int ini);
+STATIC int cdc_ncm_ptp_bind(struct usbnet *dev, struct usb_interface *intf);
+STATIC void cdc_ncm_speed_change(struct usbnet *dev, struct usb_cdc_speed_change *data);
+STATIC void cdc_ncm_status(struct usbnet *dev, struct urb *urb);
+STATIC int ncm_ptp_probe(struct usb_interface *intf, const struct usb_device_id *prod);
+STATIC void ncm_ptp_disconnect(struct usb_interface *intf);
+STATIC int check_connect(struct usbnet *dev);
+STATIC void update_filter(struct usbnet *dev);
+
 STATIC int cdc_ncm_ptp_mdio_read(struct mii_bus *bus, int phy_id, int idx)
 {
 	int err;
@@ -374,9 +390,7 @@ STATIC int cdc_ncm_ptp_bind(struct usbnet *dev, struct usb_interface *intf)
 }
 
 /* Unfortunately not public :-( */
-STATIC void
-cdc_ncm_speed_change(struct usbnet *dev,
-             struct usb_cdc_speed_change *data)
+STATIC void cdc_ncm_speed_change(struct usbnet *dev, struct usb_cdc_speed_change *data)
 {
     /* RTL8156 shipped before 2021 sends notification about every 32ms. */
     dev->rx_speed = le32_to_cpu(data->DLBitRRate);
@@ -430,8 +444,7 @@ STATIC void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
 	}
 }
 
-STATIC
-int ncm_ptp_probe(struct usb_interface *intf, const struct usb_device_id *prod)
+STATIC int ncm_ptp_probe(struct usb_interface *intf, const struct usb_device_id *prod)
 {
 	struct usbnet *dev;
 	int st = usbnet_probe( intf, prod );
@@ -458,8 +471,7 @@ int ncm_ptp_probe(struct usb_interface *intf, const struct usb_device_id *prod)
 	return st;
 }
 
-STATIC
-void ncm_ptp_disconnect(struct usb_interface *intf)
+STATIC void ncm_ptp_disconnect(struct usb_interface *intf)
 {
 	struct usbnet *dev = usb_get_intfdata(intf);
 	if ( ! dev ) {
@@ -488,15 +500,13 @@ void ncm_ptp_disconnect(struct usb_interface *intf)
  *       simply always report an OK link but this is more
  *       illustrative...
  */
-STATIC
-int check_connect(struct usbnet *dev)
+STATIC int check_connect(struct usbnet *dev)
 {
 	/* OK status -> return value 0 */
 	return ! (read_vendor_link_reg( dev ) & VEND_REQ_LINK_STATUS);
 }
 
-STATIC
-void update_filter(struct usbnet *dev)
+STATIC void update_filter(struct usbnet *dev)
 {
 	struct net_device   *net = dev->net;
 	u16                  cdc_filter;
