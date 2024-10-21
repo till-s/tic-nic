@@ -143,7 +143,7 @@ struct Handle        *h   = calloc(sizeof(struct Handle),1);
 int                   st;
 int                   rv  = 1;
 int                   vid = 0x1209;
-int                   pid = 0x0001;
+int                   pid = 0x8851;
 uint8_t               buf[2];
 int                   msk = -1;
 int                   val = -1;

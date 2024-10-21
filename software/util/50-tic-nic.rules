@@ -15,7 +15,7 @@
 # been loaded (e.g., when you unplug and re-plug the usb cable). Note that it is executed only
 # once, namely when the driver is added to the system.
 #
-ACTION=="add", SUBSYSTEM=="drivers", ENV{DEVPATH}=="/bus/usb/drivers/cdc_ncm", ATTR{new_id}="1209 0001"
+ACTION=="add", SUBSYSTEM=="drivers", ENV{DEVPATH}=="/bus/usb/drivers/cdc_ncm", ATTR{new_id}="1209 8851"
 
 # However, if the cdc_ncm module was just auto-loaded in response to the first-time the tic-nic is
 # added to the system then at the time the previous rule sets the 'new_id' the cdc_ncm driver has already
@@ -24,14 +24,14 @@ ACTION=="add", SUBSYSTEM=="drivers", ENV{DEVPATH}=="/bus/usb/drivers/cdc_ncm", A
 # just from the NCM interface (by setting the interface's 'authorized' to 0) *rebinding* the interface
 # to a new driver (the proper tic-nic driver) is not possible by setting 'authorized' to 1 on the interface.
 # This just re-enables the interface but does not trigger a driver search, alas.
-ACTION=="bind", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ENV{PRODUCT}=="1209/1/*", ENV{DRIVER}=="cdc_ncm", RUN+="/usr/bin/env bash -c 'echo 0 > $sys$devpath/../authorized'"
+ACTION=="bind", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ENV{PRODUCT}=="1209/8851/*", ENV{DRIVER}=="cdc_ncm", RUN+="/usr/bin/env bash -c 'echo 0 > $sys$devpath/../authorized'"
 
 # This rule re-authorizes the tic-nic device which results in a re-attachment that causes all drivers
 # to be re-bound. Since the tic-nic is now blacklisted from the cdc_ncm driver this will result in the
 # tic-nic driver to be bound.
 #
 # None of these rules do anything beyond the very first time the tic-nic is connected to the system.
-ACTION=="change", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{PRODUCT}=="1209/1/*", ATTR{authorized}=="0", RUN+="/usr/bin/env bash -c 'echo 1 > $sys$devpath/authorized'"
+ACTION=="change", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{PRODUCT}=="1209/8851/*", ATTR{authorized}=="0", RUN+="/usr/bin/env bash -c 'echo 1 > $sys$devpath/authorized'"
 
 # Change the permissions so allow access to the tic-nic by utilities as non-root (substitute the applicable user/group/mode)
-# SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_VENDOR_ID}=="1209", ENV{ID_MODEL_ID}=="0001", USER=<user>, GROUP=<group>, MODE=<mode>
+# SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_VENDOR_ID}=="1209", ENV{ID_MODEL_ID}=="8851", USER=<user>, GROUP=<group>, MODE=<mode>

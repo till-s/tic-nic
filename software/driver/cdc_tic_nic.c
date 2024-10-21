@@ -606,7 +606,7 @@ static const struct driver_info cdc_ncm_ptp_info = {
 
 static const struct usb_device_id cdc_ncm_ptp_devs[] = {
 	/* PIDcodes 0x0001 */
-	{ USB_DEVICE_AND_INTERFACE_INFO(0x1209, 0x0001,
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1209, 0x8851,
 		USB_CLASS_COMM,
 		USB_CDC_SUBCLASS_NCM, USB_CDC_PROTO_NONE),
 		.driver_info = (unsigned long)&cdc_ncm_ptp_info,

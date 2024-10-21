@@ -5,7 +5,7 @@
 
 -- THIS FILE WAS AUTOMATICALLY GENERATED; DO NOT EDIT!
 
--- Generated with: genAppCfgPkgBody.py -p 0x0001 -N 02deadbeef31 -a -S -f AppCfgPkgBody.vhd -m 0x8020
+-- Generated with: genAppCfgPkgBody.py -p 0x8851 -N02deadbeef31 -a -S -f AppCfgPkgBody.vhd -m 0x8020
 
 library ieee;
 use     ieee.std_logic_1164.all;
@@ -31,8 +31,8 @@ package body Usb2AppCfgPkg is
         7 => x"40",  -- bMaxPacketSize0
         8 => x"09",  -- idVendor
         9 => x"12",
-       10 => x"01",  -- idProduct
-       11 => x"00",
+       10 => x"51",  -- idProduct
+       11 => x"88",
        12 => x"00",  -- bcdDevice
        13 => x"01",
        14 => x"00",  -- iManufacturer
@@ -246,8 +246,8 @@ package body Usb2AppCfgPkg is
       197 => x"40",  -- bMaxPacketSize0
       198 => x"09",  -- idVendor
       199 => x"12",
-      200 => x"01",  -- idProduct
-      201 => x"00",
+      200 => x"51",  -- idProduct
+      201 => x"88",
       202 => x"00",  -- bcdDevice
       203 => x"01",
       204 => x"00",  -- iManufacturer
