@@ -77,8 +77,8 @@ module provides an UART and bit-rate generator to connect
 the ACM endpoint to the GPS receiver.
 
 The fourth module `acm-toolbox` is borrowed from another
-project. It provides an FIFO interface and some software
-which allow accessing the configuration flash on the
+project. It provides a FIFO interface and some software
+which allows accessing the configuration flash on the
 board. It could also be used as a side-channel to peek/poke
 at user FPGA resources.
 
@@ -112,7 +112,7 @@ further ado.
 Some useful helper programs are not found in the `software`
 directory but reside in the submodules.
 
-#### GPS Receiver
+#### GPS Receiver -- PTP Grand Master Mode
 
 Access to the GPS receiver is possible with any standard
 software since it appears as a regular `tty` device.
@@ -121,7 +121,14 @@ to `GPIO11` of the PHY to capture a PHC timestamp. This
 very important feature enables us to synchronize the PHC
 clock in the PHY precisely to the GPS. The NMEA data received
 over UART/USB merely provides the context (time-of-day) associated
-with the precision PPS.
+with the precision PPS. Thi`
+
+#### PTP Follower Mode
+
+The tic-nic can, of course, also operate as an ordinary PTP follower
+(the GPS is unused in this mode). The operation mode depends
+entirely on the `linuxPTP` setup and in which way its components
+and daemons are configured by the user.
 
 ## Building the Device
 
@@ -221,7 +228,8 @@ In order to bootstrap the design you either need a JTAG programmer
 buy an [ftdi mini module](https://ftdichip.com/products/ft2232h-mini-module/);
 the DYI version has the advantage that it can work with any voltage of the
 JTAG bank; the mini-module, IIRC, requires additional level shifters if you
-deviate from 3.3V) or a pre-programmed flash device.
+deviate from 3.3V -- but this is not an issue with the tic-nic) or a
+pre-programmed flash device.
 
 ### Software
 
@@ -249,6 +257,15 @@ For the first tests it is easiest to manually load the
 module (as root)
 
      insmod ./cdc_tic_nic.ko
+
+On the long run it is more comfortable to properly install the
+module (in the module source directory):
+
+     make modules_install
+     depmod -a
+
+Keep in mind that you have to rebuild and install the module
+after every kernel update.
 
 #### Binding the Device to the Driver
 
@@ -327,7 +344,7 @@ The recommended settings are summarized in this table
   | R25,R26,R27,R28,R11 | optional (use internal res.)  | Define PHY address: 00001                           |
   | R12                 | optional (use internal res.)  | Disable FX mode                                     |
   | JP1                 | user-defined                  | Enable `CLK_OUT` on GPIO <br> see PHY datasheet     |
-  | JP2                 | don't care                    | Enable control frames. Un-<br>used/-supported by fw |
+  | JP2                 | don't care                    | Enable control frames. Un-<br>used/-supported by sw |
   | JP3                 | *install pull-up*             | Enable RMII (*mandatory*)                           |
   | JP4                 | *install pull-up*             | Enable RMII master mode <br> (*mandatory*)          |
   | R17, R18, R19       | install pull-ups              | Enable autoneg. advertise <br> everything           |
@@ -342,15 +359,16 @@ may always be changed in software by the driver.
 
 #### FPGA
 
-We recommend to use a Trion T20Q144 at speed grade C4. This leaves
+We recommend to use a Trion T20Q144 at speed grade 4. This leaves
 enough margin e.g., to enable the debugger and add custom logic.
 
 You might get away with a T8Q144 device and save (very little)
 money. The T8Q144 and T20Q144 are fully pin-compatible and the
-design should work with either device.
+design should work with either device (you'll have to change
+the device in the efinity software, of course).
 
 It might be difficult to meet timing on the ULPI interface
-with a lower speed grade than C4 but YMMV.
+with a lower speed grade than 4 but YMMV.
 
 #### Jumpers
 
@@ -360,10 +378,10 @@ correctly for the board to work.
 JP6 provides power to an external LNA built into an active
 antenna (consult the LC76G datasheet for compatible antennas).
 
-    | JP6 State  | Description           |
-    | :--------: | :-------------------: |
-    | installed  | J8 has 3v3 DC applied |
-    | off        | J8 AC coupled         |
+  | JP6 State  | Description           |
+  | :--------: | :-------------------: |
+  | installed  | J8 has 3v3 DC applied |
+  | off        | J8 AC coupled         |
 
 Thus, when using an active antenna which is compatible with
 the Quectel LC76G you have to install a jumper on J8. When using
@@ -372,10 +390,10 @@ is no short circuit when J8 is installed!*
 
 JP7 controls the backup-power supply of the GPS receiver module:
 
-    | JP7 State      | Description                                              |
-    | :------------: | :------------------------------------------------------: |
-    | installed 2-3  | battery unused backup power connected to 3V3 supply      |
-    | installed 2-1  | backup power connected to battery when 3V3 is not preset |
+  | JP7 State      | Description                                              |
+  | :------------: | :------------------------------------------------------: |
+  | installed 2-3  | battery unused backup power connected to 3V3 supply      |
+  | installed 2-1  | backup power connected to battery when 3V3 is not preset |
 
 Note that a jumper *must* be installed on JP7. Connect 2-3 if there is no battery.
 When the jumper is installed between 1-2 the analog switch will connect the GPS'
@@ -455,10 +473,11 @@ Consult the DP83640 datasheet for details.
   | 17    | Gnd      |  18   |   CLKOUT |
   | 19    | Gnd      |  20   |    3V3   |
 
-The `GPIO`, `GPIO2` and `GPIO9` pins are also connected to the
-FPGA for optional use by the user. The default firmware allows
-the FPGA pin connected to GPIO9 to be controlled (use the 
-`tic_nic_ctl` utility) - this can be useful to test event generation.
+The PHY's `GPIO1`, `GPIO2` and `GPIO9` pins are also connected to the
+FPGA for optional use by user designs. The default firmware allows
+the FPGA pin connected to `GPIO9` to be controlled (use the 
+`tic_nic_ctl` utility) - this can be useful to test, e.g., event
+generation.
 
 Note that control of these pins is possible with standard
 linux tools and sysfs interfaces.
@@ -637,7 +656,7 @@ This can be useful to test some features. The tool also
 supports sending and receiving ethernet packets using a
 raw socket.
 
-Note, however, that `mcio_ctl` automatically takes over the
+Note, however, that `mdio_ctl` automatically takes over the
 device from the kernel driver when it runs but the udev machinery
 will immediately grab it back and re-bind it to `cdc_ncm` or
 `cdc_tic_nic` after the program exits which means that changes
