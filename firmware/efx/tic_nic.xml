@@ -152,7 +152,7 @@
         <efx:param name="mode" value="active" value_type="e_option"/>
         <efx:param name="width" value="1" value_type="e_option"/>
         <efx:param name="enable_roms" value="smart" value_type="e_option"/>
-        <efx:param name="spi_low_power_mode" value="on" value_type="e_bool"/>
+        <efx:param name="spi_low_power_mode" value="off" value_type="e_bool"/>
         <efx:param name="io_weak_pullup" value="on" value_type="e_bool"/>
         <efx:param name="oscillator_clock_divider" value="DIV8" value_type="e_option"/>
         <efx:param name="bitstream_compression" value="off" value_type="e_bool"/>
