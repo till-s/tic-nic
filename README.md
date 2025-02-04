@@ -121,7 +121,7 @@ to `GPIO11` of the PHY to capture a PHC timestamp. This
 very important feature enables us to synchronize the PHC
 clock in the PHY precisely to the GPS. The NMEA data received
 over UART/USB merely provides the context (time-of-day) associated
-with the precision PPS. Thi`
+with the precision PPS.
 
 #### PTP Follower Mode
 
