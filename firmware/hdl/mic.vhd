@@ -12,6 +12,7 @@ entity mic is
       clk                 : in  std_logic;
       mic_dat             : in  std_logic;
       mic_clk             : out std_logic;
+      mic_sel             : in  std_logic := '0';
       fifo_dat            : out std_logic_vector(7 downto 0);
       fifo_wen            : out std_logic
    );
@@ -48,7 +49,7 @@ architecture rtl of mic is
 
 begin
 
-   P_COMB : process ( r, mic_dat, cen_in ) is
+   P_COMB : process ( r, mic_dat, mic_sel, cen_in ) is
       variable v : RegType;
    begin
       v   := r;
@@ -65,7 +66,11 @@ begin
 	 v.shift_reg := mic_dat & r.shift_reg( r.shift_reg'left downto 1 );
       end if;
 
-      cen_in <= v.mic_clk and not r.mic_clk;
+      if ( mic_sel = '1' ) then
+         cen_in <= not v.mic_clk and r.mic_clk;
+      else
+         cen_in <= v.mic_clk and not r.mic_clk;
+      end if;
       rin    <= v;
    end process P_COMB;
 

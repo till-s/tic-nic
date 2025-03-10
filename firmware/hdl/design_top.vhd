@@ -206,13 +206,14 @@ architecture rtl of design_top is
 
    signal mic_clk              : std_logic := '0';
    signal mic_dat              : std_logic := '0';
-   signal mic_sel              : std_logic := '0';
+   signal mic_sel              : std_logic := '1';
 
 begin
 
    fpga_gpio_1 <= mic_sel;
    fpga_gpio_2 <= mic_clk;
    mic_dat     <= fpga_gpio_3;
+   mic_sel     <= fpga_gpio[4];
 
    P_INI : process ( ulpiClk ) is
       variable cnt : unsigned(29 downto 0)        := (others => '1');
@@ -571,6 +572,7 @@ begin
          clk                          => ulpiClk,
 	 mic_clk                      => mic_clk,
 	 mic_dat                      => mic_dat,
+	 mic_sel                      => mic_sel,
 	 fifo_dat                     => uartRxDat,
 	 fifo_wen                     => uartRxDatVld
       );

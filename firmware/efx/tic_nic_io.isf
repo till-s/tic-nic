@@ -115,6 +115,7 @@ design.set_property("fpga_gpio_2","OUT_REG","REG")
 design.set_property("fpga_gpio_2","OUT_CLK_PIN","ulpiClk")
 design.set_property("fpga_gpio_3","IN_REG","REG")
 design.set_property("fpga_gpio_3","IN_CLK_PIN","ulpiClk")
+design.set_property("fpga_gpio","PULL_OPTION","WEAK_PULLDOWN")
 
 # Set resource assignment
 design.assign_pkg_pin("LED[0]","92")
