@@ -65,7 +65,11 @@ entity design_top is
       fpga_gpio_3       : in    std_logic := '0';
       fpga_gpio_IN      : in    std_logic_vector(7 downto 4);
       fpga_gpio_OUT     : out   std_logic_vector(7 downto 4) := (others => '0');
-      fpga_gpio_OE      : out   std_logic_vector(7 downto 4) := (others => '0')
+      fpga_gpio_OE      : out   std_logic_vector(7 downto 4) := (others => '0');
+
+      fpga_b3_io_IN     : in    std_logic_vector(2 downto 0);
+      fpga_b3_io_OUT    : out   std_logic_vector(2 downto 0) := (others => '0');
+      fpga_b3_io_OE     : out   std_logic_vector(2 downto 0) := (others => '0')
    );
 end entity design_top;
 
