@@ -57,7 +57,12 @@ entity design_top is
       eth_crs_dv        : in    std_logic;
       eth_rx_col        : in    std_logic;
       eth_rx_err        : in    std_logic;
-      eth_rxd           : in    std_logic_vector(3 downto 0)
+      eth_rxd           : in    std_logic_vector(3 downto 0);
+
+      -- FPGA_GPIO[0] is not usable; not wired to a GPIO-capable pin on V1 hardware
+      fpga_gpio_IN      : in    std_logic_vector(7 downto 1);
+      fpga_gpio_OUT     : out   std_logic_vector(7 downto 1) := (others => '0');
+      fpga_gpio_OE      : out   std_logic_vector(7 downto 1) := (others => '0')
    );
 end entity design_top;
 
