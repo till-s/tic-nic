@@ -19,9 +19,9 @@
         <efx:design_file name="../modules/acm-toolbox/hdl/GenericFifoAsync.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/ILAWrapperPkg.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/SDRAMBufPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SimpleBusPipeStage.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/SFifo.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/SimpleBusAsync.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/acm-toolbox/hdl/SimpleBusPipeStage.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/SimpleI2cMaster.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/SpiBitShifter.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/SpiChecker.vhd" version="default" library="default"/>

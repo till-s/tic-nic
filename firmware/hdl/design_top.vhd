@@ -69,6 +69,8 @@ architecture rtl of design_top is
    constant LD_FIFO_OUT_C      : natural :=  9;
    constant LD_FIFO_INP_C      : natural :=  9;
 
+   constant UART_MAX_BITS_C    : natural := 8;
+
    constant NCM_IF_ASSOC_IDX_C : integer := usb2NextIfcAssocDescriptor(
       USB2_APP_DESCRIPTORS_C,
       0,
@@ -90,6 +92,7 @@ architecture rtl of design_top is
    signal acmFifoOutDat        : Usb2ByteType;
    signal acmFifoOutEmpty      : std_logic;
    signal acmFifoOutRen        : std_logic    := '1';
+   signal acmFifoOutVld        : std_logic    := '0';
    signal acmFifoInpDat        : Usb2ByteType := (others => '0');
    signal acmFifoInpFull       : std_logic;
    signal acmFifoInpWen        : std_logic    := '0';
@@ -102,6 +105,15 @@ architecture rtl of design_top is
    signal acmDTR               : std_logic;
    signal acmRate              : unsigned(31 downto 0);
    signal acmParity            : unsigned( 2 downto 0);
+
+   signal uartRst              : std_logic := '0';
+
+   signal uartRxDat            : std_logic_vector(UART_MAX_BITS_C - 1 downto 0) := (others => '0');
+   signal uartRxDatVld         : std_logic := '0';
+   signal uartTxDat            : std_logic_vector(UART_MAX_BITS_C - 1 downto 0) := (others => '0');
+   signal uartTxDatVld         : std_logic := '0';
+   signal uartTxDatRdy         : std_logic := '0';
+
    signal acmFifoRst           : std_logic    := '0';
 
    signal usb2Rst              : std_logic    := '0';
@@ -198,13 +210,51 @@ begin
       usb2Rst      <= rst(0);
    end process P_INI;
 
-   fifoRDat      <= acmFifoOutDat;
-   fifoRVld      <= not acmFifoOutEmpty;
-   acmFifoOutRen <= fifoRRdy;
+   acmFifoOutVld <= not acmFifoOutEmpty;
 
-   acmFifoInpDat <= fifoWDat;
-   acmFifoInpWen <= fifoWVld;
-   fifoWRdy      <= not acmFifoInpFull;
+   fifoRDat      <= acmFifoOutDat;
+   uartTxDat     <= acmFifoOutDat;
+
+   P_UART_MUX : process (
+      acmDTR,
+      acmFifoOutVld,
+      acmFifoInpFull,
+      fifoRRdy,
+      fifoWDat,
+      fifoWVld,
+      uartRxDat,
+      uartRxDatVld,
+      uartTxDatRdy,
+      acmFifoRst
+   ) is
+   begin
+      if ( acmDTR = '0' ) then
+         fifoRVld      <= acmFifoOutVld;
+         uartTxDatVld  <= '0';
+         acmFifoOutRen <= fifoRRdy;
+
+         acmFifoInpDat <= fifoWDat;
+         acmFifoInpWen <= fifoWVld;
+         fifoWRdy      <= not acmFifoInpFull;
+
+         uartRst       <= '1';
+      else
+         fifoRVld      <= '0';
+         uartTxDatVld  <= acmFifoOutVld;
+         acmFifoOutRen <= uartTxDatRdy;
+
+         acmFifoInpDat <= uartRxDat;
+         acmFifoInpWen <= uartRxDatVld;
+         fifoWRdy      <= '0';
+
+         uartRst       <= acmFifoRst;
+      end if;
+   end process P_UART_MUX;
+
+-- default: loopback uart signals
+   uartRxDat    <= uartTxDat;
+   uartRxDatVld <= uartTxDatVld;
+   uartTxDatRdy <= '1';
 
    U_CMD : entity work.CommandWrapper
    generic map (
