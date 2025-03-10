@@ -60,9 +60,12 @@ entity design_top is
       eth_rxd           : in    std_logic_vector(3 downto 0);
 
       -- FPGA_GPIO[0] is not usable; not wired to a GPIO-capable pin on V1 hardware
-      fpga_gpio_IN      : in    std_logic_vector(7 downto 1);
-      fpga_gpio_OUT     : out   std_logic_vector(7 downto 1) := (others => '0');
-      fpga_gpio_OE      : out   std_logic_vector(7 downto 1) := (others => '0')
+      fpga_gpio_1       : out   std_logic := '0';
+      fpga_gpio_2       : out   std_logic := '0';
+      fpga_gpio_3       : in    std_logic := '0';
+      fpga_gpio_IN      : in    std_logic_vector(7 downto 4);
+      fpga_gpio_OUT     : out   std_logic_vector(7 downto 4) := (others => '0');
+      fpga_gpio_OE      : out   std_logic_vector(7 downto 4) := (others => '0')
    );
 end entity design_top;
 
@@ -75,6 +78,9 @@ architecture rtl of design_top is
    constant LD_FIFO_INP_C      : natural :=  9;
 
    constant UART_MAX_BITS_C    : natural := 8;
+
+   -- delay in external registers (clk + dat)
+   constant MIC_DELAY_C        : natural := 2;
 
    constant NCM_IF_ASSOC_IDX_C : integer := usb2NextIfcAssocDescriptor(
       USB2_APP_DESCRIPTORS_C,
@@ -198,7 +204,15 @@ architecture rtl of design_top is
    signal mdioDatInp           : std_logic;
    signal mdioDatHiZ           : std_logic;
 
+   signal mic_clk              : std_logic := '0';
+   signal mic_dat              : std_logic := '0';
+   signal mic_sel              : std_logic := '0';
+
 begin
+
+   fpga_gpio_1 <= mic_sel;
+   fpga_gpio_2 <= mic_clk;
+   mic_dat     <= fpga_gpio_3;
 
    P_INI : process ( ulpiClk ) is
       variable cnt : unsigned(29 downto 0)        := (others => '1');
@@ -257,8 +271,9 @@ begin
    end process P_UART_MUX;
 
 -- default: loopback uart signals
-   uartRxDat    <= uartTxDat;
-   uartRxDatVld <= uartTxDatVld;
+   -- uartRx driven by mic
+   --uartRxDat    <= uartTxDat;
+   --uartRxDatVld <= uartTxDatVld;
    uartTxDatRdy <= '1';
 
    U_CMD : entity work.CommandWrapper
@@ -545,6 +560,19 @@ begin
          linkOk                       => ethMacLinkOk,
          -- full contents; above bits are for convenience
          statusRegPolled              => open
+      );
+
+   U_MIC : entity work.mic
+      generic map (
+         CEN_DLY_G                    => MIC_DELAY_C,
+	 PRESC_HALF_PERIOD_G          => 15 -- 2 MHz mic clock: ulpiClk / (2 * HALF_PERIOD)
+      )
+      port map (
+         clk                          => ulpiClk,
+	 mic_clk                      => mic_clk,
+	 mic_dat                      => mic_dat,
+	 fifo_dat                     => uartRxDat,
+	 fifo_wen                     => uartRxDatVld
       );
 
    -- LEDs are active low
