@@ -217,7 +217,7 @@ begin
    fpga_gpio_1 <= mic_sel;
    fpga_gpio_2 <= mic_clk;
    mic_dat     <= fpga_gpio_3;
-   mic_sel     <= fpga_b3_io[2];
+   mic_sel     <= fpga_b3_io_IN(2);
 
    P_INI : process ( ulpiClk ) is
       variable cnt : unsigned(29 downto 0)        := (others => '1');
