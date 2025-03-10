@@ -62,7 +62,11 @@ entity design_top is
       -- FPGA_GPIO[0] is not usable; not wired to a GPIO-capable pin on V1 hardware
       fpga_gpio_IN      : in    std_logic_vector(7 downto 1);
       fpga_gpio_OUT     : out   std_logic_vector(7 downto 1) := (others => '0');
-      fpga_gpio_OE      : out   std_logic_vector(7 downto 1) := (others => '0')
+      fpga_gpio_OE      : out   std_logic_vector(7 downto 1) := (others => '0');
+
+      fpga_b3_io_IN     : in    std_logic_vector(2 downto 0);
+      fpga_b3_io_OUT    : out   std_logic_vector(2 downto 0) := (others => '0');
+      fpga_b3_io_OE     : out   std_logic_vector(2 downto 0) := (others => '0')
    );
 end entity design_top;
 
