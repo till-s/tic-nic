@@ -611,4 +611,7 @@ package body Usb2AppCfgPkg is
    begin
       return c;
    end function usb2AppGetDescriptors;
+
+   constant USB2_APP_DESCRIPTORS_C : Usb2ByteArray := usb2AppGetDescriptors;
+
 end package body Usb2AppCfgPkg;

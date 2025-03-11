@@ -59,9 +59,9 @@
         <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2StdCtlEp.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2UtilPkg.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/mecatica-usb/core/hdl/UsbCrcTbl.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/BADDSpkr/hdl/Usb2EpBADDSpkr.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/BADDSpkr/hdl/Usb2EpBADDSpkrCtl.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/BADDSpkr/hdl/Usb2EpI2SPlayback.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/mecatica-usb/endpoints/AUDIO/hdl/Usb2EpBADDSpkr.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/mecatica-usb/endpoints/AUDIO/hdl/Usb2EpAudioCtl.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/mecatica-usb/endpoints/AUDIO/hdl/Usb2EpI2SPlayback.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/mecatica-usb/endpoints/CDCACM/hdl/Usb2EpCDCACM.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/mecatica-usb/endpoints/CDCACM/hdl/Usb2EpCDCACMCtl.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/mecatica-usb/endpoints/CDCACM/hdl/Usb2EpCDCACMNotify.vhd" version="default" library="default"/>
