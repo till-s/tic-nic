@@ -423,7 +423,8 @@ begin
    -- only instantiates logic if setting MC filters is enabled in the descriptors
    U_SET_MC_FILT : entity work.Usb2SetMCFilter
       generic map (
-         DESCRIPTORS_G    => USB2_APP_DESCRIPTORS_C
+         DESCRIPTORS_G    => USB2_APP_DESCRIPTORS_C,
+         IFC_IDX_G        => NCM_IF_ASSOC_IDX_C
       )
       port map (
          clk              => ulpiClk,
