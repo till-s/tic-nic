@@ -98,6 +98,21 @@ architecture rtl of design_top is
       )
    );
 
+   constant MICR_UAC2_IFC_ASSOC_IDX_C          : integer :=
+      usb2NextUAC2IfcAssocDescriptor(
+         USB2_APP_DESCRIPTORS_C,
+         0,
+         USB2_CS_IFC_HDR_UAC2_CATEGORY_MICROPHONE
+      );
+
+   constant AUD_SMPL_SIZE_C                    : integer :=
+      usb2GetUAC2SubSlotSize(
+         USB2_APP_DESCRIPTORS_C,
+         MICR_UAC2_IFC_ASSOC_IDX_C
+   );
+
+   constant AUD_SMPL_FREQ_C : natural := 48000;
+
    signal acmFifoOutDat        : Usb2ByteType;
    signal acmFifoOutEmpty      : std_logic;
    signal acmFifoOutRen        : std_logic    := '1';
@@ -201,6 +216,11 @@ architecture rtl of design_top is
    signal mdioDatOut           : std_logic;
    signal mdioDatInp           : std_logic;
    signal mdioDatHiZ           : std_logic;
+
+   signal audioInpFifoDat      : std_logic_vector(47 downto 0) := (others => '0');
+   signal audioInpFifoVld      : std_logic                     := '0';
+   signal audioInpFifoRdy      : std_logic;
+   signal audioInpSelectorSel  : unsigned(7 downto 0)          := (others => '0');
 
 begin
 
@@ -321,8 +341,11 @@ begin
          DESCRIPTORS_BRAM_G        => true,
          LD_ACM_FIFO_DEPTH_INP_G   => LD_FIFO_INP_C,
          LD_ACM_FIFO_DEPTH_OUT_G   => LD_FIFO_OUT_C,
+         LD_AUD_INP_FIFO_DEPTH_G   => 9,
          CDC_ACM_ASYNC_G           => false,
          CDC_NCM_ASYNC_G           => true,
+         AUD_INP_ASYNC_G           => false,
+         AUD_INP_SAMPLE_FREQ_G     => AUD_SMPL_FREQ_C,
          ULPI_EMU_MODE_G           => NONE,
          CTL_EP0_AGENTS_CONFIG_G   => EP0_AGENT_CFG_C,
          MARK_DEBUG_ULPI_IO_G      => false,
@@ -388,7 +411,13 @@ begin
          ncmMCFilterDat            => ncmMCFilterDat,
          ncmMCFilterVld            => ncmMCFilterVld,
          ncmMCFilterLst            => open,
-         ncmMCFilterDon            => ncmMCFilterDon
+         ncmMCFilterDon            => ncmMCFilterDon,
+
+         audioInpFifoClk           => ulpiClk,
+         audioInpFifoDat           => audioInpFifoDat,
+         audioInpFifoVld           => audioInpFifoVld,
+         audioInpFifoRdy           => audioInpFifoRdy,
+         audioInpSelectorSel       => audioInpSelectorSel
       );
 
    P_SPEED_SEL : process ( ncmSpeed10 ) is
@@ -551,6 +580,73 @@ begin
          -- full contents; above bits are for convenience
          statusRegPolled              => open
       );
+
+   P_AUDIO : process ( ulpiClk ) is
+      variable presc : natural range 0 to 1249 := 1249;
+      variable smpl  : signed(23 downto 0)     := (others => '0');
+      constant SCL_C : signed(23 downto 0)     := to_signed(2**23 - 17000, 24);
+
+      type U24Array is array (integer range <>) of signed(23 downto 0);
+
+      constant SIN_TBL_C : U24Array := (
+         0 => to_signed(  548641, 24),
+         1 => to_signed( 1636536, 24),
+         2 => to_signed( 2696430, 24),
+         3 => to_signed( 3710186, 24),
+         4 => to_signed( 4660461, 24),
+         5 => to_signed( 5530994, 24),
+         6 => to_signed( 6306889, 24),
+         7 => to_signed( 6974873, 24),
+         8 => to_signed( 7523514, 24),
+         9 => to_signed( 7943426, 24),
+        10 => to_signed( 8227423, 24),
+        11 => to_signed( 8370647, 24)
+      );
+
+      variable idx   : natural range SIN_TBL_C'range := 0;
+      variable quad  : natural range 0 to 3          := 0;
+   begin
+      if ( rising_edge( ulpiClk ) ) then
+         if ( presc = 0 ) then
+            presc := 1249;
+            if ( quad < 2 ) then
+               smpl :=  SIN_TBL_C(idx);
+            else
+               smpl := -SIN_TBL_C(idx);
+            end if;
+            case quad is
+               when 0 | 2 =>
+                  if ( SIN_TBL_C'high = idx ) then
+                     if ( quad = 0 ) then
+                        quad := 1;
+                     else
+                        quad := 3;
+                     end if;
+                  else
+                     idx  := idx + 1;
+                  end if;
+               when 1 | 3 =>
+                  if ( SIN_TBL_C'low  = idx ) then
+                     if ( quad = 1 ) then
+                        quad := 2;
+                     else
+                        quad := 0;
+                     end if;
+                  else
+                     idx  := idx - 1;
+                  end if;
+            end case;
+            audioInpFifoVld <= '1';
+         else
+            presc := presc - 1;
+         end if;
+         if ( (audioInpFifoVld and audioInpFifoRdy) = '1' ) then
+            audioInpFifoVld <= '0';
+         end if;
+      end if;
+      audioInpFifoDat             <= (others => '0');
+      audioInpFifoDat(smpl'range) <= std_logic_vector( shift_right(smpl, smpl'length - 8*AUD_SMPL_SIZE_C) );
+   end process P_AUDIO;
 
    -- LEDs are active low
    LED(7)        <= not ethMacPromisc;
