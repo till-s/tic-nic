@@ -3,7 +3,7 @@
         {
             "name": "la0",
             "type": "la",
-            "uuid": "b4cd93292bba4da19adfa150c21b2b36",
+            "uuid": "40e583930dfe46ca809622997914749d",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
@@ -295,13 +295,103 @@
                     "name": "audioInpSelectorSel",
                     "width": 8,
                     "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].value",
+                    "width": 16,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].recipient",
+                    "width": 2,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].length",
+                    "width": 16,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].vld",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].request",
+                    "width": 8,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].index",
+                    "width": 16,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].reqType",
+                    "width": 2,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].dev2Host",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.usr",
+                    "width": 4,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.don",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.err",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.usr",
+                    "width": 4,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.dat",
+                    "width": 8,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.vld",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.dat",
+                    "width": 8,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.don",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.err",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.vld",
+                    "width": 1,
+                    "probe_type": 1
                 }
             ]
         },
         {
             "name": "la1",
             "type": "la",
-            "uuid": "6d69e361ab57482494e80185af1890a2",
+            "uuid": "08d3623d150b4d118eb67c7b253645bc",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
@@ -1921,6 +2011,466 @@
                         "path": []
                     },
                     {
+                        "name": "la0_probe57[0]",
+                        "net": "usb2Ep0ReqParam[0].value[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[1]",
+                        "net": "usb2Ep0ReqParam[0].value[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[2]",
+                        "net": "usb2Ep0ReqParam[0].value[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[3]",
+                        "net": "usb2Ep0ReqParam[0].value[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[4]",
+                        "net": "usb2Ep0ReqParam[0].value[4]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[5]",
+                        "net": "usb2Ep0ReqParam[0].value[5]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[6]",
+                        "net": "usb2Ep0ReqParam[0].value[6]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[7]",
+                        "net": "usb2Ep0ReqParam[0].value[7]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[8]",
+                        "net": "usb2Ep0ReqParam[0].value[8]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[9]",
+                        "net": "usb2Ep0ReqParam[0].value[9]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[10]",
+                        "net": "usb2Ep0ReqParam[0].value[10]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[11]",
+                        "net": "usb2Ep0ReqParam[0].value[11]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[12]",
+                        "net": "usb2Ep0ReqParam[0].value[12]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[13]",
+                        "net": "usb2Ep0ReqParam[0].value[13]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[14]",
+                        "net": "usb2Ep0ReqParam[0].value[14]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe57[15]",
+                        "net": "usb2Ep0ReqParam[0].value[15]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe58[0]",
+                        "net": "usb2Ep0ReqParam[0].recipient[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe58[1]",
+                        "net": "usb2Ep0ReqParam[0].recipient[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[0]",
+                        "net": "usb2Ep0ReqParam[0].length[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[1]",
+                        "net": "usb2Ep0ReqParam[0].length[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[2]",
+                        "net": "usb2Ep0ReqParam[0].length[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[3]",
+                        "net": "usb2Ep0ReqParam[0].length[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[4]",
+                        "net": "usb2Ep0ReqParam[0].length[4]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[5]",
+                        "net": "usb2Ep0ReqParam[0].length[5]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[6]",
+                        "net": "usb2Ep0ReqParam[0].length[6]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[7]",
+                        "net": "usb2Ep0ReqParam[0].length[7]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[8]",
+                        "net": "usb2Ep0ReqParam[0].length[8]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[9]",
+                        "net": "usb2Ep0ReqParam[0].length[9]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[10]",
+                        "net": "usb2Ep0ReqParam[0].length[10]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[11]",
+                        "net": "usb2Ep0ReqParam[0].length[11]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[12]",
+                        "net": "usb2Ep0ReqParam[0].length[12]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[13]",
+                        "net": "usb2Ep0ReqParam[0].length[13]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[14]",
+                        "net": "usb2Ep0ReqParam[0].length[14]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe59[15]",
+                        "net": "usb2Ep0ReqParam[0].length[15]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe60",
+                        "net": "usb2Ep0ReqParam[0].vld",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe61[0]",
+                        "net": "usb2Ep0ReqParam[0].request[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe61[1]",
+                        "net": "usb2Ep0ReqParam[0].request[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe61[2]",
+                        "net": "usb2Ep0ReqParam[0].request[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe61[3]",
+                        "net": "usb2Ep0ReqParam[0].request[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe61[4]",
+                        "net": "usb2Ep0ReqParam[0].request[4]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe61[5]",
+                        "net": "usb2Ep0ReqParam[0].request[5]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe61[6]",
+                        "net": "usb2Ep0ReqParam[0].request[6]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe61[7]",
+                        "net": "usb2Ep0ReqParam[0].request[7]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[0]",
+                        "net": "usb2Ep0ReqParam[0].index[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[1]",
+                        "net": "usb2Ep0ReqParam[0].index[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[2]",
+                        "net": "usb2Ep0ReqParam[0].index[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[3]",
+                        "net": "usb2Ep0ReqParam[0].index[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[4]",
+                        "net": "usb2Ep0ReqParam[0].index[4]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[5]",
+                        "net": "usb2Ep0ReqParam[0].index[5]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[6]",
+                        "net": "usb2Ep0ReqParam[0].index[6]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[7]",
+                        "net": "usb2Ep0ReqParam[0].index[7]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[8]",
+                        "net": "usb2Ep0ReqParam[0].index[8]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[9]",
+                        "net": "usb2Ep0ReqParam[0].index[9]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[10]",
+                        "net": "usb2Ep0ReqParam[0].index[10]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[11]",
+                        "net": "usb2Ep0ReqParam[0].index[11]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[12]",
+                        "net": "usb2Ep0ReqParam[0].index[12]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[13]",
+                        "net": "usb2Ep0ReqParam[0].index[13]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[14]",
+                        "net": "usb2Ep0ReqParam[0].index[14]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe62[15]",
+                        "net": "usb2Ep0ReqParam[0].index[15]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe63[0]",
+                        "net": "usb2Ep0ReqParam[0].reqType[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe63[1]",
+                        "net": "usb2Ep0ReqParam[0].reqType[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe64",
+                        "net": "usb2Ep0ReqParam[0].dev2Host",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe65[0]",
+                        "net": "usb2Ep0ObExt.mstOut.usr[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe65[1]",
+                        "net": "usb2Ep0ObExt.mstOut.usr[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe65[2]",
+                        "net": "usb2Ep0ObExt.mstOut.usr[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe65[3]",
+                        "net": "usb2Ep0ObExt.mstOut.usr[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe66",
+                        "net": "usb2Ep0ObExt.mstOut.don",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe67",
+                        "net": "usb2Ep0ObExt.mstOut.err",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe68[0]",
+                        "net": "usb2Ep0ObExt.mstCtl.usr[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe68[1]",
+                        "net": "usb2Ep0ObExt.mstCtl.usr[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe68[2]",
+                        "net": "usb2Ep0ObExt.mstCtl.usr[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe68[3]",
+                        "net": "usb2Ep0ObExt.mstCtl.usr[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe69[0]",
+                        "net": "usb2Ep0ObExt.mstCtl.dat[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe69[1]",
+                        "net": "usb2Ep0ObExt.mstCtl.dat[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe69[2]",
+                        "net": "usb2Ep0ObExt.mstCtl.dat[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe69[3]",
+                        "net": "usb2Ep0ObExt.mstCtl.dat[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe69[4]",
+                        "net": "usb2Ep0ObExt.mstCtl.dat[4]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe69[5]",
+                        "net": "usb2Ep0ObExt.mstCtl.dat[5]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe69[6]",
+                        "net": "usb2Ep0ObExt.mstCtl.dat[6]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe69[7]",
+                        "net": "usb2Ep0ObExt.mstCtl.dat[7]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe70",
+                        "net": "usb2Ep0ObExt.mstOut.vld",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe71[0]",
+                        "net": "usb2Ep0ObExt.mstOut.dat[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe71[1]",
+                        "net": "usb2Ep0ObExt.mstOut.dat[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe71[2]",
+                        "net": "usb2Ep0ObExt.mstOut.dat[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe71[3]",
+                        "net": "usb2Ep0ObExt.mstOut.dat[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe71[4]",
+                        "net": "usb2Ep0ObExt.mstOut.dat[4]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe71[5]",
+                        "net": "usb2Ep0ObExt.mstOut.dat[5]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe71[6]",
+                        "net": "usb2Ep0ObExt.mstOut.dat[6]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe71[7]",
+                        "net": "usb2Ep0ObExt.mstOut.dat[7]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe72",
+                        "net": "usb2Ep0ObExt.mstCtl.don",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe73",
+                        "net": "usb2Ep0ObExt.mstCtl.err",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe74",
+                        "net": "usb2Ep0ObExt.mstCtl.vld",
+                        "path": []
+                    },
+                    {
                         "name": "la1_clk",
                         "net": "rmii_clk",
                         "path": []
@@ -2692,6 +3242,170 @@
                     "path": [],
                     "net_idx_left": 7,
                     "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].value",
+                    "width": 16,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].recipient",
+                    "width": 2,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 1,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].length",
+                    "width": 16,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].vld",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].request",
+                    "width": 8,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 7,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].index",
+                    "width": 16,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].reqType",
+                    "width": 2,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 1,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ReqParam[0].dev2Host",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.usr",
+                    "width": 4,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 3,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.don",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.err",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.usr",
+                    "width": 4,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 3,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.dat",
+                    "width": 8,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 7,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.vld",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstOut.dat",
+                    "width": 8,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 7,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.don",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.err",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "usb2Ep0ObExt.mstCtl.vld",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
                 }
             ],
             "top_module": "design_top",
