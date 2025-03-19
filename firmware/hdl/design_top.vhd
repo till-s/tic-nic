@@ -605,7 +605,8 @@ begin
 
       variable idx   : natural range SIN_TBL_C'range := 0;
       variable quad  : natural range 0 to 3          := 0;
-      variable iinc  : natural range 0 to 4          := 1;
+      variable rep   : natural range 0 to 3          := 0;
+      variable cnt   : integer range -1 to 2         := -1;
    begin
       if ( rising_edge( ulpiClk ) ) then
          if ( presc = 0 ) then
@@ -615,28 +616,33 @@ begin
             else
                smpl := -SIN_TBL_C(idx);
             end if;
-            case quad is
-               when 0 | 2 =>
-                  if ( SIN_TBL_C'high = idx ) then
-                     if ( quad = 0 ) then
-                        quad := 1;
+            if ( cnt >= 0 ) then
+               cnt := cnt - 1;
+            else
+               case quad is
+                  when 0 | 2 =>
+                     if ( SIN_TBL_C'high = idx ) then
+                        if ( quad = 0 ) then
+                           quad := 1;
+                        else
+                           quad := 3;
+                        end if;
                      else
-                        quad := 3;
+                        idx  := idx + 1;
                      end if;
-                  else
-                     idx  := idx + iinc;
-                  end if;
-               when 1 | 3 =>
-                  if ( SIN_TBL_C'low  = idx ) then
-                     if ( quad = 1 ) then
-                        quad := 2;
+                  when 1 | 3 =>
+                     if ( SIN_TBL_C'low  = idx ) then
+                        if ( quad = 1 ) then
+                           quad := 2;
+                        else
+                           quad := 0;
+                        end if;
                      else
-                        quad := 0;
+                        idx  := idx - 1;
                      end if;
-                  else
-                     idx  := idx - iinc;
-                  end if;
-            end case;
+               end case;
+               cnt := rep - 1;
+            end if;
             audioInpFifoVld <= '1';
          else
             presc := presc - 1;
@@ -644,10 +650,7 @@ begin
          if ( (audioInpFifoVld and audioInpFifoRdy) = '1' ) then
             audioInpFifoVld <= '0';
          end if;
-         iinc := to_integer( audioInpSelectorSel(1 downto 0) );
-         if ( iinc = 0 ) then
-           iinc := 4;
-         end if;
+         rep := to_integer( audioInpSelectorSel(1 downto 0) );
       end if;
       audioInpFifoDat             <= (others => '0');
       audioInpFifoDat(smpl'range) <= std_logic_vector( shift_right(smpl, smpl'length - 8*AUD_SMPL_SIZE_C) );
