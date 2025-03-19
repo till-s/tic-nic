@@ -5,7 +5,19 @@
 
 -- THIS FILE WAS AUTOMATICALLY GENERATED; DO NOT EDIT!
 
--- Generated with: genAppCfgPkgBody.py -p 0x0001 -N 02deadbeef31 -a -S -f AppCfgPkgBody.vhd -m 0x8020
+-- Generated with: 'genAppCfgPkgBody.py -f AppCfgPkgBody.vhd tic_nic.yaml':
+--
+-- deviceDesc:
+--   configurationDesc:
+--     functionNCM:
+--       enabled: true
+--       haveDynamicMACAddress: true
+--       iFunction: Tic-Nic PTP Ethernet Adapter V1
+--       iMACAddress: 02deadbeef31
+--       numMulticastFilters: 32800
+--   iProduct: Till's Mecatica USB Example Device
+--   idProduct: 34897
+--
 
 library ieee;
 use     ieee.std_logic_1164.all;
@@ -13,9 +25,6 @@ use     ieee.numeric_std.all;
 use     ieee.math_real.all;
 
 use     work.Usb2Pkg.all;
-use     work.UlpiPkg.all;
-use     work.Usb2UtilPkg.all;
-use     work.Usb2DescPkg.all;
 
 package body Usb2AppCfgPkg is
    function usb2AppGetDescriptors return Usb2ByteArray is
@@ -31,8 +40,8 @@ package body Usb2AppCfgPkg is
         7 => x"40",  -- bMaxPacketSize0
         8 => x"09",  -- idVendor
         9 => x"12",
-       10 => x"01",  -- idProduct
-       11 => x"00",
+       10 => x"51",  -- idProduct
+       11 => x"88",
        12 => x"00",  -- bcdDevice
        13 => x"01",
        14 => x"00",  -- iManufacturer
@@ -246,8 +255,8 @@ package body Usb2AppCfgPkg is
       197 => x"40",  -- bMaxPacketSize0
       198 => x"09",  -- idVendor
       199 => x"12",
-      200 => x"01",  -- idProduct
-      201 => x"00",
+      200 => x"51",  -- idProduct
+      201 => x"88",
       202 => x"00",  -- bcdDevice
       203 => x"01",
       204 => x"00",  -- iManufacturer
@@ -551,62 +560,100 @@ package body Usb2AppCfgPkg is
       476 => x"4d",  -- M
       477 => x"00",
       -- Usb2StringDesc
-      478 => x"1a",  -- bLength
+      478 => x"40",  -- bLength
       479 => x"03",  -- bDescriptorType
-      480 => x"4d",  -- M
+      480 => x"54",  -- T
       481 => x"00",
-      482 => x"65",  -- e
+      482 => x"69",  -- i
       483 => x"00",
       484 => x"63",  -- c
       485 => x"00",
-      486 => x"61",  -- a
+      486 => x"2d",  -- -
       487 => x"00",
-      488 => x"74",  -- t
+      488 => x"4e",  -- N
       489 => x"00",
       490 => x"69",  -- i
       491 => x"00",
       492 => x"63",  -- c
       493 => x"00",
-      494 => x"61",  -- a
+      494 => x"20",  --  
       495 => x"00",
-      496 => x"20",  --  
+      496 => x"50",  -- P
       497 => x"00",
-      498 => x"4e",  -- N
+      498 => x"54",  -- T
       499 => x"00",
-      500 => x"43",  -- C
+      500 => x"50",  -- P
       501 => x"00",
-      502 => x"4d",  -- M
+      502 => x"20",  --  
       503 => x"00",
-      -- Usb2StringDesc
-      504 => x"1a",  -- bLength
-      505 => x"03",  -- bDescriptorType
-      506 => x"30",  -- 0
+      504 => x"45",  -- E
+      505 => x"00",
+      506 => x"74",  -- t
       507 => x"00",
-      508 => x"32",  -- 2
+      508 => x"68",  -- h
       509 => x"00",
-      510 => x"64",  -- d
+      510 => x"65",  -- e
       511 => x"00",
-      512 => x"65",  -- e
+      512 => x"72",  -- r
       513 => x"00",
-      514 => x"61",  -- a
+      514 => x"6e",  -- n
       515 => x"00",
-      516 => x"64",  -- d
+      516 => x"65",  -- e
       517 => x"00",
-      518 => x"62",  -- b
+      518 => x"74",  -- t
       519 => x"00",
-      520 => x"65",  -- e
+      520 => x"20",  --  
       521 => x"00",
-      522 => x"65",  -- e
+      522 => x"41",  -- A
       523 => x"00",
-      524 => x"66",  -- f
+      524 => x"64",  -- d
       525 => x"00",
-      526 => x"33",  -- 3
+      526 => x"61",  -- a
       527 => x"00",
-      528 => x"31",  -- 1
+      528 => x"70",  -- p
       529 => x"00",
+      530 => x"74",  -- t
+      531 => x"00",
+      532 => x"65",  -- e
+      533 => x"00",
+      534 => x"72",  -- r
+      535 => x"00",
+      536 => x"20",  --  
+      537 => x"00",
+      538 => x"56",  -- V
+      539 => x"00",
+      540 => x"31",  -- 1
+      541 => x"00",
+      -- Usb2StringDesc
+      542 => x"1a",  -- bLength
+      543 => x"03",  -- bDescriptorType
+      544 => x"30",  -- 0
+      545 => x"00",
+      546 => x"32",  -- 2
+      547 => x"00",
+      548 => x"64",  -- d
+      549 => x"00",
+      550 => x"65",  -- e
+      551 => x"00",
+      552 => x"61",  -- a
+      553 => x"00",
+      554 => x"64",  -- d
+      555 => x"00",
+      556 => x"62",  -- b
+      557 => x"00",
+      558 => x"65",  -- e
+      559 => x"00",
+      560 => x"65",  -- e
+      561 => x"00",
+      562 => x"66",  -- f
+      563 => x"00",
+      564 => x"33",  -- 3
+      565 => x"00",
+      566 => x"31",  -- 1
+      567 => x"00",
       -- Usb2SentinelDesc
-      530 => x"02",  -- bLength
-      531 => x"ff"   -- bDescriptorType
+      568 => x"02",  -- bLength
+      569 => x"ff"   -- bDescriptorType
       );
    begin
       return c;
