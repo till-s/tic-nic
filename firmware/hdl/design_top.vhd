@@ -605,6 +605,7 @@ begin
 
       variable idx   : natural range SIN_TBL_C'range := 0;
       variable quad  : natural range 0 to 3          := 0;
+      variable iinc  : natural range 0 to 4          := 1;
    begin
       if ( rising_edge( ulpiClk ) ) then
          if ( presc = 0 ) then
@@ -623,7 +624,7 @@ begin
                         quad := 3;
                      end if;
                   else
-                     idx  := idx + 1;
+                     idx  := idx + iinc;
                   end if;
                when 1 | 3 =>
                   if ( SIN_TBL_C'low  = idx ) then
@@ -633,7 +634,7 @@ begin
                         quad := 0;
                      end if;
                   else
-                     idx  := idx - 1;
+                     idx  := idx - iinc;
                   end if;
             end case;
             audioInpFifoVld <= '1';
@@ -642,6 +643,10 @@ begin
          end if;
          if ( (audioInpFifoVld and audioInpFifoRdy) = '1' ) then
             audioInpFifoVld <= '0';
+         end if;
+         iinc := to_integer( audioInpSelectorSel(1 downto 0) );
+         if ( iinc = 0 ) then
+           iinc := 4;
          end if;
       end if;
       audioInpFifoDat             <= (others => '0');
