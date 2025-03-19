@@ -136,6 +136,8 @@ architecture rtl of design_top is
 
    constant NCM_IFC_NUM_C      : natural := to_integer( unsigned( USB2_APP_DESCRIPTORS_C( NCM_IF_ASSOC_IDX_C + 2 ) ) );
 
+   constant NCM_ENBL_MC_FLT_C  : boolean := usb2GetNumMCFilters( USB2_APP_DESCRIPTORS_C, NCM_IF_ASSOC_IDX_C, USB2_IFC_SUBCLASS_CDC_NCM_C ) > 0;
+
    constant EP0_AGENT_CFG_C    : Usb2CtlEpAgentConfigArray := (
       0 => usb2CtlEpMkAgentConfig(
          recipient => USB2_REQ_TYP_RECIPIENT_IFC_C,
@@ -632,7 +634,7 @@ begin
    -- only instantiates logic if setting MC filters is enabled in the descriptors
    U_SET_MC_FILT : entity work.Usb2SetMCFilter
       generic map (
-         DESCRIPTORS_G    => USB2_APP_DESCRIPTORS_C
+         ENABLE_G         => NCM_ENBL_MC_FLT_C
       )
       port map (
          clk              => ulpiClk,

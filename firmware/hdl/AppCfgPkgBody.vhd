@@ -5,7 +5,22 @@
 
 -- THIS FILE WAS AUTOMATICALLY GENERATED; DO NOT EDIT!
 
--- Generated with: genAppCfgPkgBody.py -p 0x8851 -N02deadbeef31 -a -S -f AppCfgPkgBody.vhd -m 0x8020 -d Till's PTP TicNic Ethernet Adapter
+-- Generated with: 'genAppCfgPkgBody.py -f AppCfgPkgBody.vhd tic_nic.yaml':
+--
+-- deviceDesc:
+--   configurationDesc:
+--     functionACM:
+--       enabled: true
+--       iFunction: Mecatica ACM
+--     functionNCM:
+--       enabled: true
+--       haveDynamicMACAddress: true
+--       iFunction: Mecatica NCM
+--       iMACAddress: 02deadbeef31
+--       numMulticastFilters: 32800
+--   iProduct: Till's PTP TicNic Ethernet Adapter
+--   idProduct: 34897
+--
 
 library ieee;
 use     ieee.std_logic_1164.all;
@@ -13,9 +28,6 @@ use     ieee.numeric_std.all;
 use     ieee.math_real.all;
 
 use     work.Usb2Pkg.all;
-use     work.UlpiPkg.all;
-use     work.Usb2UtilPkg.all;
-use     work.Usb2DescPkg.all;
 
 package body Usb2AppCfgPkg is
    function usb2AppGetDescriptors return Usb2ByteArray is
@@ -611,4 +623,7 @@ package body Usb2AppCfgPkg is
    begin
       return c;
    end function usb2AppGetDescriptors;
+
+   constant USB2_APP_DESCRIPTORS_C : Usb2ByteArray := usb2AppGetDescriptors;
+
 end package body Usb2AppCfgPkg;
