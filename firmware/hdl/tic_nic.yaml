@@ -1,0 +1,15 @@
+deviceDesc:
+  idProduct: 0x0001
+  configurationDesc:
+    functionNCM:
+      enabled:             true
+      iFunction:           "Tic-Nic PTP Ethernet Adapter"
+      iMACAddress:         "02deadbeef31"
+      numMulticastFilters: 0x8020
+    functionUAC2Input:
+      enabled:             true
+      iFunction:           "Mecatica Microphone Test"
+      numChannels:         1
+      numBits:             16
+      iInputTerminal: [ "Sin-Test", "CIC-1stg", "CIC-2stg", "CIC-3stg", "CIC-4stg" ]
+      iSelector: "Mecatica Mic Capture"
