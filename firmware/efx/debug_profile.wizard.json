@@ -3,7 +3,7 @@
         {
             "name": "la0",
             "type": "la",
-            "uuid": "40e583930dfe46ca809622997914749d",
+            "uuid": "27727ae504314443a3a64c4aa7f3b967",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
@@ -385,33 +385,60 @@
                     "name": "usb2Ep0ObExt.mstCtl.vld",
                     "width": 1,
                     "probe_type": 1
-                }
-            ]
-        },
-        {
-            "name": "la1",
-            "type": "la",
-            "uuid": "08d3623d150b4d118eb67c7b253645bc",
-            "trigin_en": false,
-            "trigout_en": false,
-            "auto_inserted": true,
-            "capture_control": false,
-            "data_depth": 1024,
-            "input_pipeline": 2,
-            "probes": [
+                },
                 {
-                    "name": "eth_crs_dv",
+                    "name": "acmFifoInpFull",
                     "width": 1,
                     "probe_type": 1
                 },
                 {
-                    "name": "eth_rx_dv",
+                    "name": "U_USB_DEV/audioInpVolRight",
+                    "width": 16,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/audioInpVolLeft",
+                    "width": 16,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/audioInpVolMaster",
+                    "width": 16,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/G_EP_ISO_MICR.U_MICR/fifoEmpty",
                     "width": 1,
                     "probe_type": 1
                 },
                 {
-                    "name": "eth_tx_en",
+                    "name": "U_USB_DEV/G_EP_ISO_MICR.U_MICR/r.shiftReg",
+                    "width": 16,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/G_EP_ISO_MICR.U_MICR/fifoRen",
                     "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/G_EP_ISO_MICR.U_MICR/r.delay",
+                    "width": 2,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/G_EP_ISO_MICR.U_MICR/mstInpVld",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/G_EP_ISO_MICR.U_MICR/fifoFull",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "U_USB_DEV/G_EP_ISO_MICR.U_MICR/selectorSel",
+                    "width": 8,
                     "probe_type": 1
                 }
             ]
@@ -2471,24 +2498,585 @@
                         "path": []
                     },
                     {
-                        "name": "la1_clk",
-                        "net": "rmii_clk",
+                        "name": "la0_probe75",
+                        "net": "acmFifoInpFull",
                         "path": []
                     },
                     {
-                        "name": "la1_probe0",
-                        "net": "eth_crs_dv",
-                        "path": []
+                        "name": "la0_probe76[0]",
+                        "net": "audioInpVolRight[0]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
                     },
                     {
-                        "name": "la1_probe1",
-                        "net": "eth_rx_dv",
-                        "path": []
+                        "name": "la0_probe76[1]",
+                        "net": "audioInpVolRight[1]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
                     },
                     {
-                        "name": "la1_probe2",
-                        "net": "eth_tx_en",
-                        "path": []
+                        "name": "la0_probe76[2]",
+                        "net": "audioInpVolRight[2]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[3]",
+                        "net": "audioInpVolRight[3]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[4]",
+                        "net": "audioInpVolRight[4]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[5]",
+                        "net": "audioInpVolRight[5]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[6]",
+                        "net": "audioInpVolRight[6]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[7]",
+                        "net": "audioInpVolRight[7]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[8]",
+                        "net": "audioInpVolRight[8]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[9]",
+                        "net": "audioInpVolRight[9]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[10]",
+                        "net": "audioInpVolRight[10]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[11]",
+                        "net": "audioInpVolRight[11]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[12]",
+                        "net": "audioInpVolRight[12]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[13]",
+                        "net": "audioInpVolRight[13]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[14]",
+                        "net": "audioInpVolRight[14]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe76[15]",
+                        "net": "audioInpVolRight[15]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[0]",
+                        "net": "audioInpVolLeft[0]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[1]",
+                        "net": "audioInpVolLeft[1]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[2]",
+                        "net": "audioInpVolLeft[2]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[3]",
+                        "net": "audioInpVolLeft[3]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[4]",
+                        "net": "audioInpVolLeft[4]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[5]",
+                        "net": "audioInpVolLeft[5]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[6]",
+                        "net": "audioInpVolLeft[6]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[7]",
+                        "net": "audioInpVolLeft[7]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[8]",
+                        "net": "audioInpVolLeft[8]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[9]",
+                        "net": "audioInpVolLeft[9]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[10]",
+                        "net": "audioInpVolLeft[10]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[11]",
+                        "net": "audioInpVolLeft[11]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[12]",
+                        "net": "audioInpVolLeft[12]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[13]",
+                        "net": "audioInpVolLeft[13]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[14]",
+                        "net": "audioInpVolLeft[14]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe77[15]",
+                        "net": "audioInpVolLeft[15]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[0]",
+                        "net": "audioInpVolMaster[0]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[1]",
+                        "net": "audioInpVolMaster[1]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[2]",
+                        "net": "audioInpVolMaster[2]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[3]",
+                        "net": "audioInpVolMaster[3]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[4]",
+                        "net": "audioInpVolMaster[4]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[5]",
+                        "net": "audioInpVolMaster[5]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[6]",
+                        "net": "audioInpVolMaster[6]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[7]",
+                        "net": "audioInpVolMaster[7]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[8]",
+                        "net": "audioInpVolMaster[8]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[9]",
+                        "net": "audioInpVolMaster[9]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[10]",
+                        "net": "audioInpVolMaster[10]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[11]",
+                        "net": "audioInpVolMaster[11]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[12]",
+                        "net": "audioInpVolMaster[12]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[13]",
+                        "net": "audioInpVolMaster[13]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[14]",
+                        "net": "audioInpVolMaster[14]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe78[15]",
+                        "net": "audioInpVolMaster[15]",
+                        "path": [
+                            "U_USB_DEV"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe79",
+                        "net": "fifoEmpty",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[0]",
+                        "net": "r.shiftReg[0]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[1]",
+                        "net": "r.shiftReg[1]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[2]",
+                        "net": "r.shiftReg[2]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[3]",
+                        "net": "r.shiftReg[3]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[4]",
+                        "net": "r.shiftReg[4]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[5]",
+                        "net": "r.shiftReg[5]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[6]",
+                        "net": "r.shiftReg[6]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[7]",
+                        "net": "r.shiftReg[7]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[8]",
+                        "net": "r.shiftReg[8]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[9]",
+                        "net": "r.shiftReg[9]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[10]",
+                        "net": "r.shiftReg[10]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[11]",
+                        "net": "r.shiftReg[11]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[12]",
+                        "net": "r.shiftReg[12]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[13]",
+                        "net": "r.shiftReg[13]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[14]",
+                        "net": "r.shiftReg[14]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe80[15]",
+                        "net": "r.shiftReg[15]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe81",
+                        "net": "fifoRen",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe82[0]",
+                        "net": "r.delay[0]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe82[1]",
+                        "net": "r.delay[1]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe83",
+                        "net": "mstInpVld",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe84",
+                        "net": "fifoFull",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe85[0]",
+                        "net": "selectorSel[0]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe85[1]",
+                        "net": "selectorSel[1]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe85[2]",
+                        "net": "selectorSel[2]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe85[3]",
+                        "net": "selectorSel[3]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe85[4]",
+                        "net": "selectorSel[4]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe85[5]",
+                        "net": "selectorSel[5]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe85[6]",
+                        "net": "selectorSel[6]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe85[7]",
+                        "net": "selectorSel[7]",
+                        "path": [
+                            "U_USB_DEV",
+                            "G_EP_ISO_MICR.U_MICR"
+                        ]
                     }
                 ]
             }
@@ -2988,30 +3576,6 @@
                     ]
                 },
                 {
-                    "name": "eth_crs_dv",
-                    "width": 1,
-                    "clk_domain": "rmii_clk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": []
-                },
-                {
-                    "name": "eth_rx_dv",
-                    "width": 1,
-                    "clk_domain": "rmii_clk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": []
-                },
-                {
-                    "name": "eth_tx_en",
-                    "width": 1,
-                    "clk_domain": "rmii_clk",
-                    "selected_probe_type": "DATA AND TRIGGER",
-                    "child": [],
-                    "path": []
-                },
-                {
                     "name": "r.ulpiReq.dat",
                     "width": 8,
                     "clk_domain": "ulpiClk",
@@ -3406,6 +3970,133 @@
                     "selected_probe_type": "DATA AND TRIGGER",
                     "child": [],
                     "path": []
+                },
+                {
+                    "name": "acmFifoInpFull",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "audioInpVolRight",
+                    "width": 16,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV"
+                    ],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "audioInpVolLeft",
+                    "width": 16,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV"
+                    ],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "audioInpVolMaster",
+                    "width": 16,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV"
+                    ],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "fifoEmpty",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "G_EP_ISO_MICR.U_MICR"
+                    ]
+                },
+                {
+                    "name": "r.shiftReg",
+                    "width": 16,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "G_EP_ISO_MICR.U_MICR"
+                    ],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "fifoRen",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "G_EP_ISO_MICR.U_MICR"
+                    ]
+                },
+                {
+                    "name": "r.delay",
+                    "width": 2,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "G_EP_ISO_MICR.U_MICR"
+                    ],
+                    "net_idx_left": 1,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "mstInpVld",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "G_EP_ISO_MICR.U_MICR"
+                    ]
+                },
+                {
+                    "name": "fifoFull",
+                    "width": 1,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "G_EP_ISO_MICR.U_MICR"
+                    ]
+                },
+                {
+                    "name": "selectorSel",
+                    "width": 8,
+                    "clk_domain": "ulpiClk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "U_USB_DEV",
+                        "G_EP_ISO_MICR.U_MICR"
+                    ],
+                    "net_idx_left": 7,
+                    "net_idx_right": 0
                 }
             ],
             "top_module": "design_top",

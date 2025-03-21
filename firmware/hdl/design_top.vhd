@@ -113,7 +113,9 @@ architecture rtl of design_top is
          MICR_UAC2_IFC_ASSOC_IDX_C
    );
 
-   constant AUD_SMPL_FREQ_C : natural := 48000;
+   constant AUD_SMPL_FREQ_C    : natural := 48000;
+   constant LD_AUD_FIFO_DEPTH_C: natural := 9;
+
 
    signal acmFifoOutDat        : Usb2ByteType;
    signal acmFifoOutEmpty      : std_logic;
@@ -140,9 +142,9 @@ architecture rtl of design_top is
    signal uartTxDatVld         : std_logic := '0';
    signal uartTxDatRdy         : std_logic := '0';
 
-   signal acmFifoRst           : std_logic    := '0';
+   signal acmFifoRst           : std_logic := '0';
 
-   signal usb2Rst              : std_logic    := '0';
+   signal usb2Rst              : std_logic := '0';
    signal usb2DevStatus        : Usb2DevStatusType := USB2_DEV_STATUS_INIT_C;
 
    signal ulpiIb               : UlpiIbType := ULPI_IB_INIT_C;
@@ -219,10 +221,18 @@ architecture rtl of design_top is
    signal mdioDatInp           : std_logic;
    signal mdioDatHiZ           : std_logic;
 
-   signal audioInpFifoDat      : std_logic_vector(47 downto 0) := (others => '0');
-   signal audioInpFifoVld      : std_logic                     := '0';
-   signal audioInpFifoRdy      : std_logic;
-   signal audioInpSelectorSel  : unsigned(7 downto 0)          := (others => '0');
+   signal audioInpFifoDat      : std_logic_vector(47 downto 0):= (others => '0');
+   signal audioInpFifoVld      : std_logic                    := '0';
+   signal audioInpSelectorSel  : unsigned(7 downto 0)         := (others => '0');
+   signal audioInpVolMaster    : signed(15 downto 0)          := (others => '0');
+
+   signal regLocal             : std_logic_vector(7 downto 0) := (others => '0');
+
+   signal regRDat              : std_logic_vector(7 downto 0) := (others => '0');
+   signal regWDat              : std_logic_vector(7 downto 0) := (others => '0');
+   signal regAddr              : unsigned(7 downto 0)         := (others => '0');
+   signal regRdnw              : std_logic                    := '0';
+   signal regVld               : std_logic                    := '0';
 begin
 
    P_INI : process ( ulpiClk ) is
@@ -307,6 +317,15 @@ begin
       vldOb                        => fifoWVld,
       rdyOb                        => fifoWRdy,
 
+      regClk                       => ulpiClk,
+      regRDat                      => regRDat,
+      regWDat                      => regWDat,
+      regAddr                      => regAddr,
+      regRdnw                      => regRdnw,
+      regVld                       => regVld,
+      regRdy                       => '1',
+      regErr                       => '1',
+
       spiSClk                      => spiSClk, --: out std_logic;
       spiMOSI                      => spiMOSI, --: out std_logic;
       spiCSb                       => spiCSb_OUT,  --: out std_logic;
@@ -342,7 +361,7 @@ begin
          DESCRIPTORS_BRAM_G        => true,
          LD_ACM_FIFO_DEPTH_INP_G   => LD_FIFO_INP_C,
          LD_ACM_FIFO_DEPTH_OUT_G   => LD_FIFO_OUT_C,
-         LD_AUD_INP_FIFO_DEPTH_G   => 9,
+         LD_AUD_INP_FIFO_DEPTH_G   => LD_AUD_FIFO_DEPTH_C,
          CDC_ACM_ASYNC_G           => false,
          CDC_NCM_ASYNC_G           => true,
          AUD_INP_ASYNC_G           => false,
@@ -417,7 +436,6 @@ begin
          audioInpFifoClk           => ulpiClk,
          audioInpFifoDat           => audioInpFifoDat,
          audioInpFifoVld           => audioInpFifoVld,
-         audioInpFifoRdy           => audioInpFifoRdy,
          audioInpSelectorSel       => audioInpSelectorSel
       );
 
@@ -647,7 +665,7 @@ begin
          else
             presc := presc - 1;
          end if;
-         if ( (audioInpFifoVld and audioInpFifoRdy) = '1' ) then
+         if ( audioInpFifoVld = '1' ) then
             audioInpFifoVld <= '0';
          end if;
          rep := to_integer( audioInpSelectorSel(1 downto 0) );
