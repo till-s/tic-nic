@@ -6,6 +6,8 @@ deviceDesc:
       iFunction:           "Tic-Nic PTP Ethernet Adapter"
       iMACAddress:         "02deadbeef31"
       numMulticastFilters: 0x8020
+      # not supported/used by linux but enable anyways
+      haveDynamicMACAddress: true
     functionUAC2Input:
       enabled:             true
       iFunction:           "Mecatica Microphone Test"

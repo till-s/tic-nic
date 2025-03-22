@@ -5,12 +5,13 @@
 
 -- THIS FILE WAS AUTOMATICALLY GENERATED; DO NOT EDIT!
 
--- Generated from: 'tic_nic.yaml':
+-- Generated with: 'genAppCfgPkgBody.py -f ../hdl/AppCfgPkgBody.vhd ../hdl/tic_nic.yaml':
 --
 -- deviceDesc:
 --   configurationDesc:
 --     functionNCM:
 --       enabled: true
+--       haveDynamicMACAddress: true
 --       iFunction: Tic-Nic PTP Ethernet Adapter
 --       iMACAddress: 02deadbeef31
 --       numMulticastFilters: 32800
@@ -28,7 +29,7 @@
 --       numChannels: 1
 --   iProduct: Till's Mecatica USB Example Device
 --   idProduct: 1
--- 
+--
 
 library ieee;
 use     ieee.std_logic_1164.all;
@@ -437,7 +438,7 @@ package body Usb2AppCfgPkg is
       357 => x"1a",  -- bDescriptorSubtype
       358 => x"00",  -- bcdNcmVersion
       359 => x"01",
-      360 => x"01",  -- bmNetworkCapabilities
+      360 => x"03",  -- bmNetworkCapabilities
       -- Usb2EndpointDesc
       361 => x"07",  -- bLength
       362 => x"05",  -- bDescriptorType
@@ -882,7 +883,7 @@ package body Usb2AppCfgPkg is
       759 => x"1a",  -- bDescriptorSubtype
       760 => x"00",  -- bcdNcmVersion
       761 => x"01",
-      762 => x"01",  -- bmNetworkCapabilities
+      762 => x"03",  -- bmNetworkCapabilities
       -- Usb2EndpointDesc
       763 => x"07",  -- bLength
       764 => x"05",  -- bDescriptorType
