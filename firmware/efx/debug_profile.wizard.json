@@ -3,7 +3,7 @@
         {
             "name": "la0",
             "type": "la",
-            "uuid": "3b550e4115f140fd89259b418bc38b16",
+            "uuid": "e5ae0e69a0b5458b9cb9b6b4fb054af3",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
@@ -291,7 +291,7 @@
         {
             "name": "la1",
             "type": "la",
-            "uuid": "d2d88d3dee014765a7ba8f681978c29e",
+            "uuid": "7076ccc4f9e84f349612b0aa1fddb3b6",
             "trigin_en": false,
             "trigout_en": false,
             "auto_inserted": true,
