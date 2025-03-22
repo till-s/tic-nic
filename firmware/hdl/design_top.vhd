@@ -60,9 +60,12 @@ entity design_top is
       eth_rxd           : in    std_logic_vector(3 downto 0);
 
       -- FPGA_GPIO[0] is not usable; not wired to a GPIO-capable pin on V1 hardware
-      fpga_gpio_IN      : in    std_logic_vector(7 downto 1);
-      fpga_gpio_OUT     : out   std_logic_vector(7 downto 1) := (others => '0');
-      fpga_gpio_OE      : out   std_logic_vector(7 downto 1) := (others => '0');
+      fpga_gpio_1       : out   std_logic := '0';
+      fpga_gpio_2       : out   std_logic := '0';
+      fpga_gpio_3       : in    std_logic := '0';
+      fpga_gpio_IN      : in    std_logic_vector(7 downto 4);
+      fpga_gpio_OUT     : out   std_logic_vector(7 downto 4) := (others => '0');
+      fpga_gpio_OE      : out   std_logic_vector(7 downto 4) := (others => '0');
 
       fpga_b3_io_IN     : in    std_logic_vector(2 downto 0);
       fpga_b3_io_OUT    : out   std_logic_vector(2 downto 0) := (others => '0');
@@ -79,6 +82,9 @@ architecture rtl of design_top is
    constant LD_FIFO_INP_C      : natural :=  9;
 
    constant UART_MAX_BITS_C    : natural := 8;
+
+   -- delay in external registers (clk + dat)
+   constant MIC_DELAY_C        : natural := 2;
 
    constant NCM_IF_ASSOC_IDX_C : integer := usb2NextIfcAssocDescriptor(
       USB2_APP_DESCRIPTORS_C,
@@ -113,8 +119,12 @@ architecture rtl of design_top is
          MICR_UAC2_IFC_ASSOC_IDX_C
    );
 
+   -- AUD_SMPL_FREQ_C should device the ULPI clock (60MHz)
+   constant ULPI_CLK_FREQ_C    : natural := 60000000;
    constant AUD_SMPL_FREQ_C    : natural := 48000;
-   constant LD_AUD_FIFO_DEPTH_C: natural := 9;
+   -- mic @ 2MHz
+   constant MIC_PRESC_C        : natural := 30;
+   constant LD_AUD_FIFO_DEPTH_C: natural := 6;
 
 
    signal acmFifoOutDat        : Usb2ByteType;
@@ -233,7 +243,17 @@ architecture rtl of design_top is
    signal regAddr              : unsigned(7 downto 0)         := (others => '0');
    signal regRdnw              : std_logic                    := '0';
    signal regVld               : std_logic                    := '0';
+
+   signal mic_clk              : std_logic := '0';
+   signal mic_dat              : std_logic := '0';
+   signal mic_sel              : std_logic := '1';
+
 begin
+
+   fpga_gpio_1 <= mic_sel;
+   fpga_gpio_2 <= mic_clk;
+   mic_dat     <= fpga_gpio_3;
+   mic_sel     <= fpga_b3_io_IN(2);
 
    P_INI : process ( ulpiClk ) is
       variable cnt : unsigned(29 downto 0)        := (others => '1');
@@ -292,14 +312,15 @@ begin
    end process P_UART_MUX;
 
 -- default: loopback uart signals
-   uartRxDat    <= uartTxDat;
-   uartRxDatVld <= uartTxDatVld;
+   -- uartRx driven by mic
+   --uartRxDat    <= uartTxDat;
+   --uartRxDatVld <= uartTxDatVld;
    uartTxDatRdy <= '1';
 
    U_CMD : entity work.CommandWrapper
    generic map (
       GIT_VERSION_G                => GIT_VERSION_C,
-      FIFO_FREQ_G                  => 60.0E6,
+      FIFO_FREQ_G                  => real(ULPI_CLK_FREQ_C),
       HAVE_SPI_CMD_G               => true,
       HAVE_REG_CMD_G               => false,
       HAVE_BB_CMD_G                => false,
@@ -673,6 +694,23 @@ begin
       audioInpFifoDat             <= (others => '0');
       audioInpFifoDat(smpl'range) <= std_logic_vector( shift_right(smpl, smpl'length - 8*AUD_SMPL_SIZE_C) );
    end process P_AUDIO;
+
+   U_MIC : entity work.mic
+      generic map (
+         CEN_DLY_G                    => MIC_DELAY_C,
+         -- 2 MHz mic clock: ulpiClk / (2 * HALF_PERIOD)
+         --
+         PRESC_HI_PERIOD_G            => (MIC_PRESC_C/2),
+         PRESC_LO_PERIOD_G            => ((MIC_PRESC_C+1)/2),
+      )
+      port map (
+         clk                          => ulpiClk,
+         mic_clk                      => mic_clk,
+         mic_dat                      => mic_dat,
+         mic_sel                      => mic_sel,
+         fifo_dat                     => uartRxDat,
+         fifo_wen                     => uartRxDatVld
+      );
 
    -- LEDs are active low
    LED(7)        <= not ethMacPromisc;

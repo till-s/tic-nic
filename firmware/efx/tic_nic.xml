@@ -93,6 +93,7 @@
         <efx:design_file name="../modules/acm-toolbox/hdl/ByteStuffer.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiIOBuf.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/mecatica-usb/endpoints/AUDIO/hdl/Usb2EpAudioInpStrm.vhd" version="default" library="default"/>
+        <efx:design_file name="../hdl/mic.vhd" version="default" library="default"/>
         <efx:top_vhdl_arch name=""/>
     </efx:design_info>
     <efx:constraint_info>
