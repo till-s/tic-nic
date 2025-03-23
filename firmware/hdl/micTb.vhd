@@ -74,7 +74,7 @@ begin
       end if;
    end process P_CTL;
 
-   U_DUT : entity work.mic
+   U_DUT : entity work.MicInput
       generic map (
          CEN_DLY_G => CEN_DLY_F
       )

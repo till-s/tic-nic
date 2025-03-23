@@ -695,7 +695,7 @@ begin
       audioInpFifoDat(smpl'range) <= std_logic_vector( shift_right(smpl, smpl'length - 8*AUD_SMPL_SIZE_C) );
    end process P_AUDIO;
 
-   U_MIC : entity work.mic
+   U_MIC : entity work.MicInput
       generic map (
          CEN_DLY_G                    => MIC_DELAY_C,
          -- 2 MHz mic clock: ulpiClk / (2 * HALF_PERIOD)

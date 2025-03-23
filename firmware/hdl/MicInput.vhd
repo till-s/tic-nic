@@ -3,7 +3,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity mic is
+entity MicInput is
    generic (
       PRESC_HI_PERIOD_G   : natural := 15;
       PRESC_LO_PERIOD_G   : natural := 15;
@@ -14,12 +14,13 @@ entity mic is
       mic_dat             : in  std_logic;
       mic_clk             : out std_logic;
       mic_sel             : in  std_logic := '0';
+      mic_cen             : out std_logic;
       fifo_dat            : out std_logic_vector(7 downto 0);
       fifo_wen            : out std_logic
    );
-end entity mic;
+end entity MicInput;
 
-architecture rtl of mic is
+architecture rtl of MicInput is
 
    subtype PrescalerType is signed(5 downto 0);
 
@@ -70,7 +71,7 @@ begin
 
       if ( r.cen( 0 ) = '1' ) then
          v.fifo_wena := r.fifo_wena( 0 ) & r.fifo_wena( r.fifo_wena'left downto 1 );
-	 v.shift_reg := mic_dat & r.shift_reg( r.shift_reg'left downto 1 );
+         v.shift_reg := mic_dat & r.shift_reg( r.shift_reg'left downto 1 );
       end if;
 
       if ( mic_sel = '1' ) then
@@ -91,5 +92,6 @@ begin
    fifo_dat <= r.shift_reg;
    fifo_wen <= r.fifo_wena(0) and r.cen(0);
    mic_clk  <= r.mic_clk;
+   mic_cen  <= r.cen(0);
 
 end architecture rtl;
