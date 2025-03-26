@@ -237,6 +237,7 @@ architecture rtl of design_top is
    signal audioInpSelectorSel  : unsigned(7 downto 0)         := (others => '0');
    signal audioInpVolMaster    : signed(15 downto 0)          := (others => '0');
    signal micPcmDat            : signed(23 downto 0);
+   signal micInputSel          : unsigned(2 downto 0);
 
    signal regLocal             : std_logic_vector(7 downto 0) := (others => '0');
 
@@ -459,6 +460,7 @@ begin
          audioInpFifoClk           => ulpiClk,
          audioInpFifoDat           => audioInpFifoDat,
          audioInpFifoVld           => audioInpFifoVld,
+         audioInpVolMaster         => audioInpVolMaster,
          audioInpSelectorSel       => audioInpSelectorSel
       );
 
@@ -622,11 +624,68 @@ begin
          statusRegPolled              => open
       );
 
-   P_AUDIO_MAP : process ( micPcmDat ) is
+   B_DIV : block is
+      type DivRegType is record
+         quot         : signed  (7 downto 0);
+         quotr        : signed  (7 downto 0);
+         divisor      : unsigned(7 downto 0);
+         dividend     : unsigned(7 downto 0);
+         sign         : std_logic;
+      end record DivRegType;
+
+      constant DIV_REG_INIT_C : DivRegType := (
+         quot         => (others => '0'),
+         quotr        => (others => '0'),
+         divisor      => to_unsigned(6, 8);
+         dividend     => (others => '0'),
+         sign         => '0'
+      );
+
+      signal r        : DivRegType := DIV_REG_INIT_C;
+      signal rin      : DivRegType := DIV_REG_INIT_C;
+
    begin
-      audioInpFifoDat                  <= (others => '0');
-      audioInpFifoDat(micPcmDat'range) <= std_logic_vector( shift_right(micPcmDat, micPcmDat'length - 8*AUD_SMPL_SIZE_C) );
-   end process P_AUDIO_MAP;
+
+      P_COMB : process (r, micPcmDat, audioInpVolMaster, audioInpSelectorSel ) is
+         variable shft : integer;
+         variable v    : DivRegType;
+      begin
+         v   := r;
+         if ( r.dividend < r.divisor ) then
+            if (r.sign = '1') then
+               v.quotr    := -r.quot;
+            else
+               v.quotr    :=  r.quot;
+            end if;
+            v.quot     := (others => '0');
+            v.sign     := audioInpVolMaster(audioInpVolMaster'left);
+            if ( audioInpVolMaster < 0 ) then
+               v.dividend := unsigned( - audioInpVolMaster(15 downto 8) );
+            else
+               v.dividend := unsigned(   audioInpVolMaster(15 downto 8) );
+            end if;
+         else
+            v.dividend := r.dividend - r.divisor;
+            v.quot     := r.quot + 1;
+         end if;
+
+         shft                             := to_integer( r.quotr );
+         audioInpFifoDat                  <= (others => '0');
+         audioInpFifoDat(micPcmDat'range) <= std_logic_vector( shift_right(micPcmDat, micPcmDat'length - 8*AUD_SMPL_SIZE_C - shft) );
+         -- audioInpSelectorSel is 1-based, micInputSel 0-based
+         micInputSel                      <= audioInpSelectorSel(2 downto 0) - 1;
+
+         rin <= v;
+      end process P_COMB;
+
+      P_SEQ : process ( ulpiClk ) is
+      begin
+         if ( rising_edge( ulpiClk ) ) then
+            r <= rin;
+         end if;
+      end process P_SEQ;
+
+   end block B_DIV;
 
    U_MIC : entity work.MicWrapper
       generic map (
@@ -648,7 +707,7 @@ begin
          micFifoDat                   => open,
          micFifoWen                   => open,
 
-         audSel                       => audioInpSelectorSel(2 downto 0),
+         audSel                       => micInputSel,
          audCen                       => audioInpFifoVld,
          audDat                       => micPcmDat
       );
