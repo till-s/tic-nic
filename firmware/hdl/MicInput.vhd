@@ -24,10 +24,10 @@ architecture rtl of MicInput is
 
    subtype PrescalerType is signed(5 downto 0);
 
-   function PRESC_INIT_F(constant clk : in std_logic)
+   function PRESC_INIT_F(constant clkPol : in std_logic)
       return PrescalerType is
    begin
-      if ( clk = '1' ) then
+      if ( clkPol = '1' ) then
          return to_signed( PRESC_LO_PERIOD_G - 2, PrescalerType'length );
       else
          return to_signed( PRESC_HI_PERIOD_G - 2, PrescalerType'length );
