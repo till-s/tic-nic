@@ -6,8 +6,10 @@ use ieee.math_real.all;
 
 entity MicWrapper is
    generic (
-      PRESC_HI_PERIOD_G   : natural := 15;
-      PRESC_LO_PERIOD_G   : natural := 15;
+      -- account for external clk->data delays in mic path
+      CEN_DLY_G           : natural              := 0;
+      PRESC_HI_PERIOD_G   : natural              := 15;
+      PRESC_LO_PERIOD_G   : natural              := 15;
       -- audio period in multiples of the prescaler
       -- period.
       AUDIO_DECM_G        : natural;
@@ -84,6 +86,7 @@ begin
 
    U_MIC : entity work.MicInput
       generic map (
+         CEN_DLY_G           => CEN_DLY_G,
          PRESC_HI_PERIOD_G   => PRESC_HI_PERIOD_G,
          PRESC_LO_PERIOD_G   => PRESC_LO_PERIOD_G
       )

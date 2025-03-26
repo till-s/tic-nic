@@ -123,7 +123,8 @@ architecture rtl of design_top is
    constant ULPI_CLK_FREQ_C    : natural := 60000000;
    constant AUD_SMPL_FREQ_C    : natural := 48000;
    -- mic @ 2MHz
-   constant MIC_PRESC_C        : natural := 30;
+   constant MIC_PRESC_C        : natural := 25;
+   constant AUDIO_DECM_C       : natural := 50; -- ulpi_freq/mic_pres/audio_freq
    constant LD_AUD_FIFO_DEPTH_C: natural := 6;
 
 
@@ -235,6 +236,7 @@ architecture rtl of design_top is
    signal audioInpFifoVld      : std_logic                    := '0';
    signal audioInpSelectorSel  : unsigned(7 downto 0)         := (others => '0');
    signal audioInpVolMaster    : signed(15 downto 0)          := (others => '0');
+   signal micPcmDat            : signed(23 downto 0);
 
    signal regLocal             : std_logic_vector(7 downto 0) := (others => '0');
 
@@ -620,96 +622,35 @@ begin
          statusRegPolled              => open
       );
 
-   P_AUDIO : process ( ulpiClk ) is
-      variable presc : natural range 0 to 1249 := 1249;
-      variable smpl  : signed(23 downto 0)     := (others => '0');
-      constant SCL_C : signed(23 downto 0)     := to_signed(2**23 - 17000, 24);
-
-      type U24Array is array (integer range <>) of signed(23 downto 0);
-
-      constant SIN_TBL_C : U24Array := (
-         0 => to_signed(  548641, 24),
-         1 => to_signed( 1636536, 24),
-         2 => to_signed( 2696430, 24),
-         3 => to_signed( 3710186, 24),
-         4 => to_signed( 4660461, 24),
-         5 => to_signed( 5530994, 24),
-         6 => to_signed( 6306889, 24),
-         7 => to_signed( 6974873, 24),
-         8 => to_signed( 7523514, 24),
-         9 => to_signed( 7943426, 24),
-        10 => to_signed( 8227423, 24),
-        11 => to_signed( 8370647, 24)
-      );
-
-      variable idx   : natural range SIN_TBL_C'range := 0;
-      variable quad  : natural range 0 to 3          := 0;
-      variable rep   : natural range 0 to 3          := 0;
-      variable cnt   : integer range -1 to 2         := -1;
+   P_AUDIO_MAP : process ( micPcmDat ) is
    begin
-      if ( rising_edge( ulpiClk ) ) then
-         if ( presc = 0 ) then
-            presc := 1249;
-            if ( quad < 2 ) then
-               smpl :=  SIN_TBL_C(idx);
-            else
-               smpl := -SIN_TBL_C(idx);
-            end if;
-            if ( cnt >= 0 ) then
-               cnt := cnt - 1;
-            else
-               case quad is
-                  when 0 | 2 =>
-                     if ( SIN_TBL_C'high = idx ) then
-                        if ( quad = 0 ) then
-                           quad := 1;
-                        else
-                           quad := 3;
-                        end if;
-                     else
-                        idx  := idx + 1;
-                     end if;
-                  when 1 | 3 =>
-                     if ( SIN_TBL_C'low  = idx ) then
-                        if ( quad = 1 ) then
-                           quad := 2;
-                        else
-                           quad := 0;
-                        end if;
-                     else
-                        idx  := idx - 1;
-                     end if;
-               end case;
-               cnt := rep - 1;
-            end if;
-            audioInpFifoVld <= '1';
-         else
-            presc := presc - 1;
-         end if;
-         if ( audioInpFifoVld = '1' ) then
-            audioInpFifoVld <= '0';
-         end if;
-         rep := to_integer( audioInpSelectorSel(1 downto 0) );
-      end if;
-      audioInpFifoDat             <= (others => '0');
-      audioInpFifoDat(smpl'range) <= std_logic_vector( shift_right(smpl, smpl'length - 8*AUD_SMPL_SIZE_C) );
-   end process P_AUDIO;
+      audioInpFifoDat                  <= (others => '0');
+      audioInpFifoDat(micPcmDat'range) <= std_logic_vector( shift_right(micPcmDat, micPcmDat'length - 8*AUD_SMPL_SIZE_C) );
+   end process P_AUDIO_MAP;
 
-   U_MIC : entity work.MicInput
+   U_MIC : entity work.MicWrapper
       generic map (
          CEN_DLY_G                    => MIC_DELAY_C,
          -- 2 MHz mic clock: ulpiClk / (2 * HALF_PERIOD)
          --
          PRESC_HI_PERIOD_G            => (MIC_PRESC_C/2),
          PRESC_LO_PERIOD_G            => ((MIC_PRESC_C+1)/2),
+         AUDIO_DECM_G                 => AUDIO_DECM_C
       )
       port map (
          clk                          => ulpiClk,
-         mic_clk                      => mic_clk,
-         mic_dat                      => mic_dat,
-         mic_sel                      => mic_sel,
-         fifo_dat                     => uartRxDat,
-         fifo_wen                     => uartRxDatVld
+         rst                          => usb2Rst,
+         micDat                       => mic_dat,
+         micClk                       => mic_clk,
+         micSel                       => mic_sel,
+         micCen                       => open,
+
+         micFifoDat                   => open,
+         micFifoWen                   => open,
+
+         audSel                       => audioInpSelectorSel(2 downto 0),
+         audCen                       => audioInpFifoVld,
+         audDat                       => micPcmDat
       );
 
    -- LEDs are active low
