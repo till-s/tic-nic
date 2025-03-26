@@ -639,7 +639,7 @@ begin
       constant DIV_REG_INIT_C : DivRegType := (
          quot         => (others => '0'),
          quotr        => (others => '0'),
-         divisor      => to_unsigned(6, 8);
+         divisor      => to_unsigned(6, 8),
          dividend     => (others => '0'),
          sign         => '0'
       );

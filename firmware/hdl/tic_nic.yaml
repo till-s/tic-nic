@@ -15,3 +15,5 @@ deviceDesc:
       numBits:             16
       iInputTerminal: [ "Sin-Test", "CIC-1stg", "CIC-2stg", "CIC-3stg", "CIC-4stg" ]
       iSelector: "Mecatica Mic Capture"
+      haveMasterVolume:    false
+      haveMasterMute:      false

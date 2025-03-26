@@ -5,7 +5,7 @@
 
 -- THIS FILE WAS AUTOMATICALLY GENERATED; DO NOT EDIT!
 
--- Generated with: 'genAppCfgPkgBody.py -f ../hdl/AppCfgPkgBody.vhd ../hdl/tic_nic.yaml':
+-- Generated with: 'genAppCfgPkgBody.py -f AppCfgPkgBody.vhd tic_nic.yaml':
 --
 -- deviceDesc:
 --   configurationDesc:
@@ -17,6 +17,8 @@
 --       numMulticastFilters: 32800
 --     functionUAC2Input:
 --       enabled: true
+--       haveMasterMute: false
+--       haveMasterVolume: false
 --       iFunction: Mecatica Microphone Test
 --       iInputTerminal:
 --       - Sin-Test
@@ -304,7 +306,7 @@ package body Usb2AppCfgPkg is
       236 => x"06",  -- bDescriptorSubtype
       237 => x"02",  -- bUnitID
       238 => x"0f",  -- bSourceID
-      239 => x"0f",  -- bmaControls0
+      239 => x"00",  -- bmaControls0
       240 => x"00",
       241 => x"00",
       242 => x"00",
@@ -749,7 +751,7 @@ package body Usb2AppCfgPkg is
       638 => x"06",  -- bDescriptorSubtype
       639 => x"02",  -- bUnitID
       640 => x"0f",  -- bSourceID
-      641 => x"0f",  -- bmaControls0
+      641 => x"00",  -- bmaControls0
       642 => x"00",
       643 => x"00",
       644 => x"00",
