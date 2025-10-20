@@ -121,7 +121,7 @@ to `GPIO11` of the PHY to capture a PHC timestamp. This
 very important feature enables us to synchronize the PHC
 clock in the PHY precisely to the GPS. The NMEA data received
 over UART/USB merely provides the context (time-of-day) associated
-with the precision PPS. Thi`
+with the precision PPS.
 
 #### PTP Follower Mode
 
@@ -343,7 +343,7 @@ The recommended settings are summarized in this table
   |---------------------|-------------------------------|-----------------------------------------------------|
   | R25,R26,R27,R28,R11 | optional (use internal res.)  | Define PHY address: 00001                           |
   | R12                 | optional (use internal res.)  | Disable FX mode                                     |
-  | JP1                 | user-defined                  | Enable `CLK_OUT` on GPIO <br> see PHY datasheet     |
+  | JP1                 | user-defined                  | Enable `CLK_OUT` on GPIO <br> (internal PD/dflt OFF)|
   | JP2                 | don't care                    | Enable control frames. Un-<br>used/-supported by sw |
   | JP3                 | *install pull-up*             | Enable RMII (*mandatory*)                           |
   | JP4                 | *install pull-up*             | Enable RMII master mode <br> (*mandatory*)          |
@@ -356,6 +356,12 @@ default resistors should be fine. Note that it is not possible to
 change the advertised link capabilities - this was a design choice
 to simplify the LED circuitry. However, the advertised capabilities
 may always be changed in software by the driver.
+
+Note that it doesn't seem possible to enable the `CLK_OUT` feature
+without strapping `JP1` high. The default value of `PTP_CLKOUT_EN`
+in the `PTP_COC` register appears to be `1` regardless of the strap
+position but a signal is present on `GPIO12` only when the strap is
+pulled high.
 
 #### FPGA
 
