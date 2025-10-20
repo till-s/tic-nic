@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efx:project name="tic_nic" description="" last_change="" sw_version="2024.1.163.1.8" last_run_state="fail" last_run_flow="place" config_result_in_sync="true" design_ood="sync" place_ood="change" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+<efx:project name="tic_nic" description="" last_change="" sw_version="2024.1.163.1.8" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="true" design_ood="sync" place_ood="sync" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
     <efx:device_info>
         <efx:family name="Trion"/>
         <efx:device name="T20Q144"/>
@@ -30,7 +30,7 @@
         <efx:design_file name="../modules/acm-toolbox/hdl/SynchronizerBit.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/acm-toolbox/hdl/WordSpiIF.vhd" version="default" library="default"/>
         <efx:design_file name="../hdl/design_top.vhd" version="default" library="default"/>
-        <efx:design_file name="../hdl/GitVersionPkg.vhd" version="default" library="default"/>
+        <efx:design_file name="../efx/GitVersionPkg.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/eth-rmii-mac/hdl/EthMDIO.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/eth-rmii-mac/hdl/RMIIMac.vhd" version="default" library="default"/>
         <efx:design_file name="../modules/eth-rmii-mac/hdl/RMIIMacPkg.vhd" version="default" library="default"/>

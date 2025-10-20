@@ -15,3 +15,6 @@
 [submodule "firmware/modules/UART-controller"]
 	path = firmware/modules/UART-controller
 	url = ../UART-controller
+[submodule "firmware/modules/efx-scripts"]
+	path = firmware/modules/efx-scripts
+	url = ../efx-scripts

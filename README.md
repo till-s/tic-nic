@@ -201,7 +201,7 @@ The `generate_project.py` script is provided to do that.
 
   3. Run the script
 
-          python3 generate_project.py
+          python3 ../modules/efx-scripts/generate_project.py
 
   4. This should have generated the files
 
@@ -632,7 +632,8 @@ scripts/actions the user is responsible for keeping the git version
 which is reported by `bbcli -V` synchronized with the 'true' git
 hash of the project. It is recommended to run
 
-     firmware/efx/update_git_version_pkg.sh
+     cd firmware/efx
+     ../modules/efx-scripts/update_git_version_pkg.sh
 
 every time before the design is rebuilt with efinity. Note that
 if the state of the working-directory is not 'clean' the reported
