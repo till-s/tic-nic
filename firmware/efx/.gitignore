@@ -3,3 +3,4 @@
 outflow/
 work_*/
 .lock
+GitVersionPkg.vhd
