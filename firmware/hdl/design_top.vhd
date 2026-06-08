@@ -466,7 +466,6 @@ begin
    U_CMD : entity work.CommandWrapper
    generic map (
       GIT_VERSION_G                => GIT_VERSION_C,
-      BOARD_VERSION_G              => BOARD_VERSION_C,
       FIFO_FREQ_G                  => 60.0E6,
       HAVE_SPI_CMD_G               => true,
       HAVE_REG_CMD_G               => false,
@@ -477,6 +476,8 @@ begin
    port map (
       clk                          => ulpiClk,
       rst                          => acmFifoRst,
+
+      boardVersion                 => BOARD_VERSION_C,
 
       datIb                        => fifoRDat,
       vldIb                        => fifoRVld,
