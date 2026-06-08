@@ -239,7 +239,8 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 	struct mii_bus          *mdiobus = NULL;
 	struct phy_device       *phydev  = NULL;
 	int                      st      = !ini ? 0 : -ENODEV;
-	struct sockaddr          sarnd;
+	struct sockaddr_storage  sas;
+	struct sockaddr         *sarnd = (struct sockaddr*)&sas;
 
 	if ( ini ) {
 
@@ -309,11 +310,11 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 		 * work.
 		 */
 		if ( random_mac_addr ) {
-			sarnd.sa_family = ARPHRD_ETHER;
-			eth_random_addr( sarnd.sa_data );
+			sarnd->sa_family = ARPHRD_ETHER;
+			eth_random_addr( sarnd->sa_data );
 
 			rtnl_lock();
-			st = dev_set_mac_address( dev->net, &sarnd, NULL );
+			st = dev_set_mac_address( dev->net, &sas, NULL );
 			rtnl_unlock();
 			if ( st < 0 ) {
 				netdev_err( dev->net, "Unable to set random MAC address: %d\n", st );
