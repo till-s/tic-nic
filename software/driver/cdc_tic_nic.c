@@ -42,6 +42,7 @@
  * SUCH DAMAGE.
  */
 
+#include <linux/version.h>
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include <linux/ctype.h>
@@ -239,7 +240,11 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 	struct mii_bus          *mdiobus = NULL;
 	struct phy_device       *phydev  = NULL;
 	int                      st      = !ini ? 0 : -ENODEV;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,16,0)
+	struct sockaddr          sas;
+#else
 	struct sockaddr_storage  sas;
+#endif
 	struct sockaddr         *sarnd = (struct sockaddr*)&sas;
 
 	if ( ini ) {
