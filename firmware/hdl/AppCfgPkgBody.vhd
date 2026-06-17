@@ -5,9 +5,10 @@
 
 -- THIS FILE WAS AUTOMATICALLY GENERATED; DO NOT EDIT!
 
--- Generated with: 'genAppCfgPkgBody.py -f AppCfgPkgBody.vhd tic_nic.yaml':
+-- Generated with: 'genAppCfgPkgBody.py -F -f AppCfgPkgBody.vhd tic_nic.yaml':
 --
 -- deviceDesc:
+--   bcdDevice: 257
 --   configurationDesc:
 --     functionACM:
 --       enabled: true
@@ -45,7 +46,7 @@ package body Usb2AppCfgPkg is
         9 => x"12",
        10 => x"51",  -- idProduct
        11 => x"88",
-       12 => x"00",  -- bcdDevice
+       12 => x"01",  -- bcdDevice
        13 => x"01",
        14 => x"00",  -- iManufacturer
        15 => x"01",  -- iProduct
@@ -260,7 +261,7 @@ package body Usb2AppCfgPkg is
       199 => x"12",
       200 => x"51",  -- idProduct
       201 => x"88",
-      202 => x"00",  -- bcdDevice
+      202 => x"01",  -- bcdDevice
       203 => x"01",
       204 => x"00",  -- iManufacturer
       205 => x"01",  -- iProduct
