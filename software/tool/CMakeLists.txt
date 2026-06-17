@@ -34,16 +34,18 @@ find_library(LIBUSB NAMES usb-1.0)
 
 include_directories(./ ${ACM_TOOLBOX})
 
-set(SRCS "libusb_vend_cmd.cpp" "ticnic.cpp")
+add_library(ticnicpp "libusb_vend_cmd.cpp" "ticnic.cpp")
 
-add_executable(tic_nic_ctl tic_nic_ctl.cpp ${SRCS})
+add_executable(tic_nic_ctl tic_nic_ctl.cpp)
 
 add_subdirectory(${ACM_TOOLBOX} acm-toolbox EXCLUDE_FROM_ALL)
 
-target_link_libraries(tic_nic_ctl PRIVATE fwcommGeneric ${LIBUSB})
+set(LIBS ticnicpp fwcommGeneric ${LIBUSB})
+
+target_link_libraries(tic_nic_ctl PRIVATE ${LIBS})
 
 add_executable(pkt pkt.c)
 
-add_executable(flastic flastic.cpp ${SRCS})
+add_executable(flastic flastic.cpp)
 
-target_link_libraries(flastic PRIVATE fwcommGeneric ${LIBUSB})
+target_link_libraries(flastic PRIVATE ${LIBS})
