@@ -506,12 +506,7 @@ begin
    U_CMD : entity work.CommandWrapper
    generic map (
       GIT_VERSION_G                => GIT_VERSION_C,
-      FIFO_FREQ_G                  => 60.0E6,
-      HAVE_SPI_CMD_G               => true,
-      HAVE_REG_CMD_G               => false,
-      HAVE_BB_CMD_G                => false,
-      HAVE_ADC_CMD_G               => false,
-      REG_ASYNC_G                  => false
+      SPI_CLK_FREQ_G               => 60.0E6
    )
    port map (
       clk                          => ulpiClk,
