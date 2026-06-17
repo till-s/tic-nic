@@ -7,98 +7,13 @@
     </efx:device_info>
     <efx:design_info def_veri_version="verilog_2k" def_vhdl_version="vhdl_2008" unified_flow="false">
         <efx:top_module name="design_top"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/ByteDeStuffer.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/CicFilter.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/CommandMux.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/CommandMuxPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/CommandReg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/CommandSpi.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/CommandVersion.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/CommandWrapper.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/Flicker.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/GenericFifoAsync.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/ILAWrapperPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SDRAMBufPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SFifo.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SimpleBusAsync.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SimpleBusPipeStage.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SimpleI2cMaster.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SpiBitShifter.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SpiChecker.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SpiReg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SpiShadowReg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SynchronizerBit.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/WordSpiIF.vhd" version="default" library="default"/>
         <efx:design_file name="../hdl/design_top.vhd" version="default" library="default"/>
         <efx:design_file name="../efx/GitVersionPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/eth-rmii-mac/hdl/EthMDIO.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/eth-rmii-mac/hdl/RMIIMac.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/eth-rmii-mac/hdl/RMIIMacPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/eth-rmii-mac/hdl/RMIIMacRx.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/eth-rmii-mac/hdl/RMIIMacTx.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/eth-rmii-mac/hdl/Usb2Ep0MDIOCtl.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiFSLSEmul.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiIO.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiLineState.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiLogger.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2AppCfgPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2Bram.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2CCSync.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2Core.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2DescPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2FSLSRx.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2FSLSRxBitShift.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2FSLSTx.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2MboxSync.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2Pkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2PktProc.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2PktRx.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2PktTx.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2PrivPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2StdCtlEp.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/Usb2UtilPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/UsbCrcTbl.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/AUDIO/hdl/Usb2EpBADDSpkr.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/AUDIO/hdl/Usb2EpAudioCtl.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/AUDIO/hdl/Usb2EpAudioInpStrm.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/AUDIO/hdl/Usb2EpI2SPlayback.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/CDCACM/hdl/Usb2EpCDCACM.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/CDCACM/hdl/Usb2EpCDCACMCtl.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/CDCACM/hdl/Usb2EpCDCACMNotify.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/CDCECM/hdl/Usb2EpCDCECM.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/CDCNCM/hdl/Usb2EpCDCNCM.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/CDCNCM/hdl/Usb2EpCDCNCMCtl.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/CDCNCM/hdl/Usb2EpCDCNCMInp.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/CDCNCM/hdl/Usb2EpCDCNCMOut.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/common/hdl/Usb2EpCDCEtherNotify.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/common/hdl/Usb2EpGenericCtl.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/common/hdl/Usb2EpGenericCtlPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/common/hdl/Usb2Fifo.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/common/hdl/Usb2FifoEp.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/common/hdl/Usb2MuxEpCtl.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/endpoints/common/hdl/Usb2MuxEpCtlPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/example/hdl/Usb2ExampleDev.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/BasicPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/AcqCtlPkg.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/CommandAcqParm.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/CommandBitBang.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SampleBufferSDRAM.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/MulShifter.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/PipelinedRShifter.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/SampleBufferBRAM.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/MaxAdc.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/BitBangIF.vhd" version="default" library="default"/>
         <efx:design_file name="../hdl/AppCfgPkgBody.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/eth-rmii-mac/hdl/Usb2SetMCFilter.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/acm-toolbox/hdl/ByteStuffer.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/mecatica-usb/core/hdl/UlpiIOBuf.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/UART-controller/hdl/UartRx.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/UART-controller/hdl/UartWrapper.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/UART-controller/hdl/RateGenerator.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/UART-controller/hdl/LongDivider.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/UART-controller/hdl/UartTx.vhd" version="default" library="default"/>
-        <efx:design_file name="../modules/UART-controller/hdl/UartPkg.vhd" version="default" library="default"/>
+        <efx:design_file name="../modules/acm-toolbox/efx_src_files_core.f" version="na" library="default"/>
+        <efx:design_file name="../modules/eth-rmii-mac/efx_src_files.f" version="na" library="default"/>
+        <efx:design_file name="../modules/mecatica-usb/efx_src_files.f" version="na" library="default"/>
+        <efx:design_file name="../modules/UART-controller/efx_src_files.f" version="na" library="default"/>
         <efx:top_vhdl_arch name=""/>
     </efx:design_info>
     <efx:constraint_info>
