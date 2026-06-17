@@ -2,6 +2,8 @@
 
 #include <libusb_vend_cmd.hpp>
 
+#include <stdio.h>
+
 namespace ticnic {
 
 class TicNic : public libusb_vend_cmd::VendDev {
@@ -53,6 +55,8 @@ public:
 	};
 
 	void getVersion(Version &);
+
+	void printVersion(FILE *f);
 
 	// read binary flash contents of 'length' (starting at 'flashAddr') to 'dstFile'
 	void flashRead(const std::string &dstFileName, size_t length, unsigned flashAddr = 0);

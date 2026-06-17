@@ -332,4 +332,19 @@ TicNic::requireBCDDevice(uint16_t minVersion)
 	}
 }
 
+void
+TicNic::printVersion(FILE *f)
+{
+	if ( ! f ) {
+		f = stdout;
+	}
+	TicNic::Version v;
+	getVersion( v );
+	fprintf(f, "TicNic Version:\n");
+	fprintf(f, " Git Hash              : %08x\n", v.gitHash_              );
+	fprintf(f, " ACM Tool API Function : %1x\n",  v.acmToolboxApiFunction_);
+	fprintf(f, " ACM Tool API Version  : %1x\n",  v.acmToolboxApiVersion_ );
+	fprintf(f, " Board/Hw Revision     : %02x\n", v.hardware_             );
+}
+
 } // namespace ticnic
