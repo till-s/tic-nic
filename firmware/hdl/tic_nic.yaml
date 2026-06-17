@@ -2,6 +2,7 @@
 deviceDesc:
   idProduct:                  0x8851
   iProduct:                   "Till's PTP TicNic Ethernet Adapter"
+  bcdDevice:                  0x0101
   configurationDesc:
     # ACM is enabled by default anyways; made explicit FYI
     functionACM:
