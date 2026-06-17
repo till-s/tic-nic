@@ -15,6 +15,8 @@ use     work.BasicPkg.Slv8Array;
 use     work.RMIIMacPkg.all;
 use     work.GitVersionPkg.all;
 use     work.UartPkg.all;
+use     work.RegPkg.all;
+use     work.GenRegPkg.all;
 
 -- differences to V1
 --
@@ -54,6 +56,13 @@ entity design_top is
       LED               : out   std_logic_vector(7 downto 0) := (others => '1');
       ulpiPllLocked     : in    std_logic;
       rmiiPllLocked     : in    std_logic := '0';
+
+      -- reconfiguration
+      cfg_CONFIG        : out   std_logic                    := '0';
+      cfg_ENA           : out   std_logic                    := '0';
+      cfg_CBSEL         : out   std_logic_vector(1 downto 0) := (others => '0');
+      cfg_CDONE         : in    std_logic;
+      cfg_ERROR         : in    std_logic;
 
       spiSClk           : out   std_logic;
       spiMOSI           : out   std_logic;
@@ -370,6 +379,12 @@ architecture rtl of design_top is
    signal gpioRegs             : Usb2ByteArray(0 to 1) := (others => (others => '0'));
    signal gpioIn               : std_logic_vector(7 downto 0);
 
+   signal usb2DisconnectReq    : std_logic;
+   signal usb2DisconnectAck    : std_logic;
+
+   signal genRegReq            : GenRegOutType;
+   signal genRegRep            : GenRegInpType;
+
 begin
 
    P_INI : process ( ulpiClk ) is
@@ -521,6 +536,9 @@ begin
       vldOb                        => fifoWVld,
       rdyOb                        => fifoWRdy,
 
+      genRegOb                     => genRegReq,
+      genRegIb                     => genRegRep,
+
       spiSClk                      => spiSClk,
       spiMOSI                      => spiMOSI,
       spiCSb                       => spiCSb_OUT,
@@ -583,6 +601,8 @@ begin
          usb2Ep0CtlExt             => usb2Ep0CtlExt,
 
          usb2DevStatus             => usb2DevStatus,
+         usb2DisconnectReq         => usb2DisconnectReq,
+         usb2DisconnectAck         => usb2DisconnectAck,
 
          acmFifoClk                => ulpiClk,
          acmFifoOutDat             => acmFifoOutDat,
@@ -889,16 +909,25 @@ begin
    eth_gpio_9_OUT            <= gpioRegs(0) (         0);
    eth_gpio_9_OE             <= gpioRegs(1) (         0);
 
-   ledIn(7)      <= ethMacPromisc;
-   ledIn(6)      <= ethMacAllMulti;
-   ledIn(5)      <= usb2DevStatus.suspended;
-   ledIn(4)      <= ethMacDuplexFull;
-   ledIn(3)      <= ethMacSpeed10;
-   ledIn(2)      <= ethPhyLinkOk;
-   ledIn(1)      <= not rmiiPllLocked; -- and rmiiClkBlink;
-   ledIn(0)      <= gpsPps;
+   ledIn(7)                  <= ethMacPromisc;
+   ledIn(6)                  <= ethMacAllMulti;
+   ledIn(5)                  <= usb2DevStatus.suspended;
+   ledIn(4)                  <= ethMacDuplexFull;
+   ledIn(3)                  <= ethMacSpeed10;
+   ledIn(2)                  <= ethPhyLinkOk;
+   ledIn(1)                  <= not rmiiPllLocked; -- and rmiiClkBlink;
+   ledIn(0)                  <= gpsPps;
 
    -- LEDs are active low
-   LED           <= not ((ledIn and not ledDiagRegs(1)) or (ledDiagRegs(1) and ledDiagRegs(0))) ;
+   LED                       <= not ((ledIn and not ledDiagRegs(1)) or (ledDiagRegs(1) and ledDiagRegs(0))) ;
+
+   -- reconfiguration interface
+   genRegRep.reconfigurable  <= '1';
+   cfg_ENA                   <= genRegRep.reconfigurable;
+   -- initiate device disconnect from usb when reconfiguration is
+   -- requested as soon as DTR drops.
+   usb2DisconnectReq         <= (genRegReq.reconfigure and not acmDTR);
+   -- once disconnection is complete proceed to reconfigure
+   cfg_CONFIG                <= usb2DisconnectAck;
 
 end architecture rtl;
