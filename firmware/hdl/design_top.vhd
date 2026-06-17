@@ -153,16 +153,26 @@ architecture rtl of design_top is
          recipient => USB2_REQ_TYP_RECIPIENT_DEV_C,
          index     => 1,
          reqType   => USB2_REQ_TYP_TYPE_VENDOR_C
+      ),
+      3 => usb2CtlEpMkAgentConfig(
+         recipient => USB2_REQ_TYP_RECIPIENT_DEV_C,
+         index     => 2,
+         reqType   => USB2_REQ_TYP_TYPE_VENDOR_C
       )
    );
 
    constant REQ_LED_CTL_C     : Usb2CtlRequestCodeType := x"01";
    constant REQ_GPIO_CTL_C    : Usb2CtlRequestCodeType := x"02";
+   constant REQ_UMUX_CTL_C    : Usb2CtlRequestCodeType := x"03";
+   constant REQ_VERS_CTL_C    : Usb2CtlRequestCodeType := x"04";
 
    constant REQ_LED_WR_IDX_C  : natural                := 0;
    constant REQ_LED_RD_IDX_C  : natural                := 1;
    constant REQ_GPIO_WR_IDX_C : natural                := 2;
    constant REQ_GPIO_RD_IDX_C : natural                := 3;
+   constant REQ_UMUX_WR_IDX_C : natural                := 4;
+   constant REQ_UMUX_RD_IDX_C : natural                := 5;
+   constant REQ_VERS_RD_IDX_C : natural                := 6;
 
    constant EP0_DEV_AGENT_REQS_C : Usb2EpGenericReqDefArray := (
       REQ_LED_WR_IDX_C => usb2MkEpGenericReqDef(
@@ -184,8 +194,35 @@ architecture rtl of design_top is
          dev2Host  => '1',
          request   => REQ_GPIO_CTL_C,
          dataSize  => 2
+      ),
+      REQ_UMUX_WR_IDX_C => usb2MkEpGenericReqDef(
+         dev2Host  => '0',
+         request   => REQ_UMUX_CTL_C,
+         dataSize  => 1
+      ),
+      REQ_UMUX_RD_IDX_C => usb2MkEpGenericReqDef(
+         dev2Host  => '1',
+         request   => REQ_UMUX_CTL_C,
+         dataSize  => 1
+      ),
+      REQ_VERS_RD_IDX_C => usb2MkEpGenericReqDef(
+         dev2Host  => '1',
+         request   => REQ_VERS_CTL_C,
+         dataSize  => 6
       )
    );
+
+   type UmuxRegType is record
+      lastDTR      : std_logic;
+      selInternal  : std_logic;
+   end record UmuxRegType;
+
+   constant UMUX_REG_INIT_C : UmuxRegType := (
+      lastDTR      => '0',
+      selInternal  => '0'
+   );
+
+   signal umuxR                : UmuxRegType := UMUX_REG_INIT_C;
 
    signal ep0DevAgentParmsIb   : Usb2ByteArray(0 to maxParamSize(EP0_DEV_AGENT_REQS_C) - 1) := (others => (others =>'0'));
    signal ep0DevAgentParmsOb   : Usb2ByteArray(0 to maxParamSize(EP0_DEV_AGENT_REQS_C) - 1);
@@ -207,6 +244,7 @@ architecture rtl of design_top is
    signal acmFifoLocal         : std_logic    := '1';
 
    signal acmDTR               : std_logic;
+   signal acmSelUart           : std_logic;
    signal acmRTS               : std_logic;
    signal acmRate              : unsigned(31 downto 0);
    signal acmStopBits          : unsigned( 1 downto 0);
@@ -354,8 +392,10 @@ begin
    fifoRDat      <= acmFifoOutDat;
    uartTxDat     <= acmFifoOutDat;
 
+   acmSelUart    <= not umuxR.selInternal;
+
    P_UART_MUX : process (
-      acmDTR,
+      acmSelUart,
       acmFifoOutVld,
       acmFifoInpFull,
       fifoRRdy,
@@ -368,7 +408,7 @@ begin
       acmLineBreak
    ) is
    begin
-      if ( acmDTR = '0' ) then
+      if ( acmSelUart = '0' ) then
          fifoRVld      <= acmFifoOutVld;
          uartTxDatVld  <= '0';
          acmFifoOutRen <= fifoRRdy;
@@ -804,9 +844,21 @@ begin
    begin
       if ( rising_edge( ulpiClk ) ) then
          if ( ep0DevAgentParmsVld(REQ_LED_WR_IDX_C) = '1' ) then
-            ledDiagRegs <= ep0DevAgentParmsOb(ledDiagRegs'range);
-         elsif ( ep0DevAgentParmsVld(REQ_GPIO_WR_IDX_C) = '1' ) then
-            gpioRegs    <= ep0DevAgentParmsOb(ledDiagRegs'range);
+            ledDiagRegs       <= ep0DevAgentParmsOb(ledDiagRegs'range);
+         end if;
+         if ( ep0DevAgentParmsVld(REQ_GPIO_WR_IDX_C) = '1' ) then
+            gpioRegs          <= ep0DevAgentParmsOb(ledDiagRegs'range);
+         end if;
+         if ( ep0DevAgentParmsVld(REQ_UMUX_WR_IDX_C) = '1' ) then
+            umuxR.selInternal <= ep0DevAgentParmsOb(0)(0);
+         end if;
+         umuxR.lastDTR <= acmDTR;
+         -- when DTR drops reset mux
+         if ( (not acmDTR and umuxR.lastDTR) = '1' ) then
+            umuxR.selInternal <= '0';
+         end if;
+         if ( (usb2Rst or usb2DevStatus.usb2Rst) = '1' ) then
+            umuxR <= UMUX_REG_INIT_C;
          end if;
       end if;
    end process P_EP0_DEV_REG_OB;
@@ -816,10 +868,22 @@ begin
       ep0DevAgentParmsIb  <= (others => (others => '0'));
       ep0DevAgentParmsAck <= '1';
       ep0DevAgentParmsErr <= '0';
-      ep0DevAgentParmsIb(ledDiagRegs'range) <= ledDiagRegs;
       if ( ep0DevAgentParmsVld(REQ_GPIO_RD_IDX_C) = '1' ) then
-         ep0DevAgentParmsIb(0) <= gpioIn;
-         ep0DevAgentParmsIb(1) <= gpioRegs(1);
+         ep0DevAgentParmsIb(0)                 <= gpioIn;
+         ep0DevAgentParmsIb(1)                 <= gpioRegs(1);
+      end if;
+      if ( ep0DevAgentParmsVld(REQ_LED_RD_IDX_C) = '1' ) then
+         ep0DevAgentParmsIb(ledDiagRegs'range) <= ledDiagRegs;
+      end if;
+      if ( ep0DevAgentParmsVld(REQ_UMUX_RD_IDX_C) = '1' ) then
+         ep0DevAgentParmsIb(0)(0)              <= umuxR.selInternal;
+      end if;
+      if ( ep0DevAgentParmsVld(REQ_VERS_RD_IDX_C) = '1' ) then
+         ep0DevAgentParmsIb(5)                 <= BOARD_VERSION_C;
+         ep0DevAgentParmsIb(4)                 <= CMD_API_VERSION_C;
+         for i in 3 downto 0 loop
+            ep0DevAgentParmsIb(i)              <= GIT_VERSION_C(8*i + 7 downto 8*i);
+         end loop;
       end if;
    end process P_EP0_DEV_REG_IB;
 
