@@ -83,14 +83,11 @@ board. It could also be used as a side-channel to peek/poke
 at user FPGA resources.
 
 The ACM endpoint is multiplexed between the UART and the
-FIFO interface (the aforementioned side-channel) using the
-DTR modem signal. During normal sessions DTR is asserted
-and the ACM endoint is connected to the UART and receives
-NMEA data from the GPS receiver.
-
-The `bbcli` software from the `acm-toolbox` deasserts DTR
-to switch the ACM endpoint to the FIFO and can thus access
-special diagnostic features (e.g., the SPI-flash programmer).
+FIFO interface (the aforementioned side-channel).
+The multiplexer is controlled with USB control requests
+(c.f. `software/tool/`) and automatically released to
+the UART when the DTR modem signal drops, thus resuming
+reception of NMEA data from the GPS receiver.
 
 #### Firmware Block Diagram
 
@@ -153,11 +150,15 @@ might be paranoid.
 
 To build the firmware you need to install the efinity software from
 [efinix](https://www.efinixinc.com). At the time of this writing I'm
-using version 2024.1.
+using version 2025.1.
 
-The software is decent; the most serious draw-back is that it does not
-support scripting and that their constraint language is quite limited when
-compared with some of the big competitors.
+If the project cannot be opened then a possible reason is that the
+XML file was created by a more recent version of efinity. Unfortunately,
+the tool gives no helpful feedback in this case.
+
+The software is decent; the most serious draw-back is that their
+constraint language is quite limited when compared with some of the
+big competitors.
 
 Surprisingly, I found that inferral of RAMs and multipliers worked
 out of the box (just FYI - there are no multipliers used in this
@@ -250,6 +251,9 @@ available out of the box on my ubuntu system.
         make
 
   3. this should produce the `cdc_tic_nic.ko` kernel module.
+
+Alternatively, you may use `dkms` to compile the driver.
+A `dkms.conf` file has been added to the driver directory.
 
 #### Loading the Module
 
@@ -583,41 +587,39 @@ Once a working design is in the FPGA you can use it to reprogram the
 flash. The tic-nic design features an ACM USB function which has
 flash-programming functionality:
 
-   1. change directory to `firmware/modules/acm-toolbox/sw/`
-   2. build the `bbcli` utility:
+   1. change directory to `software/tool`
+   2. build the `flastic` utility:
 
-          make bbcli
+          cmake -B build .
+          make -C build -j
+
+   3. install to a location of your choice.
 
 NOTE: make sure the ACM tty device is not in use by any
-GPS software before running `bbcli`!
+GPS software before running `flastic`!
 
-The `bbcli` utility can be used for
+The `flastic` utility can be used for
 
    1. reading the firmware git version
 
-          bbcli -d /dev/ttyACM0 -V
-
-      assuming the tic-nic is the first/only ACM
-      device. If there are multiple ACM devices then
-      you have to figure out which one belongs to tic-nic.
+          flastic -V
 
    2. accessing the SPI flash device
 
-Since the utility was copied from another design it has many
-options that are unsupported by tic-nic.
-
-`bbcli -h` gives online help (including many unsupported features;
- relevant are `-d`, `-h`, `-V`, `-a`, `-f`, `-S`, `-!`, `-?`).
+`flastic -h` gives online help.
 
 Reprogramming the flash can be done with the command
 
-      bbcli -d /dev/ttyACM0 -a 0 -f tic_nic.hex.bin -SResume,Wena,Erase,Prog -!
+          flastic -f tic_nic.hex.bin
 
 assuming you are in the `firmware/efx/outflow` directory; otherwise
 the `-f` argument must be modified accordingly.
 
-Note that you have to power-cycle or hit the reset button
-for the new design to be loaded from flash.
+Newer versions of the firmware support automatic reconfiguration
+of the FPGA after `flastic` has rewritten the flash but if you are
+updating an older version then you have to power-cycle or hit the reset
+button for the new design to be loaded into the FPGA's configuration
+memory. The tool will alert you accordingly.
 
 #### Modifications
 
@@ -629,7 +631,7 @@ call `generate_project.py` again.
 
 Because the efinity software does not support hooking user-defined
 scripts/actions the user is responsible for keeping the git version
-which is reported by `bbcli -V` synchronized with the 'true' git
+which is reported by `flastic -V` synchronized with the 'true' git
 hash of the project. It is recommended to run
 
      cd firmware/efx
@@ -645,9 +647,13 @@ project XML (and debugger JSON) files by changing their UUID and
 dates. This is unfortunate and will cause `update_git_version_pkg.sh`
 to reset the version to all zeros. It is OK to just reset the
 mentioned files (`git reset --hard`) if you are certain that you
-have no local modifications.
+have no other local modifications.
 
 ### Software
+
+#### Flash Utility
+
+See above for how to build and use the `flastic` utility.
 
 #### Mdio Helper Program
 
