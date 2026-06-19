@@ -21,9 +21,9 @@ static void usage(const char *nm, int level)
 	printf("  -h                 : print this message; use twice for more info.\n");
 	printf("  -V                 : print version info (default if -f not used).\n");
 	printf("  -f <file_name>     : 'firmware.hex.bin' file to write or read from flash.\n");
+	if ( verbose ) {
 	printf("  -r <read_size>     : if this option is given then data are *read* from the\n");
 	printf("                       flash. The defaul is to program the device.\n");
-	if ( verbose ) {
 	printf("  -v <vendor_id>     : USB vendor id (default: 0x%04x).\n",  TicNic::VID_PIDCODES );
 	printf("  -p <product_id>    : USB product id (default: 0x%04x).\n", TicNic::PID_TICNIC   );
 	printf("  -a <flash_address> : starting address in the flash (default: 0).\n");
