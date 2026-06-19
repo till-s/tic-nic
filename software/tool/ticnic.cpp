@@ -299,7 +299,7 @@ TicNic::~TicNic()
 void
 TicNic::flashRead(const std::string &dstFileName, size_t length, unsigned flashAddr)
 {
-	int st = flash_read_to_file( fw(), dstFileName.c_str(), flashAddr, length );
+	int st = flash_read_into_file( fw(), dstFileName.c_str(), length, flashAddr );
 	if ( st < 0 ) {
 		throw std::system_error( -st, std::generic_category(), "reading flash contents to file failed" );
 	}
