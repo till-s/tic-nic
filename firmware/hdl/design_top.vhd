@@ -878,7 +878,13 @@ begin
       end if;
    end process P_EP0_DEV_REG_OB;
 
-   P_EP0_DEV_REG_IB : process ( ep0DevAgentParmsVld, ledDiagRegs, gpioIn ) is
+   P_EP0_DEV_REG_IB : process (
+      ep0DevAgentParmsVld,
+      ledDiagRegs,
+      gpioIn,
+      gpioRegs,
+      umuxR
+   ) is
    begin
       ep0DevAgentParmsIb  <= (others => (others => '0'));
       ep0DevAgentParmsAck <= '1';
