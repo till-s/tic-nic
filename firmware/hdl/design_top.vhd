@@ -901,7 +901,7 @@ begin
       end if;
       if ( ep0DevAgentParmsVld(REQ_VERS_RD_IDX_C) = '1' ) then
          ep0DevAgentParmsIb(5)                 <= BOARD_VERSION_C;
-         ep0DevAgentParmsIb(4)                 <= CMD_API_VERSION_C;
+         ep0DevAgentParmsIb(4)                 <= mkApiVersion( CMD_API_FUNCTION_GENERIC_C );
          for i in 3 downto 0 loop
             ep0DevAgentParmsIb(i)              <= GIT_VERSION_C(8*i + 7 downto 8*i);
          end loop;
