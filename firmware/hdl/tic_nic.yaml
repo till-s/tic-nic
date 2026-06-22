@@ -1,13 +1,20 @@
+# YAML to control USB descriptor generation using genAppCfgPkgBody.py
 deviceDesc:
-  idProduct: 0x0001
+  idProduct:                  0x8851
+  iProduct:                   "Till's PTP TicNic Ethernet Adapter"
+  bcdDevice:                  0x0101
   configurationDesc:
+    # ACM is enabled by default anyways; made explicit FYI
+    functionACM:
+      enabled:                true
     functionNCM:
-      enabled:             true
-      iFunction:           "Tic-Nic PTP Ethernet Adapter"
-      iMACAddress:         "02deadbeef31"
-      numMulticastFilters: 0x8020
-      # not supported/used by linux but enable anyways
-      haveDynamicMACAddress: true
+      enabled:                true
+      iMACAddress:            "02deadbeef31"
+      # 32 filters; 0x8000 indicates that they are imperfect (hashed)
+      numMulticastFilters:    0x8020
+      # enable SET_NET_ADDRESS ctrl. req.; just in case - linux driver
+      # does not use it, though.
+      haveDynamicMACAddress:  true
     functionUAC2Input:
       enabled:             true
       iFunction:           "Mecatica Microphone Test"

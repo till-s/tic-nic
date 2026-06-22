@@ -42,6 +42,7 @@
  * SUCH DAMAGE.
  */
 
+#include <linux/version.h>
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include <linux/ctype.h>
@@ -61,6 +62,9 @@
 
 #define PHY_ID 1
 #define VEND_REQ_MDIO 0x01
+#define VEND_REQ_LINK 0x02
+#define VEND_REQ_LINK_STATUS          (1<<0)
+#define VEND_REQ_LINK_FORCE_ALWAYS_ON (1<<1)
 
 #define STATIC
 
@@ -71,7 +75,24 @@ MODULE_PARM_DESC(random_mac_addr, "Use random MAC address (default == TRUE)");
 struct cdc_ncm_ptp_priv {
 	struct mii_bus     *mdiobus;
 	struct phy_device  *phydev;
+	unsigned char       origLinkReg;
 };
+
+STATIC int cdc_ncm_ptp_mdio_read(struct mii_bus *bus, int phy_id, int idx);
+STATIC int cdc_ncm_ptp_mdio_write(struct mii_bus *bus, int phy_id, int idx, u16 regval);
+STATIC int set_addr(struct usbnet *dev);
+STATIC int try_set_addr(struct usbnet *dev);
+STATIC int read_vendor_link_reg(struct usbnet *dev);
+STATIC int write_vendor_link_reg(struct usbnet *dev, u16 value);
+STATIC int ndev_handler(struct notifier_block *nblk, unsigned long event, void *closure);
+STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, int ini);
+STATIC int cdc_ncm_ptp_bind(struct usbnet *dev, struct usb_interface *intf);
+STATIC void cdc_ncm_speed_change(struct usbnet *dev, struct usb_cdc_speed_change *data);
+STATIC void cdc_ncm_status(struct usbnet *dev, struct urb *urb);
+STATIC int ncm_ptp_probe(struct usb_interface *intf, const struct usb_device_id *prod);
+STATIC void ncm_ptp_disconnect(struct usb_interface *intf);
+STATIC int check_connect(struct usbnet *dev);
+STATIC void update_filter(struct usbnet *dev);
 
 STATIC int cdc_ncm_ptp_mdio_read(struct mii_bus *bus, int phy_id, int idx)
 {
@@ -138,6 +159,52 @@ STATIC int try_set_addr(struct usbnet *dev)
 	return -ENOTSUPP;
 }
 
+/*
+ * read vendor-specific link register
+ *
+ * RETURN: contents or negative error code
+ */
+STATIC int read_vendor_link_reg(struct usbnet *dev)
+{
+	int err;
+
+	u8 buf[1];
+
+	u8 cmd     = VEND_REQ_LINK;
+	u8 reqtype = USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_INTERFACE;
+	u16 value  = 0;
+	u16 index  = dev->intf->cur_altsetting->desc.bInterfaceNumber;
+
+	err = usbnet_read_cmd( dev, cmd, reqtype, value, index, buf, sizeof(buf) );
+	if ( err < 0 ) {
+		return err;
+	}
+	if ( err < 1 ) {
+		return -EIO;
+	}
+
+	return buf[0];
+}
+
+/*
+ * write vendor-specific link register
+ *
+ * RETURN: negative error code on failure
+ */
+STATIC int write_vendor_link_reg(struct usbnet *dev, u16 value)
+{
+	/* pure write (instead of RMW which would require some kind of synchronization)
+	 * works here since ATM no other writeable bits are available.
+	 */
+
+	u8 cmd     = VEND_REQ_LINK;
+	u8 reqtype = USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_INTERFACE;
+	u16 index  = dev->intf->cur_altsetting->desc.bInterfaceNumber;
+
+	return usbnet_write_cmd( dev, cmd, reqtype, value, index, NULL, 0 );
+}
+
+
 STATIC int ndev_handler(struct notifier_block *nblk, unsigned long event, void *closure)
 {
 	struct net_device                  *ndev = netdev_notifier_info_to_dev( closure );
@@ -173,7 +240,12 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 	struct mii_bus          *mdiobus = NULL;
 	struct phy_device       *phydev  = NULL;
 	int                      st      = !ini ? 0 : -ENODEV;
-	struct sockaddr          sarnd;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,16,0)
+	struct sockaddr          sas;
+#else
+	struct sockaddr_storage  sas;
+#endif
+	struct sockaddr         *sarnd = (struct sockaddr*)&sas;
 
 	if ( ini ) {
 
@@ -235,19 +307,19 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 			goto notifier_not_registered;
 		}
 
-        /*
-         * The address from the descriptors might be generic (multiple firmwares
-         * with the same descriptors and hence MAC addr). Unless told otherwise
-         * by module parameter we randomize the address...
+		/*
+		 * The address from the descriptors might be generic (multiple firmwares
+		 * with the same descriptors and hence MAC addr). Unless told otherwise
+		 * by module parameter we randomize the address...
 		 * Note that we need our 'cdc_ncm_ptp_notifier' installed for this to
 		 * work.
 		 */
 		if ( random_mac_addr ) {
-			sarnd.sa_family = ARPHRD_ETHER;
-			eth_random_addr( sarnd.sa_data );
+			sarnd->sa_family = ARPHRD_ETHER;
+			eth_random_addr( sarnd->sa_data );
 
 			rtnl_lock();
-			st = dev_set_mac_address( dev->net, &sarnd, NULL );
+			st = dev_set_mac_address( dev->net, &sas, NULL );
 			rtnl_unlock();
 			if ( st < 0 ) {
 				netdev_err( dev->net, "Unable to set random MAC address: %d\n", st );
@@ -256,14 +328,31 @@ STATIC int cdc_ncm_ptp_inifini(struct usbnet *dev, struct usb_interface *intf, i
 			}
 		}
 
+		if ( ( st = read_vendor_link_reg( dev ) ) < 0 ) {
+			netdev_err( dev->net, "Failed to read 'force-link-always on bit': %d\n", st );
+			goto force_link_failed;
+		}
+
+		priv->origLinkReg = st;
+
+		if ( ( st = write_vendor_link_reg( dev, (priv->origLinkReg | VEND_REQ_LINK_FORCE_ALWAYS_ON) ) ) < 0 ) {
+			netdev_err( dev->net, "Failed to set 'force-link-always on bit': %d\n", st );
+			// if the write failed it doesn't make much sense to write the original value back...
+			goto force_link_failed;
+		}
+
 		return 0;
 
 	}
 
+	write_vendor_link_reg( dev, priv->origLinkReg );
+
+force_link_failed:
+
 	unregister_netdevice_notifier( &cdc_ncm_ptp_notifier );
 notifier_not_registered:
 	/* the dp83640 driver will complain:
-     *  'expected to find an attached netdevice'
+	 *  'expected to find an attached netdevice'
 	 * but phy_detach deattaches the netdevice before it calls
 	 * the driver 'remove' function which will cause this message...
 	 */
@@ -280,6 +369,19 @@ priv_not_alloced:
 	return st;
 }
 
+static const struct net_device_ops netdev_ops = {
+	.ndo_open            = usbnet_open,
+	.ndo_stop            = usbnet_stop,
+	.ndo_eth_ioctl       = phy_do_ioctl,
+	.ndo_start_xmit      = usbnet_start_xmit,
+	.ndo_tx_timeout      = usbnet_tx_timeout,
+	.ndo_set_rx_mode     = usbnet_set_rx_mode,
+	.ndo_get_stats64     = dev_get_tstats64,
+	.ndo_change_mtu      = cdc_ncm_change_mtu,
+	.ndo_set_mac_address = eth_mac_addr,
+	.ndo_validate_addr   = eth_validate_addr,
+};
+
 STATIC int cdc_ncm_ptp_bind(struct usbnet *dev, struct usb_interface *intf)
 {
 	/* The NCM data altsetting is fixed, so we hard-coded it.
@@ -287,13 +389,14 @@ STATIC int cdc_ncm_ptp_bind(struct usbnet *dev, struct usb_interface *intf)
 	 * placed NDP.
 	 */
 	int rv = cdc_ncm_bind_common(dev, intf, CDC_NCM_DATA_ALTSETTING_NCM, 0);
+	if ( 0 == rv ) {
+		dev->net->netdev_ops = &netdev_ops;
+	}
 	return rv;
 }
 
 /* Unfortunately not public :-( */
-STATIC void
-cdc_ncm_speed_change(struct usbnet *dev,
-             struct usb_cdc_speed_change *data)
+STATIC void cdc_ncm_speed_change(struct usbnet *dev, struct usb_cdc_speed_change *data)
 {
     /* RTL8156 shipped before 2021 sends notification about every 32ms. */
     dev->rx_speed = le32_to_cpu(data->DLBitRRate);
@@ -347,8 +450,7 @@ STATIC void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
 	}
 }
 
-STATIC
-int ncm_ptp_probe(struct usb_interface *intf, const struct usb_device_id *prod)
+STATIC int ncm_ptp_probe(struct usb_interface *intf, const struct usb_device_id *prod)
 {
 	struct usbnet *dev;
 	int st = usbnet_probe( intf, prod );
@@ -375,8 +477,7 @@ int ncm_ptp_probe(struct usb_interface *intf, const struct usb_device_id *prod)
 	return st;
 }
 
-STATIC
-void ncm_ptp_disconnect(struct usb_interface *intf)
+STATIC void ncm_ptp_disconnect(struct usb_interface *intf)
 {
 	struct usbnet *dev = usb_get_intfdata(intf);
 	if ( ! dev ) {
@@ -387,27 +488,50 @@ void ncm_ptp_disconnect(struct usb_interface *intf)
 	usbnet_disconnect(intf);
 }
 
-STATIC
-void update_filter(struct usbnet *dev)
+/* return value 0 means the connection is OK,
+ * a negative return value is an error; this
+ * means a positive value would mean 'no connection'
+ * but no read or other error...
+ *
+ * NOTE: without our 'check_connect' method usbnet would
+ *       fall-back to determining the link state using MDIO
+ *       to talk to the BMCR in the PHY. We need to avoid this
+ *       from happening since we want the link to always be
+ *       ON in order to receive status frames. It is not enough
+ *       for the NCM to always send 'carrier on' notifications -
+ *       usbnet_get_link() would still use the MDIO method *unless*
+ *       we provide a check_connect().
+ *       Since we force the link state obtaining a reading from
+ *       the vendor register is not strictly necessary - we could
+ *       simply always report an OK link but this is more
+ *       illustrative...
+ */
+STATIC int check_connect(struct usbnet *dev)
 {
-    struct net_device   *net = dev->net;
-    u16                  cdc_filter;
+	/* OK status -> return value 0 */
+	return ! (read_vendor_link_reg( dev ) & VEND_REQ_LINK_STATUS);
+}
+
+STATIC void update_filter(struct usbnet *dev)
+{
+	struct net_device   *net = dev->net;
+	u16                  cdc_filter;
 	int                  st = 0;
 
 	/* Enable all directed filters */
-    cdc_filter =    USB_CDC_PACKET_TYPE_DIRECTED
-	              | USB_CDC_PACKET_TYPE_BROADCAST
-	              | USB_CDC_PACKET_TYPE_MULTICAST;
+	cdc_filter =    USB_CDC_PACKET_TYPE_DIRECTED
+		| USB_CDC_PACKET_TYPE_BROADCAST
+		| USB_CDC_PACKET_TYPE_MULTICAST;
 
-    /* filtering on the device is an optional feature and not worth
-     * the hassle so we just roughly care about snooping and if any
-     * multicast is requested, we take every multicast
-     */
-    if (net->flags & IFF_PROMISC) {
-        cdc_filter |= USB_CDC_PACKET_TYPE_PROMISCUOUS;
-    } else if (net->flags & IFF_ALLMULTI) {
-        cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
-    } else {
+	/* filtering on the device is an optional feature and not worth
+	 * the hassle so we just roughly care about snooping and if any
+	 * multicast is requested, we take every multicast
+	 */
+	if (net->flags & IFF_PROMISC) {
+		cdc_filter |= USB_CDC_PACKET_TYPE_PROMISCUOUS;
+	} else if (net->flags & IFF_ALLMULTI) {
+		cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
+	} else {
 
 		u8                    *mc_buf = 0;
 		unsigned               mc_cnt = 0;
@@ -449,7 +573,7 @@ void update_filter(struct usbnet *dev)
 			}
 		}
 		if ( st < 0 ) {
-       		cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
+			cdc_filter |= USB_CDC_PACKET_TYPE_ALL_MULTICAST;
 		}
 		if ( mc_buf ) {
 			kfree( mc_buf );
@@ -457,15 +581,15 @@ void update_filter(struct usbnet *dev)
 	}
 
 	st = usb_control_msg(dev->udev,
-            usb_sndctrlpipe(dev->udev, 0),
-            USB_CDC_SET_ETHERNET_PACKET_FILTER,
-            USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-            cdc_filter,
-            dev->intf->cur_altsetting->desc.bInterfaceNumber,
-            NULL,
-            0,
-            USB_CTRL_SET_TIMEOUT
-        );
+			usb_sndctrlpipe(dev->udev, 0),
+			USB_CDC_SET_ETHERNET_PACKET_FILTER,
+			USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+			cdc_filter,
+			dev->intf->cur_altsetting->desc.bInterfaceNumber,
+			NULL,
+			0,
+			USB_CTRL_SET_TIMEOUT
+			);
 
 	if ( st < 0 ) {
 		netdev_err( net, "Failed to set packet filters (st = %d); hope the device passes everything up\n", st);
@@ -476,7 +600,7 @@ static const struct driver_info cdc_ncm_ptp_info = {
 	.description = "CDC NCM with PTP Phy",
 	.flags = FLAG_POINTTOPOINT | FLAG_NO_SETINT | FLAG_MULTI_PACKET
 			| FLAG_LINK_INTR | FLAG_ETHER,
-    .check_connect = NULL,
+    .check_connect = check_connect,
 	.bind = cdc_ncm_ptp_bind,
 	.unbind = cdc_ncm_unbind,
 	.manage_power = usbnet_manage_power,
@@ -488,7 +612,7 @@ static const struct driver_info cdc_ncm_ptp_info = {
 
 static const struct usb_device_id cdc_ncm_ptp_devs[] = {
 	/* PIDcodes 0x0001 */
-	{ USB_DEVICE_AND_INTERFACE_INFO(0x1209, 0x0001,
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1209, 0x8851,
 		USB_CLASS_COMM,
 		USB_CDC_SUBCLASS_NCM, USB_CDC_PROTO_NONE),
 		.driver_info = (unsigned long)&cdc_ncm_ptp_info,

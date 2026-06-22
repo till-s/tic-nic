@@ -1,0 +1,4 @@
+# For these filters to work they must be installed;
+# use the modules/efx-scripts/install-git-filters.sh script
+tic_nic.xml filter=efx_xml_last_change
+debug_profile.wizard.json filter=efx_debug_profile_uuid

@@ -27,6 +27,15 @@ design.set_device_property("TL","VOLTAGE","1.2","IOBANK")
 design.set_device_property("TR","VOLTAGE","1.2","IOBANK")
 design.set_device_property("cfg","RECONFIG_EN","0","RU")
 
+# Enable reconfiguration
+design.set_device_property("cfg","RECONFIG_EN","1","RU")
+design.set_device_property("cfg","CBSEL_PIN","cfg_CBSEL","RU")
+design.set_device_property("cfg","CLK_PIN","ulpiClk","RU")
+design.set_device_property("cfg","CONFIG_PIN","cfg_CONFIG","RU")
+design.set_device_property("cfg","ENA_PIN","cfg_ENA","RU")
+design.set_device_property("cfg","ERROR_PIN","cfg_ERROR","RU")
+design.set_device_property("cfg","INVERT_CLK_EN","0","RU")
+
 # Create instance
 design.create_output_gpio("LED",7,0)
 design.create_input_gpio("eth_rxd",3,0)

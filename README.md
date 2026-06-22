@@ -8,12 +8,14 @@ to generate precisely synchronized events or capture PTP
 timestamps.
 
 <p align="center">
-<img src="./tic_nic.png" style="width: 70%">
+<img src="./tic_nic.png" alt="[TODO] Picture goes here" style="width: 70%">
 </p>
 
 This is the niche the tic-nic tries to fill. It is a very portable
 USB gadget with a PTP PHY and clock providing a handfull of
 GPIO pins that can be controlled in a synchronous fashion.
+(Not all the connectors have been populated on the device shown in
+the picture.)
 
 ## Features
 
@@ -24,17 +26,19 @@ GPIO pins that can be controlled in a synchronous fashion.
    between PHY and MAC (most PTP-capable adapters implement
    it in the MAC).
  - Fully open-source project (hard-, firm- and software).
- - Low cost (PHY plus FPGA are in the order of $20).
-   Uses an Efinix Trion T8 or T20 (recommended) device.
+ - Low cost. Uses an Efinix Trion T8 or T20 (recommended) device.
  - Remaining FPGA logic and pins available for user application.
+ - GPS Receiver (optional) to convert the tic-nic into a PTP
+   master clock.
 
 ## Block Diagram
 
-![Block Diagram](https://github.com/till-s/trion-lqfp144-test/blob/tic_nic_v1/block_diag.png)
+![Block Diagram](https://github.com/till-s/trion-lqfp144-test/blob/tic_nic_gps_v2/block_diag.png)
 
 ## License
 
-Tic-Nic is copyright of Till Straumann and released under the [European-Union Public
+Tic-Nic (hard-, firm- and software) is copyright of Till Straumann and
+released under the [European-Union Public
 License](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
 *with the exception of* the [ethernet driver](./software/driver/cdc_tic_nic.c)
 which is released under a [dual GPL/BSD license](./software/driver/LICENSE).
@@ -52,8 +56,8 @@ firmware written in VHDL and software.
 ### Hardware Design
 
 The kicad design files are located in the `kicad` subdirectory.
-Note that the project name (`trion-8-test.pro`) and some of
-the sheet names are unfortunate and due to legacy reasons.
+Note that some of the sheet names are unfortunate and due to legacy
+reasons.
 
 ### Firmware
 
@@ -68,20 +72,30 @@ are attached as submodules under `firmware/modules`.
 
 We find the `mecatica-usb` and `eth-rmii-mac` modules
 which provide the usb device and endpoint implementation
-and the ethernet MAC functionality.
+and the ethernet MAC functionality. The `UART-controller`
+module provides an UART and bit-rate generator to connect
+the ACM endpoint to the GPS receiver.
 
-The third module `acm-toolbox` is borrowed from another
-project. It provides an ACM interface and some software
-which allow accessing the configuration flash on the
+The fourth module `acm-toolbox` is borrowed from another
+project. It provides a FIFO interface and some software
+which allows accessing the configuration flash on the
 board. It could also be used as a side-channel to peek/poke
 at user FPGA resources.
+
+The ACM endpoint is multiplexed between the UART and the
+FIFO interface (the aforementioned side-channel).
+The multiplexer is controlled with USB control requests
+(c.f. `software/tool/`) and automatically released to
+the UART when the DTR modem signal drops, thus resuming
+reception of NMEA data from the GPS receiver.
 
 #### Firmware Block Diagram
 
 ![Block Diagram](fw_block_diag.png)
 
-
 ### Software
+
+#### Ethernet/PTP
 
 The most important software component is the linux driver
 which builds on top of the vanilla `cdc_ncm` USB class
@@ -94,6 +108,24 @@ further ado.
 
 Some useful helper programs are not found in the `software`
 directory but reside in the submodules.
+
+#### GPS Receiver -- PTP Grand Master Mode
+
+Access to the GPS receiver is possible with any standard
+software since it appears as a regular `tty` device.
+The PPS output of the GPS receiver is directly connected
+to `GPIO11` of the PHY to capture a PHC timestamp. This
+very important feature enables us to synchronize the PHC
+clock in the PHY precisely to the GPS. The NMEA data received
+over UART/USB merely provides the context (time-of-day) associated
+with the precision PPS.
+
+#### PTP Follower Mode
+
+The tic-nic can, of course, also operate as an ordinary PTP follower
+(the GPS is unused in this mode). The operation mode depends
+entirely on the `linuxPTP` setup and in which way its components
+and daemons are configured by the user.
 
 ## Building the Device
 
@@ -118,11 +150,15 @@ might be paranoid.
 
 To build the firmware you need to install the efinity software from
 [efinix](https://www.efinixinc.com). At the time of this writing I'm
-using version 2023.2.
+using version 2025.1.
 
-The software is decent; the most serious draw-back is that it does not
-support scripting and that their constraint language is quite limited when
-compared with some of the big competitors.
+If the project cannot be opened then a possible reason is that the
+XML file was created by a more recent version of efinity. Unfortunately,
+the tool gives no helpful feedback in this case.
+
+The software is decent; the most serious draw-back is that their
+constraint language is quite limited when compared with some of the
+big competitors.
 
 Surprisingly, I found that inferral of RAMs and multipliers worked
 out of the box (just FYI - there are no multipliers used in this
@@ -166,7 +202,7 @@ The `generate_project.py` script is provided to do that.
 
   3. Run the script
 
-          python3 generate_project.py
+          python3 ../modules/efx-scripts/generate_project.py
 
   4. This should have generated the files
 
@@ -193,7 +229,8 @@ In order to bootstrap the design you either need a JTAG programmer
 buy an [ftdi mini module](https://ftdichip.com/products/ft2232h-mini-module/);
 the DYI version has the advantage that it can work with any voltage of the
 JTAG bank; the mini-module, IIRC, requires additional level shifters if you
-deviate from 3.3V) or a pre-programmed flash device.
+deviate from 3.3V -- but this is not an issue with the tic-nic) or a
+pre-programmed flash device.
 
 ### Software
 
@@ -215,12 +252,24 @@ available out of the box on my ubuntu system.
 
   3. this should produce the `cdc_tic_nic.ko` kernel module.
 
+Alternatively, you may use `dkms` to compile the driver.
+A `dkms.conf` file has been added to the driver directory.
+
 #### Loading the Module
 
 For the first tests it is easiest to manually load the
 module (as root)
 
      insmod ./cdc_tic_nic.ko
+
+On the long run it is more comfortable to properly install the
+module (in the module source directory):
+
+     make modules_install
+     depmod -a
+
+Keep in mind that you have to rebuild and install the module
+after every kernel update.
 
 #### Binding the Device to the Driver
 
@@ -229,8 +278,8 @@ class device the `cdc_ncm` driver grabs it by default
 and you'll have to manually rebind it (as root):
 
   1. Look under `/sys/bus/usb/drivers/cdc_ncm`; the tic-nic
-     device should be sym-linked from there. Remember it's id
-     (let's say it was `1-7:1.2`).
+     device should be sym-linked from there. Remember one of
+     it's ids (there are two interfaces); let's say it was `1-7:1.2`.
 
   2. Unbind `cdc_ncm`:
 
@@ -243,8 +292,8 @@ and you'll have to manually rebind it (as root):
 You should now be all ready to go!
 
 You can use proper udev magic to avoid having to manually
-load and rebind the driver (every time you replug the tic-nic)
-but this is beyond the scope of this document.
+load and rebind the driver (every time you replug the tic-nic).
+An example udev rules file can be found in `software/util`.
 
 ## Detailed Comments
 
@@ -254,17 +303,28 @@ but this is beyond the scope of this document.
 
 The design features an SDRAM chip. This component is unused
 (I have employed the same PCB design for a different project
-which exercises this SDRAM). The SDRAM may safely be omitted.
+which exercises this SDRAM). The SDRAM may safely be omitted
+(along with its associated de-coupling capacitors and ferrite
+bead).
 
 Likewise, the backup clock (X2) is optional and need not
 to be loaded on the PCB.
 
-Due to their close spacing the diagnostic LEDs can be difficult
-to distinguish. It is recommended to load them in an alternating
-pattern of different colors, e.g., red-green-red...
+The GPS is normally connected via UART. However, the module
+provides also an I2C interface (I have not tested this). To switch
+the connection to I2C you need to remove R29 and R38 and instead
+populate R14, R15, R16 and R20. This also requires the FPGA logic
+to be modified.
 
-The secondary JTAG connector (J2) connects to the PHY chip
-(only) and is optional.
+Loading the battery backup supply for the GPS receiver is
+optional (if you omit U4 and R39 then you have to replace
+D12 with a solder-bridge) as is the GPS receiver itself.
+If you are not interested in having a PPS signal and NMEA information
+then you can omit the GPS ciruitry - the firmware and the driver work
+without modifications.
+
+When the battery is installed the GPS module should find satellites
+faster after having been powered off.
 
 #### Straps
 
@@ -287,8 +347,8 @@ The recommended settings are summarized in this table
   |---------------------|-------------------------------|-----------------------------------------------------|
   | R25,R26,R27,R28,R11 | optional (use internal res.)  | Define PHY address: 00001                           |
   | R12                 | optional (use internal res.)  | Disable FX mode                                     |
-  | JP1                 | user-defined                  | Enable `CLK_OUT` on GPIO <br> see PHY datasheet     |
-  | JP2                 | don't care                    | Enable control frames. Un-<br>used/-supported by fw |
+  | JP1                 | user-defined                  | Enable `CLK_OUT` on GPIO <br> (internal PD/dflt OFF)|
+  | JP2                 | don't care                    | Enable control frames. Un-<br>used/-supported by sw |
   | JP3                 | *install pull-up*             | Enable RMII (*mandatory*)                           |
   | JP4                 | *install pull-up*             | Enable RMII master mode <br> (*mandatory*)          |
   | R17, R18, R19       | install pull-ups              | Enable autoneg. advertise <br> everything           |
@@ -301,27 +361,86 @@ change the advertised link capabilities - this was a design choice
 to simplify the LED circuitry. However, the advertised capabilities
 may always be changed in software by the driver.
 
+Note that it doesn't seem possible to enable the `CLK_OUT` feature
+without strapping `JP1` high. The default value of `PTP_CLKOUT_EN`
+in the `PTP_COC` register appears to be `1` regardless of the strap
+position but a signal is present on `GPIO12` only when the strap is
+pulled high.
+
 #### FPGA
 
-We recommend to use a Trion T20Q144 at speed grade C4. This leaves
+We recommend to use a Trion T20Q144 at speed grade 4. This leaves
 enough margin e.g., to enable the debugger and add custom logic.
 
 You might get away with a T8Q144 device and save (very little)
 money. The T8Q144 and T20Q144 are fully pin-compatible and the
-design should work with either device.
+design should work with either device (you'll have to change
+the device in the efinity software, of course).
 
 It might be difficult to meet timing on the ULPI interface
-with a lower speed grade than C4 but YMMV.
+with a lower speed grade than 4 but YMMV.
+
+#### Jumpers
+
+There are two headers: JP6 and JP7 which *must* be jumpered
+correctly for the board to work.
+
+JP6 provides power to an external LNA built into an active
+antenna (consult the LC76G datasheet for compatible antennas).
+
+  | JP6 State  | Description           |
+  | :--------: | :-------------------: |
+  | installed  | J8 has 3v3 DC applied |
+  | off        | J8 AC coupled         |
+
+Thus, when using an active antenna which is compatible with
+the Quectel LC76G you have to install a jumper on J8. When using
+a passive antenna the jumper should be removed. *Make sure there
+is no short circuit when J8 is installed!*
+
+JP7 controls the backup-power supply of the GPS receiver module:
+
+  | JP7 State      | Description                                              |
+  | :------------: | :------------------------------------------------------: |
+  | installed 2-3  | battery unused backup power connected to 3V3 supply      |
+  | installed 2-1  | backup power connected to battery when 3V3 is not preset |
+
+Note that a jumper *must* be installed on JP7. Connect 2-3 if there is no battery.
+When the jumper is installed between 1-2 the analog switch will connect the GPS'
+backup power input to the battery when the normal power goes down.
+
+If you don't use the tic-nic for longer periods of time then you are
+recommended to move the jumper to 2-3 which completely open-circuits
+the battery.
 
 #### Connectors and LEDs
 
 The board outline
 
 <p align="center">
-<img src="./conn_overview.svg" style="width: 100%">
+<img src="./conn_overview.svg" style="width: 90%">
 </p>
 
-shows the pin-headers J3, J5, J6, J7 and LEDs D2..D9, D11.
+shows the connectors J1, J4, J8, J10, J11, J12, J13, J14, J15, J15
+the pin-headers J3, J5, J6, J2, J9 and LEDs D1..D4, D11.
+
+##### Board-Edge Connectors
+
+The footprints of the connectors J10-J16 can be loaded either with
+SMA (Molex 732515460) or LEMO connectors.
+
+  |  Connector  |  Type    |    Function    |
+  | :---------: | :------: | :------------: |
+  |  J1         | RJ-45    | Ethernet       |
+  |  J4         | USB-C    | USB            |
+  |  J8         | SMA      | GPS Antenna    |
+  |  J10        | SMA/LEMO | PPS Out        |
+  |  J11        | SMA/LEMO | PHY GPIO1      |
+  |  J12        | SMA/LEMO | PHY GPIO2      |
+  |  J13        | SMA/LEMO | PHY GPIO3      |
+  |  J14        | SMA/LEMO | PHY GPIO4      |
+  |  J15        | SMA/LEMO | PHY GPIO8      |
+  |  J16        | SMA/LEMO | PHY CLKOUT     |
 
 ##### J3 - FPGA JTAG Connector
 
@@ -360,22 +479,24 @@ Consult the DP83640 datasheet for details.
   |  9    | Gnd      |  10   |    GPIO4 |
   | 11    | Gnd      |  12   |    GPIO8 |
   | 13    | Gnd      |  14   |    GPIO9 |
-  | 15    | Gnd      |  16   |    Gnd   |
+  | 15    | Gnd      |  16   |    GPIO10|
   | 17    | Gnd      |  18   |   CLKOUT |
   | 19    | Gnd      |  20   |    3V3   |
 
-The `GPIO9` pin is also connected to the FPGA (`GPIOB_CLKN0`)
-for optional use by the user (the default firmware does not
-use this connection).
+The PHY's `GPIO1`, `GPIO2` and `GPIO9` pins are also connected to the
+FPGA for optional use by user designs. The default firmware allows
+the FPGA pin connected to `GPIO9` to be controlled (use the 
+`tic_nic_ctl` utility) - this can be useful to test, e.g., event
+generation.
 
 Note that control of these pins is possible with standard
 linux tools and sysfs interfaces.
 
-##### J6,J7 - FPGA GPIO Connectors
+##### J6 - FPGA GPIO Connectors
 
 These headers connect to spare pins of the FPGA and
-are available for user applications. J6 connects to bank 4B
-and J7 to bank B3. Both banks use a 3.3V supply voltage but
+are available for user applications. J6 connects to banks 1A
+(GPIOL 04) and 4B (others). Both banks use a 3.3V supply voltage but
 have slightly different special features (consult the Trion
 datasheet for details).
 
@@ -384,26 +505,51 @@ datasheet for details).
   |  Pin  | Function |  Pin  | Function   |
   | :---: | :------: | :---: | :--------: |
   |  1    | Gnd      |   2   |    3V3     |
-  |  3    | Gnd      |   4   |    REF RES |
+  |  3    | Gnd      |   4   | GPIOL 04   |
   |  5    | Gnd      |   6   | GPIOB TXP00|
   |  7    | Gnd      |   8   | GPIOB TXN00|
   |  9    | Gnd      |  10   | GPIOB TXP02|
   | 11    | Gnd      |  12   | GPIOB TXN02|
-  | 13    | Gnd      |  14   | GPIOB TXP04|
-  | 15    | Gnd      |  16   | GPIOB TXN04|
-  | 17    | Gnd      |  18   | GPIOB TXP06|
+  | 13    | Gnd      |  14   | GPIOB TXN11|
+  | 15    | Gnd      |  16   | GPIOB RXP00|
+  | 17    | Gnd      |  18   | GPIOB RXN07|
   | 19    | Gnd      |  20   |    3V3     |
 
-###### J7 Pinout
+##### J2 and J9 - GPS Headers
+
+Some of the GPS module's signals are available
+at these headers. For details about these signals
+consult the GPS module datasheet.
+
+###### J2 Pinout
+
+Note that the PPS signal is also available at board-edge
+connector J10 and in the FPGA.
 
   |  Pin  | Function |  Pin  | Function   |
   | :---: | :------: | :---: | :--------: |
-  |  1    | Gnd      |   2   | B3 IO 0    |
-  |  3    | Gnd      |   4   | B3 IO 1    |
-  |  5    | Gnd      |   6   | B3 IO 2    |
-  |  7    | Gnd      |   8   |    3V3     |
+  |  1    | Gnd      |   2   | JAM IND    |
+  |  3    | Gnd      |   4   | 3D FIX     |
+  |  5    | Gnd      |   6   | PPS        |
+  |  7    | Gnd      |   8   | 3V3        |
+
+###### J9 Pinout
+
+  |  Pin  | Function |  Pin  | Function   |
+  | :---: | :------: | :---: | :--------: |
+  |  1    | Gnd      |   2   | GEOFENCE   |
+
 
 ##### LEDs
+
+The LED `D5` serves as a power-OK indicator and also shows the FPGA
+configuration status:
+
+  |  LED  |            State              |
+  | :---: | :---------------------------: |
+  | off   | no power                      |
+  | red   | power OK, FPGA not configured |
+  | green | power OK, FPGA configured OK  |
 
 The LED `D11` connects to the DP83640's `LED_ACT` output and
 conveys -- together with the other two LEDs which are built into
@@ -413,19 +559,25 @@ If the board is strapped for 'Mode 1' then `LED_ACT` blinks when there
 is link activity. The built-in LEDs signal the link speed and connectivity.
 Consult the datasheet for details and other modes.
 
-LEDs `D2` through `D9` are controlled by the FPGA and the firmware
+LEDs `D1` through `D4` are controlled by the FPGA and the firmware
 uses them to indicate the following status.
 
-  |  LED  | Function             |
-  | :---- | :------------------- |
-  |  D2   | Unused               |
-  |  D3   | RMII PLL not locked  |
-  |  D4   | Ethernet Link OK     |
-  |  D5   | Link speed 10Mbps    |
-  |  D6   | Full duplex          |
-  |  D7   | USB suspended        |
-  |  D8   | All-multicast        |
-  |  D9   | Promiscuous          |
+  |  LED     | Function             |
+  | :------- | :------------------- |
+  |  D1 GRN  | PPS                  |
+  |  D1 RED  | RMII PLL not locked  |
+  |  D2 GRN  | Ethernet Link OK     |
+  |  D2 RED  | Link speed 10Mbps    |
+  |  D3 GRN  | Full duplex          |
+  |  D3 RED  | USB suspended        |
+  |  D4 GRN  | All-multicast        |
+  |  D4 RED  | Promiscuous          |
+
+#### Enclosure
+
+The tic-nic should fit into a Hammond 1455L801 extruded aluminum enclosure.
+Alternatively, we recommend to install Essentra FSR-1 feet and cover the
+battery holder with some tape to avoid short-circuits.
 
 ### Firmware
 
@@ -435,38 +587,39 @@ Once a working design is in the FPGA you can use it to reprogram the
 flash. The tic-nic design features an ACM USB function which has
 flash-programming functionality:
 
-   1. change directory to `firmware/modules/acm-toolbox/sw/`
-   2. build the `bbcli` utility:
+   1. change directory to `software/tool`
+   2. build the `flastic` utility:
 
-          make bbcli
+          cmake -B build .
+          make -C build -j
 
-The `bbcli` utility can be used for
+   3. install to a location of your choice.
+
+NOTE: make sure the ACM tty device is not in use by any
+GPS software before running `flastic`!
+
+The `flastic` utility can be used for
 
    1. reading the firmware git version
 
-          bbcli -d /dev/ttyACM0 -V
-
-      assuming the tic-nic is the first/only ACM
-      device. If there are multiple ACM devices then
-      you have to figure out which one belongs to tic-nic.
+          flastic -V
 
    2. accessing the SPI flash device
 
-Since the utility was copied from another design it has many
-options that are unsupported by tic-nic.
-
-`bbcli -h` gives online help (including many unsupported features;
- relevant are `-d`, `-h`, `-a`, `-f`, `-S`, `-!`, `-?`).
+`flastic -h` gives online help.
 
 Reprogramming the flash can be done with the command
 
-      bbcli -d /dev/ttyACM0 -a 0 -f tic_nic.hex.bin -SWena,Erase,Prog -!
+          flastic -f tic_nic.hex.bin
 
 assuming you are in the `firmware/efx/outflow` directory; otherwise
 the `-f` argument must be modified accordingly.
 
-Note that you have to power-cycle or hit the reset button
-for the new design to be loaded from flash.
+Newer versions of the firmware support automatic reconfiguration
+of the FPGA after `flastic` has rewritten the flash but if you are
+updating an older version then you have to power-cycle or hit the reset
+button for the new design to be loaded into the FPGA's configuration
+memory. The tool will alert you accordingly.
 
 #### Modifications
 
@@ -478,10 +631,11 @@ call `generate_project.py` again.
 
 Because the efinity software does not support hooking user-defined
 scripts/actions the user is responsible for keeping the git version
-which is reported by `bbcli -V` synchronized with the 'true' git
+which is reported by `flastic -V` synchronized with the 'true' git
 hash of the project. It is recommended to run
 
-     firmware/efx/update_git_version_pkg.sh
+     cd firmware/efx
+     ../modules/efx-scripts/update_git_version_pkg.sh
 
 every time before the design is rebuilt with efinity. Note that
 if the state of the working-directory is not 'clean' the reported
@@ -493,9 +647,13 @@ project XML (and debugger JSON) files by changing their UUID and
 dates. This is unfortunate and will cause `update_git_version_pkg.sh`
 to reset the version to all zeros. It is OK to just reset the
 mentioned files (`git reset --hard`) if you are certain that you
-have no local modifications.
+have no other local modifications.
 
 ### Software
+
+#### Flash Utility
+
+See above for how to build and use the `flastic` utility.
 
 #### Mdio Helper Program
 
@@ -511,7 +669,7 @@ This can be useful to test some features. The tool also
 supports sending and receiving ethernet packets using a
 raw socket.
 
-Note, however, that `mcio_ctl` automatically takes over the
+Note, however, that `mdio_ctl` automatically takes over the
 device from the kernel driver when it runs but the udev machinery
 will immediately grab it back and re-bind it to `cdc_ncm` or
 `cdc_tic_nic` after the program exits which means that changes
