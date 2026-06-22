@@ -67,19 +67,61 @@ VendDev::vend_cmd_dev_wr(unsigned req, uint8_t *buf, size_t len)
 	return vend_cmd_dev_wr( req, 0x00, MAIN_IDX, buf, len );
 }
 
+struct DevList {
+	libusb_device **l_{nullptr};
+
+	DevList(libusb_context *ctx)
+	{
+		int st;
+		if ( (st = libusb_get_device_list( ctx, &l_ )) < 0 ) {
+			throw Err(st, "Error - libusb_get_device_list failed:");
+		}
+	}
+
+	libusb_device *operator[](unsigned i) {
+		return l_[i];
+	}
+
+	~DevList() {
+		int UNREF_DEVICES = 1;
+		if ( l_ ) {
+			libusb_free_device_list( l_, UNREF_DEVICES );
+		}
+	}
+};
+
 VendDev::VendDev(unsigned vid, unsigned pid)
 	: ctx_( nullptr ),
 	  dev_( nullptr )
 {
-int st;
+int      st;
+unsigned instance = 0;
 	if ( (st = libusb_init( &ctx_ )) ) {
 		throw Err(st, "Error - libusb_init failed:");
 	}
-	if ( ! (dev_ = libusb_open_device_with_vid_pid( ctx_, vid, pid )) ) {
-		throw std::runtime_error("Error - libusb_open_device_with_vid_pid failed.");
+	DevList devList( ctx_ );
+	unsigned i = 0;
+
+	libusb_device *dev = nullptr;
+	while ( (dev = devList[i]) ) {
+		if ( (st = libusb_get_device_descriptor( dev, &devDesc_ )) ) {
+			throw Err(st, "Error - libusb_get_device_descriptor failed.");
+		}
+		if ( devDesc_.idVendor == vid && devDesc_.idProduct == pid ) {
+			if ( instance > 0 ) {
+				instance--;
+			} else {
+				break;
+			}
+		}
+		++i;
 	}
-	if ( (st = libusb_get_device_descriptor( libusb_get_device( dev_ ), &devDesc_ )) ) {
-		throw std::runtime_error("Error - libusb_open_device_with_vid_pid failed.");
+	if ( ! dev ) {
+		throw std::runtime_error("Error - requested instance with vendor/product ID not found on USB");
+	}
+	st = libusb_open( dev, &dev_ );
+	if ( st ) {
+		throw Err(st, "Error - libusb_open failed:");
 	}
 }
 
