@@ -954,14 +954,22 @@ begin
 
    gpioIn      (7 downto 1)  <= fpgaGpio_IN (7 downto 1);
 
-   fpgaGpio_OUT(7 downto 4)  <= gpioRegs(0) (7 downto 4);
-   fpgaGpio_OE (7 downto 4)  <= gpioRegs(1) (7 downto 4);
+   fpgaGpio_OUT(7 downto 7)  <= gpioRegs(0) (7 downto 7);
+   fpgaGpio_OE (7 downto 7)  <= gpioRegs(1) (7 downto 7);
    fpgaGpio_OE (         3)  <= '0'; -- mic in
-   mic_dat                   <= fpgaGpio_IN(3);
-   fpgaGpio_OE (         1)  <= '1';
-   fpgaGpio_OUT(         1)  <= mic_sel;
-   fpgaGpio_OE (         2)  <= '1'; -- mic in
-   fpgaGpio_OUT(         2)  <= mic_clk;
+
+--   mic_dat                   <= fpgaGpio_IN(3);
+--   fpgaGpio_OE (         1)  <= '1';
+--   fpgaGpio_OUT(         1)  <= mic_sel;
+--   fpgaGpio_OE (         2)  <= '1'; -- mic in
+--   fpgaGpio_OUT(         2)  <= mic_clk;
+
+   mic_dat                   <= fpgaGpio_IN(6);
+   fpgaGpio_OE (         4)  <= '1';
+   fpgaGpio_OUT(         4)  <= mic_sel;
+   fpgaGpio_OE (         5)  <= '1'; -- mic in
+   fpgaGpio_OUT(         5)  <= mic_clk;
+
 
    gpioIn      (         0)  <= eth_gpio_9_IN;
    eth_gpio_9_OUT            <= gpioRegs(0) (         0);
