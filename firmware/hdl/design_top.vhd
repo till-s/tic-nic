@@ -16,6 +16,9 @@ use     work.RMIIMacPkg.all;
 use     work.GitVersionPkg.all;
 
 entity design_top is
+   generic (
+      BOARD_VERSION_G   : std_logic_vector(7 downto 0) := x"10"
+   );
    port (
       ulpiClk           : in    std_logic;
       -- NOTE    : unfortunately, the ulpiClk stops while ulpiRstb is asserted...
@@ -241,12 +244,6 @@ architecture rtl of design_top is
 
    signal regLocal             : std_logic_vector(7 downto 0) := (others => '0');
 
-   signal regRDat              : std_logic_vector(7 downto 0) := (others => '0');
-   signal regWDat              : std_logic_vector(7 downto 0) := (others => '0');
-   signal regAddr              : unsigned(7 downto 0)         := (others => '0');
-   signal regRdnw              : std_logic                    := '0';
-   signal regVld               : std_logic                    := '0';
-
    signal mic_clk              : std_logic := '0';
    signal mic_dat              : std_logic := '0';
    signal mic_sel              : std_logic := '1';
@@ -323,12 +320,7 @@ begin
    U_CMD : entity work.CommandWrapper
    generic map (
       GIT_VERSION_G                => GIT_VERSION_C,
-      FIFO_FREQ_G                  => real(ULPI_CLK_FREQ_C),
-      HAVE_SPI_CMD_G               => true,
-      HAVE_REG_CMD_G               => false,
-      HAVE_BB_CMD_G                => false,
-      HAVE_ADC_CMD_G               => false,
-      REG_ASYNC_G                  => false
+      SPI_CLK_FREQ_G               => real(ULPI_CLK_FREQ_C)
    )
    port map (
       clk                          => ulpiClk,
@@ -341,14 +333,7 @@ begin
       vldOb                        => fifoWVld,
       rdyOb                        => fifoWRdy,
 
-      regClk                       => ulpiClk,
-      regRDat                      => regRDat,
-      regWDat                      => regWDat,
-      regAddr                      => regAddr,
-      regRdnw                      => regRdnw,
-      regVld                       => regVld,
-      regRdy                       => '1',
-      regErr                       => '1',
+      boardVersion                 => BOARD_VERSION_G,
 
       spiSClk                      => spiSClk, --: out std_logic;
       spiMOSI                      => spiMOSI, --: out std_logic;
