@@ -29,7 +29,9 @@ entity MicWrapper is
       --                 1..n -> MIN_CIC_STAGES..MAX_CIC_STAGES
       audSel              : in  unsigned(2 downto 0) := (others => '0');
       audCen              : out std_logic;
-      audDat              : out signed(23 downto 0)
+      audDat              : out signed(23 downto 0);
+      -- synthetic PDM of sinewave
+      sinPdm              : out std_logic
    );
 end entity MicWrapper;
 
@@ -107,6 +109,15 @@ begin
          sin                 => audSin
       );
 
+   U_PDM : entity work.PDModulator
+      port map (
+         clk                 => clk,
+         rst                 => rst,
+         cen                 => micCenLoc,
+         sig                 => audSin,
+         pdm                 => sinPdm
+      );
+
    -- map micDat 0/1 to cicDataIn -1/+1; match
    -- existing CIC implementation from other project
    cicDataIn(0) <= '1';
@@ -119,8 +130,12 @@ begin
       -- arbitrary decimation factors up to 2**LD_MAX_DCM_G - 1. Also,
       -- the input data width is wider than necessary since we want
       -- bipolar input data. => sign bit + max growth
-      constant GROWTH_C           : natural := AUDIO_DECM_G**STAGES;
-      constant LD_GROWTH_C        : natural := integer(ceil(log2(real(GROWTH_C))));
+      --
+      --    constant GROWTH_C           : natural := AUDIO_DECM_G**STAGES;
+      --    constant LD_GROWTH_C        : natural := integer(ceil(log2(real(GROWTH_C))));
+      -- prevent GROWTH_C above from overflowing natural
+      constant LD_GROWTH_C        : natural := integer(ceil(real(STAGES)*log2(real(AUDIO_DECM_G))));
+
       constant SIGNIFICANT_BITS_C : natural := 1 +  LD_GROWTH_C;
       -- FACT_W_C: multiplier width (given by hardware)
       constant FACT_W_C         : natural := 18;
@@ -172,19 +187,46 @@ begin
 
       P_SCALE : process ( clk ) is
          -- represents 'one' but does not directly fit
-         -- into the multiplier (largest positive number is ONE_C - 1).
-         constant ONE_C    : natural := 2**(FACT_W_C - 1);
-         -- scale as a real number full-scale => 2**LD_GROWTH_C - 1
-         -- RSCALE_C = ((full_scale/growth) - 1) * ONE_C, i.e., the deviation from one normalized to ONE_C
-         -- (so that we can perform integer multiplication)
-         constant RSCALE_C : real    := real((2**LD_GROWTH_C - 1) - GROWTH_C)*real(ONE_C)/real(GROWTH_C);
+         -- into the multiplier (largest positive number is ONE_M_C - 1).
+         constant ONE_M_C  : unsigned(FACT_W_C -1 downto 0) := ( (FACT_W_C - 1) => '1', others => '0' );
 
-         -- scale factor, renormalized to ONE_C, as a signed number matching the multiplier port width
+         function POW(constant x : unsigned; constant y : natural) return unsigned is
+            variable v : unsigned(x'range) := to_unsigned(1, x'length);
+         begin
+            for i in 1 to y loop
+               v := resize(v * x, v'length);
+	    end loop;
+            return v;
+         end function POW;
+
+         -- scale as a real number full-scale => 2**LD_GROWTH_C - 1
+         -- RSCALE_C = ((full_scale/growth) - 1) * ONE_M_C, i.e., the deviation from one normalized to ONE_M_C
+         -- (so that we can perform integer multiplication)
+
+         function RSCALE_F return unsigned is
+            variable grow     : unsigned(LD_GROWTH_C - 1 downto 0);
+            variable diff     : unsigned(grow'range);
+            -- one extra bit for rounding
+            variable prod     : unsigned(LD_GROWTH_C + FACT_W_C downto 0);
+            constant FULLS_C  : unsigned(grow'range)  := (others => '1');
+         begin
+             grow := POW(to_unsigned(AUDIO_DECM_G, grow'length), STAGES);
+             -- 2**LD_GROWTH_C - 1 - AUDIO_DECM_G**STAGES
+             diff := FULLS_C - grow;
+             -- 2 * diff * one
+             prod := shift_left( resize( diff * ONE_M_C, prod'length ), 1 );
+             prod := prod / resize( grow, prod'length );
+             -- round
+             prod := shift_right( prod + 1, 1 );
+             return resize(prod, FACT_W_C);
+         end function RSCALE_F;
+
+         -- scale factor, renormalized to ONE_M_C, as a signed number matching the multiplier port width
          -- (FACT_W_C).
-         constant SCALE_C  : signed(FACT_W_C - 1 downto 0) := to_signed(integer(round(RSCALE_C)), FACT_W_C);
+         constant SCALE_C  : signed(FACT_W_C - 1 downto 0) := signed(RSCALE_F);
       begin
          if ( rising_edge(clk) ) then
-            -- prod = (scale - 1)*ONE_C * data
+            -- prod = (scale - 1)*ONE_M_C * data
             prod           <= SCALE_C * cicData(cicData'left downto cicData'length - FACT_W_C);
             -- delay the data while the product is computed
             cicDataDly     <= cicData;
