@@ -12,3 +12,6 @@
 [submodule "firmware/modules/eth-rmii-mac"]
 	path = firmware/modules/eth-rmii-mac
 	url = ../eth-rmii-mac.git
+[submodule "firmware/modules/efx-scripts"]
+	path = firmware/modules/efx-scripts
+	url = ../efx-scripts.git
