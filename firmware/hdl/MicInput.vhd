@@ -6,9 +6,7 @@ use ieee.math_real.all;
 
 entity MicInput is
    generic (
-      -- arbitray upper bound; lower bound is 2
-      PRESC_HI_PERIOD_G   : positive range 2 to 10000 := 15;
-      PRESC_LO_PERIOD_G   : positive range 2 to 10000 := 15;
+      PRESC_WIDTH_G       : positive  := 8;
       CEN_DLY_G           : natural   := 0;
       MIC_SEL_G           : std_logic := '0';
       MIC_DAT_CC_STAGES_G : natural   := 0
@@ -21,6 +19,14 @@ entity MicInput is
       mic_cen             : out std_logic;
       fifo_dat            : out std_logic_vector(7 downto 0);
       fifo_wen            : out std_logic;
+      -- prescaler for generating the microphone clock; the rate is
+      -- the input ('clk') frequency divided by (prescPeriodLo + 1 + prescPeriodHi + 1),
+      -- i.e., the values provided is the actual value - 1.
+      -- The clock stays low for (prescPeriodLo + 1) cycles and high for
+      -- (prescPeriodHi + 1) cycles;
+      -- unless both values are set no clock is generated
+      prescPeriodLo       : in  unsigned(PRESC_WIDTH_G - 1 downto 0);
+      prescPeriodHi       : in  unsigned(PRESC_WIDTH_G - 1 downto 0);
       -- rising edge on 'resync' causes the
       -- mic_clk to be 'resynchronized'; this means
       -- that the data line is observed until a rising
@@ -47,27 +53,15 @@ architecture rtl of MicInput is
 
    constant MIC_DAT_ACTIVE_C : std_logic := '1';
 
-   function PRESC_HI_F return natural is
-      variable v : integer;
-   begin
-      v := PRESC_LO_PERIOD_G;
-      if ( v < PRESC_HI_PERIOD_G ) then
-         v := PRESC_HI_PERIOD_G;
-      end if;
-      if ( v <= 2 ) then
-         v := 1;
-      else
-         v := integer(ceil(log2(real(v - 2)))) + 1;
-      end if;
-      return v + 1; -- sign bit
-   end function PRESC_HI_F;
-
-   subtype PrescalerType is signed(PRESC_HI_F downto 0);
+   -- add a sign bit
+   subtype PrescalerType is signed(PRESC_WIDTH_G downto 0);
 
    type RegType is record
       shift_reg : std_logic_vector(7 downto 0);
       fifo_wena : std_logic_vector(7 downto 0);
       prescaler : PrescalerType;
+      perLo     : PrescalerType;
+      perHi     : PrescalerType;
       mic_clk   : std_logic;
       cen       : std_logic_vector(CEN_DLY_G downto 0);
       synced    : std_logic;
@@ -75,23 +69,12 @@ architecture rtl of MicInput is
       resync    : std_logic;
    end record RegType;
 
-   function PRESC_INIT_F(constant clkPol : in std_logic)
-   return PrescalerType is
-      variable v : integer;
-   begin
-      if ( clkPol = '1' ) then
-         v := PRESC_LO_PERIOD_G;
-      else
-         v := PRESC_HI_PERIOD_G;
-      end if;
-      return to_signed( v - 2, PrescalerType'length );
-   end function PRESC_INIT_F;
- 
    constant REG_INIT_C : RegType := (
       shift_reg => ( others => '0' ),
       fifo_wena => ( 0 => '1', others => '0'),
-      -- PRESC_INIT_F takes the *previous* clock level
-      prescaler => PRESC_INIT_F('1'),
+      prescaler => ( others => '0' ), -- first clock registers periods;
+      perLo     => ( others => '1' ),
+      perHi     => ( others => '1' ),
       mic_clk   => MIC_SEL_G,
       cen       => ( others => '0' ),
       synced    => '1', -- only sync on request
@@ -134,19 +117,28 @@ begin
       mic_dat_sync <= mic_dat;
    end generate G_NO_CC;
 
-   P_COMB : process ( r, mic_dat_sync, cen_in, resync ) is
+   P_COMB : process ( r, mic_dat_sync, cen_in, resync, prescPeriodLo, prescPeriodHi ) is
       variable v : RegType;
    begin
       v           := r;
 
       v.lstDat    := mic_dat_sync;
 
+      v.perLo     := signed( resize( prescPeriodLo, v.perLo'length ) );
+      v.perHi     := signed( resize( prescPeriodHi, v.perHi'length ) );
+
       v.resync    := resync;
-      v.prescaler := r.prescaler - 1;
+
       if ( r.prescaler < 0 ) then
-         v.prescaler := PRESC_INIT_F(r.mic_clk);
+         if ( r.mic_clk = '1' ) then
+            v.prescaler := r.perLo - 1;
+         else
+            v.prescaler := r.perHi - 1;
+         end if;
          v.mic_clk   := not r.mic_clk;
       end if;
+
+      v.prescaler := v.prescaler - 1;
 
       v.cen := cen_in & r.cen( r.cen'left downto 1 );
 
@@ -169,7 +161,11 @@ begin
            -- deactivate the clock; may cause a glitch
            -- but who cares.
            v.mic_clk   := MIC_SEL_G;
-           v.prescaler := shift_right(PRESC_INIT_F( not MIC_SEL_G ), 1);
+           if ( not MIC_SEL_G ) then
+              v.prescaler := shift_right(r.perLo, 1);
+           else
+              v.prescaler := shift_right(r.perHi, 1);
+           end if;
            v.synced    := '1';
          end if;
       end if;

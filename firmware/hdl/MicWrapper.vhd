@@ -8,15 +8,14 @@ entity MicWrapper is
    generic (
       -- account for external clk->data delays in mic path
       CEN_DLY_G           : natural              := 0;
-      PRESC_HI_PERIOD_G   : natural              := 15;
-      PRESC_LO_PERIOD_G   : natural              := 15;
       -- audio period in multiples of the prescaler
       -- period.
       AUDIO_DECM_G        : natural;
       MIN_CIC_STAGES_G    : natural range 1 to 4 := 1;
       MAX_CIC_STAGES_G    : natural range 1 to 4 := 4;
       MIC_SEL_G           : std_logic            := '0';
-      MIC_DAT_CC_STAGES_G : natural              := 0
+      MIC_DAT_CC_STAGES_G : natural              := 0;
+      MIC_PRESC_WIDTH_G   : positive             := 8
    );
    port (
       clk                 : in  std_logic;
@@ -29,6 +28,14 @@ entity MicWrapper is
       micCen              : out std_logic;
       micFifoDat          : out std_logic_vector(7 downto 0);
       micFifoWen          : out std_logic;
+      -- prescaler for generating the microphone clock; the rate is
+      -- the input ('clk') frequency divided by (prescLoPeriod + 1 + prescHiPeriod + 1),
+      -- i.e., the values provided is the actual value - 1.
+      -- The clock stays low for (prescLoPeriod + 1) cycles and high for
+      -- (prescHiPeriod + 1) cycles;
+      -- unless both values are set no clock is generated
+      micPrescPeriodLo    : in  unsigned(MIC_PRESC_WIDTH_G - 1 downto 0);
+      micPrescPeriodHi    : in  unsigned(MIC_PRESC_WIDTH_G - 1 downto 0);
       -- mux: 0-based index 0 -> test sinewave,
       --                 1..n -> MIN_CIC_STAGES..MAX_CIC_STAGES
       audSel              : in  unsigned(2 downto 0) := (others => '0');
@@ -98,8 +105,7 @@ begin
    U_MIC : entity work.MicInput
       generic map (
          CEN_DLY_G           => CEN_DLY_G,
-         PRESC_HI_PERIOD_G   => PRESC_HI_PERIOD_G,
-         PRESC_LO_PERIOD_G   => PRESC_LO_PERIOD_G,
+         PRESC_WIDTH_G       => MIC_PRESC_WIDTH_G,
 	 MIC_SEL_G           => MIC_SEL_G,
 	 MIC_DAT_CC_STAGES_G => MIC_DAT_CC_STAGES_G
       )
@@ -109,6 +115,8 @@ begin
          mic_dat             => micDat,
          mic_clk             => micClk,
          mic_cen             => micCenLoc,
+	 prescPeriodLo       => micPrescPeriodLo,
+	 prescPeriodHi       => micPrescPeriodHi,
          fifo_dat            => micFifoDat,
          fifo_wen            => micFifoWen,
 	 resync              => micSync,

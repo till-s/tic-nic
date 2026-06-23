@@ -119,6 +119,7 @@ architecture rtl of design_top is
    constant UART_MAX_BITS_C    : natural :=  8;
 
    constant MIC_SEL_C          : std_logic := '0';
+   constant MIC_PRESC_WIDTH_C  : natural :=  8;
 
    -- delay in external registers (clk + dat)
    constant MIC_DELAY_C        : natural := 2;
@@ -400,6 +401,8 @@ architecture rtl of design_top is
    signal mic_sel              : std_logic := MIC_SEL_C;
    signal mic_resync           : std_logic := '0';
    signal mic_synced           : std_logic;
+   signal mic_presc_period_hi  : unsigned(MIC_PRESC_WIDTH_C - 1 downto 0);
+   signal mic_presc_period_lo  : unsigned(MIC_PRESC_WIDTH_C - 1 downto 0);
 
 begin
 
@@ -845,10 +848,7 @@ begin
    U_MIC : entity work.MicWrapper
       generic map (
          CEN_DLY_G                    => MIC_DELAY_C,
-         -- 2 MHz mic clock: ulpiClk / (2 * HALF_PERIOD)
-         --
-         PRESC_HI_PERIOD_G            => MIC_PRESC_HI_C,
-         PRESC_LO_PERIOD_G            => MIC_PRESC_LO_C,
+         MIC_PRESC_WIDTH_G            => MIC_PRESC_WIDTH_C,
          AUDIO_DECM_G                 => AUDIO_DECM_C,
 	 MIC_SEL_G                    => MIC_SEL_C,
 	 MIC_DAT_CC_STAGES_G          => 2
@@ -862,6 +862,8 @@ begin
          micCen                       => open,
 	 micSync                      => mic_resync,
 	 micSynced                    => mic_synced,
+         micPrescPeriodLo             => mic_presc_period_lo,
+         micPrescPeriodHi             => mic_presc_period_hi,
 
          micFifoDat                   => open,
          micFifoWen                   => open,
@@ -1016,6 +1018,8 @@ begin
 
    micInputRst               <= gpioRegs(0)(5);
    mic_resync                <= gpioRegs(0)(4);
+   mic_presc_period_lo       <= to_unsigned( MIC_PRESC_LO_C, MIC_PRESC_WIDTH_C );
+   mic_presc_period_hi       <= to_unsigned( MIC_PRESC_HI_C, MIC_PRESC_WIDTH_C );
 
    -- reconfiguration interface
    genRegRep.reconfigurable  <= '1';
