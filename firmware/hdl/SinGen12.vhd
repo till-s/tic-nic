@@ -8,6 +8,7 @@ use     ieee.numeric_std.all;
 entity SinGen12 is
    port (
       clk            : in  std_logic;
+      rst            : in  std_logic;
       cen            : in  std_logic;
       sin            : out signed(23 downto 0);
       -- repeat each sample 'rep' times
@@ -81,6 +82,13 @@ begin
             end if;
          end if;
          repCnt := rep;
+	 if ( rst = '1' ) then
+            idx    := 0;
+            quad   := 0;
+            repCnt := 0;
+            cnt    := -1;
+	    smpl   := (others => '0');
+	 end if;
       end if;
       sin <= smpl;
    end process P_SING;
