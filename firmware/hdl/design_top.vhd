@@ -124,6 +124,8 @@ architecture rtl of design_top is
 
    constant UART_MAX_BITS_C    : natural :=  8;
 
+   constant MIC_SEL_C          : std_logic := '0';
+
    -- delay in external registers (clk + dat)
    constant MIC_DELAY_C        : natural := 2;
 
@@ -180,6 +182,8 @@ architecture rtl of design_top is
    constant AUD_SMPL_FREQ_C    : natural := 48000;
    -- mic @ 2MHz
    constant MIC_PRESC_C        : natural := 25;
+   constant MIC_PRESC_HI_C     : natural := (MIC_PRESC_C / 2);
+   constant MIC_PRESC_LO_C     : natural := ((MIC_PRESC_C + 1) / 2);
    constant AUDIO_DECM_C       : natural := 50; -- ulpi_freq/mic_pres/audio_freq
    constant LD_AUD_FIFO_DEPTH_C: natural := 6;
 
@@ -845,17 +849,20 @@ begin
          CEN_DLY_G                    => MIC_DELAY_C,
          -- 2 MHz mic clock: ulpiClk / (2 * HALF_PERIOD)
          --
-         PRESC_HI_PERIOD_G            => (MIC_PRESC_C/2),
-         PRESC_LO_PERIOD_G            => ((MIC_PRESC_C+1)/2),
-         AUDIO_DECM_G                 => AUDIO_DECM_C
+         PRESC_HI_PERIOD_G            => MIC_PRESC_HI_C,
+         PRESC_LO_PERIOD_G            => MIC_PRESC_LO_C,
+         AUDIO_DECM_G                 => AUDIO_DECM_C,
+	 MIC_SEL_G                    => MIC_SEL_C,
+	 MIC_DAT_CC_STAGES_G          => 2
       )
       port map (
          clk                          => ulpiClk,
          rst                          => usb2Rst,
          micDat                       => mic_dat,
          micClk                       => mic_clk,
-         micSel                       => mic_sel,
          micCen                       => open,
+	 micSync                      => mic_resync,
+	 micSynced                    => mic_synced,
 
          micFifoDat                   => open,
          micFifoWen                   => open,

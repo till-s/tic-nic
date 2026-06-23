@@ -14,14 +14,18 @@ entity MicWrapper is
       -- period.
       AUDIO_DECM_G        : natural;
       MIN_CIC_STAGES_G    : natural range 1 to 4 := 1;
-      MAX_CIC_STAGES_G    : natural range 1 to 4 := 4
+      MAX_CIC_STAGES_G    : natural range 1 to 4 := 4;
+      MIC_SEL_G           : std_logic            := '0';
+      MIC_DAT_CC_STAGES_G : natural              := 0
    );
    port (
       clk                 : in  std_logic;
       rst                 : in  std_logic;
+      micInputRst         : in  std_logic;
       micDat              : in  std_logic;
       micClk              : out std_logic;
-      micSel              : in  std_logic := '0';
+      micSync             : in  std_logic := '0';
+      micSynced           : out std_logic;
       micCen              : out std_logic;
       micFifoDat          : out std_logic_vector(7 downto 0);
       micFifoWen          : out std_logic;
@@ -90,16 +94,19 @@ begin
       generic map (
          CEN_DLY_G           => CEN_DLY_G,
          PRESC_HI_PERIOD_G   => PRESC_HI_PERIOD_G,
-         PRESC_LO_PERIOD_G   => PRESC_LO_PERIOD_G
+         PRESC_LO_PERIOD_G   => PRESC_LO_PERIOD_G,
+	 MIC_SEL_G           => MIC_SEL_G,
+	 MIC_DAT_CC_STAGES_G => MIC_DAT_CC_STAGES_G
       )
       port map (
          clk                 => clk,
          mic_dat             => micDat,
          mic_clk             => micClk,
-         mic_sel             => micSel,
          mic_cen             => micCenLoc,
          fifo_dat            => micFifoDat,
-         fifo_wen            => micFifoWen
+         fifo_wen            => micFifoWen,
+	 resync              => micSync,
+	 synced              => micSynced
       );
 
    U_SIN : entity work.SinGen12
