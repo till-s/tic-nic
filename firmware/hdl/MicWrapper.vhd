@@ -214,18 +214,18 @@ begin
             variable grow     : unsigned(LD_GROWTH_C - 1 downto 0);
             variable diff     : unsigned(grow'range);
             -- one extra bit for rounding
-            variable prod     : unsigned(LD_GROWTH_C + FACT_W_C downto 0);
+            variable mulp     : unsigned(LD_GROWTH_C + FACT_W_C downto 0);
             constant FULLS_C  : unsigned(grow'range)  := (others => '1');
          begin
              grow := POW(to_unsigned(AUDIO_DECM_G, grow'length), STAGES);
              -- 2**LD_GROWTH_C - 1 - AUDIO_DECM_G**STAGES
              diff := FULLS_C - grow;
              -- 2 * diff * one
-             prod := shift_left( resize( diff * ONE_M_C, prod'length ), 1 );
-             prod := prod / resize( grow, prod'length );
+             mulp := shift_left( resize( diff * ONE_M_C, mulp'length ), 1 );
+             mulp := mulp / resize( grow, mulp'length );
              -- round
-             prod := shift_right( prod + 1, 1 );
-             return resize(prod, FACT_W_C);
+             mulp := shift_right( mulp + 1, 1 );
+             return resize(mulp, FACT_W_C);
          end function RSCALE_F;
 
          -- scale factor, renormalized to ONE_M_C, as a signed number matching the multiplier port width
