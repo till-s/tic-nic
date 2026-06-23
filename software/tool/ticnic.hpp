@@ -43,7 +43,12 @@ public:
 	void getLED (GPIOVal &);
 	void getGPIO(GPIOVal &);
 
-	enum class ACMSelection { UART, TOOL };
+	// TOOL switches the ACM mux until DTR is dropped
+	// (may happen multiple times when using fifoOpen!;
+	// c.f. the 'fw()' algorithm). TOOL_HOLD switches
+	// the mux permanently, i.e., until explicitly
+	// switched back.
+	enum class ACMSelection { UART, TOOL, TOOL_HOLD };
 	void setSelection(ACMSelection);
 	ACMSelection getSelection();
 

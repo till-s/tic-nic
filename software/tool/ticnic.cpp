@@ -33,6 +33,7 @@ namespace {
 	constexpr const unsigned  REQ_UMUX = 0x03; // control uart mux (was acmDTR on older firmware)
 	constexpr const unsigned  REQ_VERS = 0x04; // obtain versions (w/o having to use the ACM)
 
+	constexpr const uint8_t   UMUX_SEL_HOLD = 0x02;
 	constexpr const uint8_t   UMUX_SEL_TOOL = 0x01;
 	constexpr const uint8_t   UMUX_SEL_UART = 0x00;
 };
@@ -46,7 +47,6 @@ TicNic::TicNic( const std::string &ttyName )
 TicNic::TicNic(unsigned vid, unsigned pid, const std::string &ttyName )
 : libusb_vend_cmd::VendDev( vid, pid ), fw_( nullptr ), fd_( -1 ), ttyName_( ttyName )
 {
-	fw();
 }
 
 struct Dir {
@@ -273,7 +273,11 @@ TicNic::setSelection(TicNic::ACMSelection sel)
 {
 	requireBCDDevice( 0x0101 );
 	uint8_t buf[1];
-	buf[0] = (sel == ACMSelection::TOOL ? UMUX_SEL_TOOL : UMUX_SEL_UART);
+	switch ( sel ) {
+		case  ACMSelection::TOOL      : buf[0] = UMUX_SEL_TOOL;                   break;
+		case  ACMSelection::TOOL_HOLD : buf[0] = (UMUX_SEL_TOOL | UMUX_SEL_HOLD); break;
+		default                       : buf[0] = UMUX_SEL_UART;                   break;
+	}
 	vend_cmd_dev_wr( REQ_UMUX, buf, sizeof(buf) );
 }
 

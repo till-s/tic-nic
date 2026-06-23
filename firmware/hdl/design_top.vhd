@@ -224,11 +224,13 @@ architecture rtl of design_top is
    type UmuxRegType is record
       lastDTR      : std_logic;
       selInternal  : std_logic;
+      holdMux      : std_logic;
    end record UmuxRegType;
 
    constant UMUX_REG_INIT_C : UmuxRegType := (
       lastDTR      => '0',
-      selInternal  => '0'
+      selInternal  => '0',
+      holdMux      => '0'
    );
 
    signal umuxR                : UmuxRegType := UMUX_REG_INIT_C;
@@ -866,10 +868,11 @@ begin
          end if;
          if ( ep0DevAgentParmsVld(REQ_UMUX_WR_IDX_C) = '1' ) then
             umuxR.selInternal <= ep0DevAgentParmsOb(0)(0);
+            umuxR.holdMux     <= ep0DevAgentParmsOb(0)(1);
          end if;
          umuxR.lastDTR <= acmDTR;
          -- when DTR drops reset mux
-         if ( (not acmDTR and umuxR.lastDTR) = '1' ) then
+         if ( (not acmDTR and umuxR.lastDTR and not umuxR.holdMux) = '1' ) then
             umuxR.selInternal <= '0';
          end if;
          if ( (usb2Rst or usb2DevStatus.usb2Rst) = '1' ) then
@@ -898,6 +901,7 @@ begin
       end if;
       if ( ep0DevAgentParmsVld(REQ_UMUX_RD_IDX_C) = '1' ) then
          ep0DevAgentParmsIb(0)(0)              <= umuxR.selInternal;
+         ep0DevAgentParmsIb(0)(1)              <= umuxR.holdMux;
       end if;
       if ( ep0DevAgentParmsVld(REQ_VERS_RD_IDX_C) = '1' ) then
          ep0DevAgentParmsIb(5)                 <= BOARD_VERSION_C;
