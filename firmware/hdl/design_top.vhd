@@ -627,7 +627,7 @@ begin
       end if;
    end process P_SPEED_SEL;
 
-   U_SYNC_SPEED : entity work.Usb2CSync
+   U_SYNC_SPEED : entity work.Usb2CCSync
       generic map ( INIT_G => '0' )
       port    map ( clk => ulpiClk,  d => ethMacSpeed10,      q => ncmSpeed10 );
 
