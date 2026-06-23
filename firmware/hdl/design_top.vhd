@@ -81,12 +81,6 @@ entity design_top is
       eth_mdio_OUT      : out   std_logic := '1';
       eth_mdio_OE       : out   std_logic := '0';
 
-      eth_gpio_1_IN     : in    std_logic;
-      eth_gpio_1_OUT    : out   std_logic := '0';
-      eth_gpio_1_OE     : out   std_logic := '0';
-      eth_gpio_2_IN     : in    std_logic;
-      eth_gpio_2_OUT    : out   std_logic := '0';
-      eth_gpio_2_OE     : out   std_logic := '0';
       eth_gpio_9_IN     : in    std_logic;
       eth_gpio_9_OUT    : out   std_logic := '0';
       eth_gpio_9_OE     : out   std_logic := '0';
@@ -101,9 +95,9 @@ entity design_top is
       eth_rxd           : in    std_logic_vector(3 downto 0);
 
       -- note: fpgaGpio[0] *not* available on V2.0 board (only starting with 2.1)
-      fpgaGpio_IN       : in    std_logic_vector(7 downto 0) := (others => '0');
-      fpgaGpio_OUT      : out   std_logic_vector(7 downto 0) := (others => '0');
-      fpgaGpio_OE       : out   std_logic_vector(7 downto 0) := (others => '0');
+      fpgaGpio_IN       : in    std_logic_vector(7 downto 1) := (others => '0');
+      fpgaGpio_OUT      : out   std_logic_vector(7 downto 1) := (others => '0');
+      fpgaGpio_OE       : out   std_logic_vector(7 downto 1) := (others => '0');
 
       fpga_b3_io_IN     : in    std_logic_vector(2 downto 0);
       fpga_b3_io_OUT    : out   std_logic_vector(2 downto 0) := (others => '0');
@@ -398,10 +392,14 @@ architecture rtl of design_top is
    signal audioInpVolMaster    : signed(15 downto 0)          := (others => '0');
    signal micPcmDat            : signed(23 downto 0);
    signal micInputSel          : unsigned(2 downto 0);
+   signal micInputRst          : std_logic := '0';
 
    signal mic_clk              : std_logic := '0';
+   signal mic_clk_loc          : std_logic := '0';
    signal mic_dat              : std_logic := '0';
-   signal mic_sel              : std_logic := '1';
+   signal mic_sel              : std_logic := MIC_SEL_C;
+   signal mic_resync           : std_logic := '0';
+   signal mic_synced           : std_logic;
 
 begin
 
@@ -629,7 +627,7 @@ begin
       end if;
    end process P_SPEED_SEL;
 
-   U_SYNC_SPEED : entity work.Usb2CCSync
+   U_SYNC_SPEED : entity work.Usb2CSync
       generic map ( INIT_G => '0' )
       port    map ( clk => ulpiClk,  d => ethMacSpeed10,      q => ncmSpeed10 );
 
@@ -858,6 +856,7 @@ begin
       port map (
          clk                          => ulpiClk,
          rst                          => usb2Rst,
+	 micInputRst                  => micInputRst,
          micDat                       => mic_dat,
          micClk                       => mic_clk,
          micCen                       => open,
@@ -973,13 +972,30 @@ begin
 --   fpgaGpio_OE (         1)  <= '1';
 --   fpgaGpio_OUT(         1)  <= mic_sel;
 --   fpgaGpio_OE (         2)  <= '1'; -- mic in
---   fpgaGpio_OUT(         2)  <= mic_clk;
+   fpgaGpio_OUT(         2)  <= mic_clk;
 
-   mic_dat                   <= fpgaGpio_IN(6);
-   fpgaGpio_OE (         4)  <= '1';
-   fpgaGpio_OUT(         4)  <= mic_sel;
-   fpgaGpio_OE (         5)  <= '1'; -- mic in
-   fpgaGpio_OUT(         5)  <= mic_clk;
+   P_MIC_CLK : process (ulpiClk) is
+      variable cnt : integer := 0;
+   begin
+      if ( rising_edge( ulpiClk ) ) then
+         if ( cnt < 0 ) then
+            if ( mic_clk_loc = '0' ) then
+               cnt := MIC_PRESC_HI_C - 2;
+            else
+               cnt := MIC_PRESC_LO_C - 2;
+            end if;
+            mic_clk_loc <= not mic_clk_loc;
+         else
+            cnt := cnt - 1;
+         end if;
+      end if;
+   end process P_MIC_CLK;
+
+   mic_dat                   <= fpga_b3_io_IN(0);
+   fpga_b3_io_OE (       1)  <= '1';
+   fpga_b3_io_OUT(       1)  <= mic_sel;
+   fpga_b3_io_OE (       2)  <= '1'; -- mic in
+   fpga_b3_io_OUT(       2)  <= mic_clk_loc;
 
 
    gpioIn      (         0)  <= eth_gpio_9_IN;
@@ -997,6 +1013,9 @@ begin
 
    -- LEDs are active low
    LED                       <= not ((ledIn and not ledDiagRegs(1)) or (ledDiagRegs(1) and ledDiagRegs(0))) ;
+
+   micInputRst               <= gpioRegs(0)(5);
+   mic_resync                <= gpioRegs(0)(4);
 
    -- reconfiguration interface
    genRegRep.reconfigurable  <= '1';

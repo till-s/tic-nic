@@ -76,16 +76,21 @@ begin
    P_PRESC : process ( clk ) is
    begin
       if ( rising_edge( clk ) ) then
-         if ( micCenLoc = '1' ) then
-            if ( audPresc < 0 ) then
-               audPresc  <= AUDIO_DECM_G - 2;
-               sinCen    <= '1';
-            else
-               audPresc <= audPresc - 1;
+         if ( rst = '1' ) then
+            audPresc <= AUDIO_DECM_G - 2;
+	    sinCen   <= '0';
+	 else
+            if ( micCenLoc = '1' ) then
+               if ( audPresc < 0 ) then
+                  audPresc  <= AUDIO_DECM_G - 2;
+                  sinCen    <= '1';
+               else
+                  audPresc <= audPresc - 1;
+               end if;
             end if;
-         end if;
-         if ( sinCen = '1' ) then
-            sinCen <= '0';
+            if ( sinCen = '1' ) then
+               sinCen <= '0';
+            end if;
          end if;
       end if;
    end process P_PRESC;
@@ -100,6 +105,7 @@ begin
       )
       port map (
          clk                 => clk,
+         rst                 => micInputRst,
          mic_dat             => micDat,
          mic_clk             => micClk,
          mic_cen             => micCenLoc,
@@ -112,6 +118,7 @@ begin
    U_SIN : entity work.SinGen12
       port map (
          clk                 => clk,
+         rst                 => rst,
          cen                 => sinCen,
          sin                 => audSin
       );
