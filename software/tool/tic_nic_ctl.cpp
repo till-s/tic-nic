@@ -64,7 +64,7 @@ MDIOVendDev::vend_cmd_mdio_wr(uint8_t reg_off, uint16_t v)
 
 static void usage(const char *nm)
 {
-	printf("usage: %s [-hg] [-p <product_id>] [-M reg_off[=value]] [-m <mask>] [-v <value>]\n", nm);
+	printf("usage: %s [-hgXx] [-p <product_id>] [-M reg_off[=value]] [-m <mask>] [-v <value>]\n", nm);
 }
 
 
@@ -85,7 +85,8 @@ uint16_t              vu16;
 int                   haveMdio = 0;
 bool                  reqLED   = true;
 bool                  showVers = false;
-const char           *optstr   = "VM:m:v:hg";
+const char           *optstr   = "VM:m:v:hgXx";
+int                   setMux   = 0;
 
 	while ( ( opt = getopt(argc, argv, optstr) ) > 0 ) {
 		i_p = 0;
@@ -97,6 +98,8 @@ const char           *optstr   = "VM:m:v:hg";
 			case 'p': i_p      = &pid;          break;
 			case 'g': reqLED   = false;         break;
 			case 'M':                           break;
+			case 'X': setMux   = 1;             break;
+			case 'x': setMux   =-1;             break;
 			default:  fprintf(stderr, "unknown option -%c\n", opt);
 				return -1;
 		}
@@ -141,7 +144,11 @@ const char           *optstr   = "VM:m:v:hg";
 		}
 	}
 
-	if ( val >= 0 || msk >= 0 || ! haveMdio ) {
+	if ( setMux ) {
+		ticNic.setSelection( setMux > 0 ? TicNic::ACMSelection::TOOL_HOLD : TicNic::ACMSelection::UART );
+	}
+
+	if ( val >= 0 || msk >= 0 || ! (haveMdio || setMux != 0) ) {
 		/* default is readback if nothing else is desired */
 
 		rd = (val < 0 && msk < 0);
@@ -166,7 +173,7 @@ const char           *optstr   = "VM:m:v:hg";
 		if ( rd ) {
 			printf("Response: val 0x%02x - mask 0x%02x\n", gval.val_, gval.mask_);
 		}
-	} else {
+	} else if ( 0 == setMux ) {
 		// nothing to do; show versions
 		showVers = true;
 	}
@@ -174,6 +181,7 @@ const char           *optstr   = "VM:m:v:hg";
 	if ( showVers ) {
 		ticNic.printVersion( stdout );
 	}
+	printf("Mux %i\n", static_cast<int>(ticNic.getSelection()));
 
 	rv = 0;
 bail:
