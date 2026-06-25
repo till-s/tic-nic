@@ -16,6 +16,7 @@ entity MicInput is
       rst                 : in  std_logic;
       mic_dat             : in  std_logic;
       mic_clk             : out std_logic;
+      mic_dat_sync        : out std_logic;
       mic_cen             : out std_logic;
       fifo_dat            : out std_logic_vector(7 downto 0);
       fifo_wen            : out std_logic;
@@ -84,11 +85,11 @@ architecture rtl of MicInput is
       resync    => '0'
    );
 
-   signal r            : RegType := REG_INIT_C;
-   signal rin          : RegType;
-   signal cen_in       : std_logic;
+   signal r                : RegType := REG_INIT_C;
+   signal rin              : RegType;
+   signal cen_in           : std_logic;
 
-   signal mic_dat_sync : std_logic;
+   signal mic_dat_sync_loc : std_logic;
 
 begin
 
@@ -109,20 +110,20 @@ begin
             end if;
          end if;
       end process P_CC;
-      mic_dat_sync <= syncReg(syncReg'left);
+      mic_dat_sync_loc <= syncReg(syncReg'left);
    end generate G_CC;
 
    G_NO_CC : if ( MIC_DAT_CC_STAGES_G = 0 ) generate
    begin
-      mic_dat_sync <= mic_dat;
+      mic_dat_sync_loc <= mic_dat;
    end generate G_NO_CC;
 
-   P_COMB : process ( r, mic_dat_sync, cen_in, resync, prescPeriodLo, prescPeriodHi ) is
+   P_COMB : process ( r, mic_dat_sync_loc, cen_in, resync, prescPeriodLo, prescPeriodHi ) is
       variable v : RegType;
    begin
       v           := r;
 
-      v.lstDat    := mic_dat_sync;
+      v.lstDat    := mic_dat_sync_loc;
 
       v.perLo     := signed( resize( prescPeriodLo, v.perLo'length ) );
       v.perHi     := signed( resize( prescPeriodHi, v.perHi'length ) );
@@ -144,7 +145,7 @@ begin
 
       if ( r.cen( 0 ) = '1' ) then
          v.fifo_wena := r.fifo_wena( 0 ) & r.fifo_wena( r.fifo_wena'left downto 1 );
-         v.shift_reg := mic_dat_sync & r.shift_reg( r.shift_reg'left downto 1 );
+         v.shift_reg := mic_dat_sync_loc & r.shift_reg( r.shift_reg'left downto 1 );
       end if;
 
       if ( MIC_SEL_G = '1' ) then
@@ -157,7 +158,7 @@ begin
       -- prescaler so that a detected active edge
       -- is 1/2 clock cycle ahead of the active output clock
       if ( r.synced = '0' ) then
-         if ( ( mic_dat_sync and not r.lstDat ) = MIC_DAT_ACTIVE_C ) then
+         if ( ( mic_dat_sync_loc and not r.lstDat ) = MIC_DAT_ACTIVE_C ) then
            -- deactivate the clock; may cause a glitch
            -- but who cares.
            v.mic_clk   := MIC_SEL_G;
@@ -188,10 +189,11 @@ begin
       end if;
    end process P_SEQ;
 
-   fifo_dat <= r.shift_reg;
-   fifo_wen <= r.fifo_wena(0) and r.cen(0);
-   mic_clk  <= r.mic_clk;
-   mic_cen  <= r.cen(0);
-   synced   <= r.synced;
+   fifo_dat     <= r.shift_reg;
+   fifo_wen     <= r.fifo_wena(0) and r.cen(0);
+   mic_clk      <= r.mic_clk;
+   mic_cen      <= r.cen(0);
+   synced       <= r.synced;
+   mic_dat_sync <= mic_dat_sync_loc;
 
 end architecture rtl;
