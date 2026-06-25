@@ -886,7 +886,7 @@ begin
          clk                          => ulpiClk,
          rst                          => usb2Rst,
 	 micInputRst                  => micInputRst,
-         micDat                       => sinPdm,
+         micDat                       => mic_dat,
          micClk                       => mic_clk,
          micCen                       => open,
 	 micSync                      => mic_resync,
