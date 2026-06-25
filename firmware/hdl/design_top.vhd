@@ -16,6 +16,7 @@ use     work.RMIIMacPkg.all;
 use     work.GitVersionPkg.all;
 use     work.RegPkg.all;
 use     work.GenRegPkg.all;
+use     work.MicPkg.all;
 
 -- differences to V1
 --
@@ -118,11 +119,8 @@ architecture rtl of design_top is
 
    constant UART_MAX_BITS_C    : natural :=  8;
 
-   constant MIC_SEL_C          : std_logic := '0';
-   constant MIC_PRESC_WIDTH_C  : natural :=  8;
-
    -- delay in external registers (clk + dat)
-   constant MIC_DELAY_C        : natural := 2;
+   constant MIC_DELAY_C        : natural := 0;
 
    constant NCM_IF_ASSOC_IDX_C : integer := usb2NextIfcAssocDescriptor(
       USB2_APP_DESCRIPTORS_C,
@@ -172,6 +170,9 @@ architecture rtl of design_top is
          MICR_UAC2_IFC_ASSOC_IDX_C
    );
 
+   constant MIC_PRESC_WIDTH_C  : natural :=  8;
+   constant AUDIO_DECM_WIDTH_C : natural :=  8;
+
    -- AUD_SMPL_FREQ_C should divide the ULPI clock (60MHz)
    constant ULPI_CLK_FREQ_C    : natural := 60000000;
    constant AUD_SMPL_FREQ_C    : natural := 48000;
@@ -179,8 +180,32 @@ architecture rtl of design_top is
    constant MIC_PRESC_C        : natural := 25;
    constant MIC_PRESC_HI_C     : natural := (MIC_PRESC_C / 2);
    constant MIC_PRESC_LO_C     : natural := ((MIC_PRESC_C + 1) / 2);
-   constant AUDIO_DECM_C       : natural := 50; -- ulpi_freq/mic_pres/audio_freq
+   -- decimation is zero-based
+   constant AUDIO_DECM_C       : unsigned(AUDIO_DECM_WIDTH_C - 1 downto 0) := to_unsigned( 50 - 1, AUDIO_DECM_WIDTH_C ); -- ulpi_freq/mic_pres/audio_freq
    constant LD_AUD_FIFO_DEPTH_C: natural := 6;
+
+   constant MIC_SEL_C          : std_logic := '0';
+   constant MULT_WIDTH_C       : natural := 18;
+   constant MIN_CIC_STAGES_C   : natural :=  1;
+   constant MAX_CIC_STAGES_C   : natural :=  4;
+
+   function AUD_SCALES_F return ScaleArray is
+      variable v : ScaleArray(MIN_CIC_STAGES_C to MAX_CIC_STAGES_C);
+   begin
+      for STAGES in v'range loop
+         v(STAGES) := cicScaleFactor( AUDIO_DECM_C, STAGES, MULT_WIDTH_C );
+      end loop;
+      return v;
+   end function AUD_SCALES_F;
+
+   function AUD_SHIFTS_F return ShiftArray is
+      variable v : ShiftArray(MIN_CIC_STAGES_C to MAX_CIC_STAGES_C);
+   begin
+      for STAGES in v'range loop
+         v(STAGES) := cicScaleFactorShift( AUDIO_DECM_C, STAGES );
+      end loop;
+      return v;
+   end function AUD_SHIFTS_F;
 
    constant REQ_LED_CTL_C     : Usb2CtlRequestCodeType := x"01";
    constant REQ_GPIO_CTL_C    : Usb2CtlRequestCodeType := x"02";
@@ -391,7 +416,7 @@ architecture rtl of design_top is
    signal audioInpFifoVld      : std_logic                    := '0';
    signal audioInpSelectorSel  : unsigned(7 downto 0)         := (others => '0');
    signal audioInpVolMaster    : signed(15 downto 0)          := (others => '0');
-   signal micPcmDat            : signed(23 downto 0);
+   signal micPcmDat            : S24Type;
    signal micInputSel          : unsigned(2 downto 0);
    signal micInputRst          : std_logic := '0';
 
@@ -404,6 +429,7 @@ architecture rtl of design_top is
    signal mic_presc_period_hi  : unsigned(MIC_PRESC_WIDTH_C - 1 downto 0);
    signal mic_presc_period_lo  : unsigned(MIC_PRESC_WIDTH_C - 1 downto 0);
 
+   signal sinPdm               : std_logic;
 begin
 
    P_INI : process ( ulpiClk ) is
@@ -849,15 +875,18 @@ begin
       generic map (
          CEN_DLY_G                    => MIC_DELAY_C,
          MIC_PRESC_WIDTH_G            => MIC_PRESC_WIDTH_C,
-         AUDIO_DECM_G                 => AUDIO_DECM_C,
+         AUDIO_DECM_WIDTH_G           => AUDIO_DECM_WIDTH_C,
 	 MIC_SEL_G                    => MIC_SEL_C,
-	 MIC_DAT_CC_STAGES_G          => 2
+	 MIC_DAT_CC_STAGES_G          => 2,
+         SCALE_WIDTH_G                => MULT_WIDTH_C,
+         MIN_CIC_STAGES_G             => MIN_CIC_STAGES_C,
+         MAX_CIC_STAGES_G             => MAX_CIC_STAGES_C
       )
       port map (
          clk                          => ulpiClk,
          rst                          => usb2Rst,
 	 micInputRst                  => micInputRst,
-         micDat                       => mic_dat,
+         micDat                       => sinPdm,
          micClk                       => mic_clk,
          micCen                       => open,
 	 micSync                      => mic_resync,
@@ -865,12 +894,16 @@ begin
          micPrescPeriodLo             => mic_presc_period_lo,
          micPrescPeriodHi             => mic_presc_period_hi,
 
-         micFifoDat                   => open,
-         micFifoWen                   => open,
+         micFifoDat                   => uartRxDat,
+         micFifoWen                   => uartRxDatVld,
 
          audSel                       => micInputSel,
          audCen                       => audioInpFifoVld,
-         audDat                       => micPcmDat
+         audDat                       => micPcmDat,
+         audDecm                      => AUDIO_DECM_C,
+         audScales                    => AUD_SCALES_F,
+         audShifts                    => AUD_SHIFTS_F,
+         sinPdm                       => sinPdm
       );
 
    -- mux the MDIO control endpoint between interface (driver use) and device (user/diagnostic)

@@ -4,30 +4,73 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 
+use work.MicPkg.all;
+
 entity MicWrapper is
    generic (
-      -- account for external clk->data delays in mic path
+      -- The wrapper can be used in different modes!
+      -- In 'normal' mode this module drives the microphone
+      -- clock (micClk output). Since there could be
+      -- external delays (registering) of the data line
+      -- with respect to the clock there is a generic to
+      -- account for external clk->data delays in the mic-
+      -- data path.
       CEN_DLY_G           : natural              := 0;
-      -- audio period in multiples of the prescaler
-      -- period.
-      AUDIO_DECM_G        : natural;
+      AUDIO_DECM_WIDTH_G  : natural              := 8;
+      -- If you need a single stage only set MIN=MAX.
       MIN_CIC_STAGES_G    : natural range 1 to 4 := 1;
       MAX_CIC_STAGES_G    : natural range 1 to 4 := 4;
+      -- The 'L/R' level this microphone uses; must
+      -- match hardware setting.
       MIC_SEL_G           : std_logic            := '0';
+      -- In 'sync' mode we assume that the microphone
+      -- is clocked by an external source to which we
+      -- have no direct access. We observe the data
+      -- line and synchronize our internal clock to
+      -- an active micClk transition (depending on
+      -- MIC_SEL_G). This generic activates an internal
+      -- CC synchronizer for this use case; you can
+      -- also do this externally and leave the generic
+      -- at 0.
       MIC_DAT_CC_STAGES_G : natural              := 0;
-      MIC_PRESC_WIDTH_G   : positive             := 8
+      -- width of the prescaler (clk -> mic_clk)
+      MIC_PRESC_WIDTH_G   : positive             := 8;
+      -- number of significant bits in the scale
+      -- factors (this must match the hardware multiplier
+      -- width of the architecture this will be synthesized
+      -- for!)
+      SCALE_WIDTH_G       : positive             := 18
    );
    port (
       clk                 : in  std_logic;
       rst                 : in  std_logic;
+      -- reset the mic input block; (tie to 'rst';
+      -- this is mostly for testing the synchronization
+      -- feature; resetting the input block lets you
+      -- 'desynchronize').
       micInputRst         : in  std_logic;
       micDat              : in  std_logic;
+      -- aux output after CC synchronizer
       micDatSync          : out std_logic;
+      -- generated mic clock
       micClk              : out std_logic;
+      -- request synchronization of the mic_clk generator
+      -- to an 0->1 mic_dat transition. Useful if
+      -- the mic is clocked by another source (must still be
+      -- phase synchronous to 'clk').
+      -- NOTE: does not work in stereo configurations as
+      --       it is not possible to recover the R/L info.
       micSync             : in  std_logic := '0';
+      -- Goes low when a 'micSync' request is detected and
+      -- back high once the prescaler is synced.
       micSynced           : out std_logic;
+      -- clock-enable for anything that listens to
+      -- mic_data
       micCen              : out std_logic;
+      -- raw mic_data bits are available here; lsbit is the
+      -- oldest bit.
       micFifoDat          : out std_logic_vector(7 downto 0);
+      -- asserted when a new bytes of raw data is available.
       micFifoWen          : out std_logic;
       -- prescaler for generating the microphone clock; the rate is
       -- the input ('clk') frequency divided by (prescLoPeriod + 1 + prescHiPeriod + 1),
@@ -40,9 +83,18 @@ entity MicWrapper is
       -- mux: 0-based index 0 -> test sinewave,
       --                 1..n -> MIN_CIC_STAGES..MAX_CIC_STAGES
       audSel              : in  unsigned(2 downto 0) := (others => '0');
+      -- valid audio data (1-clk cycle)
       audCen              : out std_logic;
-      audDat              : out signed(23 downto 0);
-      -- synthetic PDM of sinewave
+      audDat              : out S24Type;
+      -- decimation (PDM -> PCM; zero based, i.e., actual decimation is audDecm + 1)
+      audDecm             : in  unsigned(AUDIO_DECM_WIDTH_G - 1 downto 0);
+      -- the SCALE_WIDTH_G most-significant bits will be used
+      audScales           : in  ScaleArray(MIN_CIC_STAGES_G to MAX_CIC_STAGES_G);
+      -- the shift, OTOH, is right-adjusted; i.e., the least significant bits are
+      -- used
+      audShifts           : in  ShiftArray(MIN_CIC_STAGES_G to MAX_CIC_STAGES_G);
+      -- synthetic PDM of sinewave; can be fed back into micDat for testing
+      -- the sinewave frequency is 1/48 the audio sampling frequency.
       sinPdm              : out std_logic
    );
 end entity MicWrapper;
@@ -62,22 +114,17 @@ architecture rtl of MicWrapper is
       return rv;
    end function bits;
 
-   subtype S24Type           is signed(23 downto 0);
-   type    S24Array          is array (integer range <>) of S24Type;
+   constant LD_DECM_C        : natural := AUDIO_DECM_WIDTH_G;
 
-   constant LD_DECM_C        : natural := bits(AUDIO_DECM_G);
-
-   -- CicFilter takes the decimation factor minus one on its
-   -- 'decmInp' port.
-   constant DECM_Z_BASED_C   : unsigned(LD_DECM_C - 1 downto 0) := to_unsigned(AUDIO_DECM_G - 1, LD_DECM_C);
-
+   signal micClkLoc          : std_logic;
    signal micCenLoc          : std_logic;
    signal cicCen             : std_logic_vector(MIN_CIC_STAGES_G to MAX_CIC_STAGES_G);
    signal sinCen             : std_logic;
-   signal audPresc           : integer range -1 to AUDIO_DECM_G - 2 := AUDIO_DECM_G - 2;
+   signal audPresc           : signed(AUDIO_DECM_WIDTH_G downto 0) := (others => '0');
    signal audSin             : S24Type;
    signal audCic             : S24Array(MIN_CIC_STAGES_G to MAX_CIC_STAGES_G);
    signal cicDataIn          : signed(1 downto 0);
+   signal pdmCen             : std_logic := '0';
 
 begin
 
@@ -85,12 +132,12 @@ begin
    begin
       if ( rising_edge( clk ) ) then
          if ( rst = '1' ) then
-            audPresc <= AUDIO_DECM_G - 2;
+            audPresc <= ( others => '0' );
 	    sinCen   <= '0';
 	 else
             if ( micCenLoc = '1' ) then
                if ( audPresc < 0 ) then
-                  audPresc  <= AUDIO_DECM_G - 2;
+                  audPresc  <= signed( resize( audDecm, audPresc'length ) ) - 1;
                   sinCen    <= '1';
                else
                   audPresc <= audPresc - 1;
@@ -114,7 +161,7 @@ begin
          clk                 => clk,
          rst                 => micInputRst,
          mic_dat             => micDat,
-         mic_clk             => micClk,
+         mic_clk             => micClkLoc,
          mic_dat_sync        => micDatSync,
          mic_cen             => micCenLoc,
 	 prescPeriodLo       => micPrescPeriodLo,
@@ -133,11 +180,30 @@ begin
          sin                 => audSin
       );
 
+   B_PDM_CEN : block is
+      signal lstMicClk : std_logic := MIC_SEL_G;
+   begin
+
+      P_PDM_CEN : process ( clk, micClkLoc ) is
+      begin
+         if ( rising_edge( clk ) ) then
+            if ( rst = '1' ) then
+               lstMicClk <= MIC_SEL_G;
+	    else
+               lstMicClk <= micClkLoc;
+	    end if;
+         end if;
+      end process P_PDM_CEN;
+
+      pdmCen <= ( micClkLoc xnor MIC_SEL_G ) and ( lstMicClk xor MIC_SEL_G );
+
+   end block B_PDM_CEN;
+
    U_PDM : entity work.PDModulator
       port map (
          clk                 => clk,
          rst                 => rst,
-         cen                 => micCenLoc,
+         cen                 => pdmCen,
          sig                 => audSin,
          pdm                 => sinPdm
       );
@@ -155,20 +221,20 @@ begin
       -- the input data width is wider than necessary since we want
       -- bipolar input data. => sign bit + max growth
       --
-      --    constant GROWTH_C           : natural := AUDIO_DECM_G**STAGES;
+      --    constant GROWTH_C           : natural := max(audioDecm)**STAGES;
       --    constant LD_GROWTH_C        : natural := integer(ceil(log2(real(GROWTH_C))));
-      -- prevent GROWTH_C above from overflowing natural
-      constant LD_GROWTH_C        : natural := integer(ceil(real(STAGES)*log2(real(AUDIO_DECM_G))));
+      constant LD_GROWTH_C        : natural := STAGES * LD_DECM_C;
 
       constant SIGNIFICANT_BITS_C : natural := 1 +  LD_GROWTH_C;
       -- FACT_W_C: multiplier width (given by hardware)
-      constant FACT_W_C         : natural := 18;
+      constant FACT_W_C           : natural := SCALE_WIDTH_G;
+
       signal   cicData            : S24Type;
       signal   cicDataDly         : S24Type;
       signal   prod               : signed(2*FACT_W_C - 1 downto 0) := (others => '0');
-      -- pipeline stages of MADDer (1 for product, 1 for accumulator)
+      -- pipeline stages of MADDer (1 for shift, 1 for product, 1 for accumulator)
       signal   cicCenDlyIn        : std_logic;
-      signal   cicCenDly          : std_logic_vector(1 downto 0)    := (others => '0');
+      signal   cicCenDly          : std_logic_vector(2 downto 0)    := (others => '0');
 
       function mapPart(signal s : in signed; constant tgtLen : in natural; constant lshft : in natural)
          return signed is
@@ -194,72 +260,83 @@ begin
             clk              => clk,
             rst              => rst,
             cen              => micCenLoc,
-            decmInp          => DECM_Z_BASED_C,
+            decmInp          => audDecm,
             dataInp          => cicDataIn,
             dataOut          => cicDataOu,
             strbOut          => cicCenDlyIn
          );
 
-      P_MAP : process ( cicDataOu ) is
-      begin
-         cicData <= mapPart(cicDataOu, cicData'length, cicDataOu'length - SIGNIFICANT_BITS_C);
-      end process P_MAP;
-
-      -- scale with (2**LD_GROWTH_C - 1)/GROWTH_C; this scale is always between 1 and 2
-      -- => out = in + in * ( 1 - scale ); the multiplication with 1-scale saves one bit
-      -- in the multiplier
-
+      -- scale the CIC output data so it fits into W = S24'length; this maps the +/-1 PDM signal to
+      -- +/- 2**(W - 1) by multiplying the CIC output data by S = 2**(W-1)/CIC_growth; we want to employ
+      -- a hardware multiplier with the bit width FACT_W_C for this task.
+      -- S can be restated as 2**SHIFT * SCALE where SCALE is in the range 1 <= SCALE < 2
+      --
+      --    using ldGrowth = log2(CIC_growth)) = CIC_STAGES * log2( CIC_DECIMATION )
+      --
+      --    S = 2**( W - 1 - ldGrowth) = 2**(W-1-ceil(ldGrowth) - ldGrowth + ceil(ldGrowth)
+      --      = 2**( W - 1 - ceil(ldGrowth)) 2**(ceil(ldGrowth) - ldGrowth)
+      --
+      --    SHIFT = W - 1 - ceil( ldGrowth )
+      --    SCALE = 2**(ceil(ldGrowth) - ldGrowth)
+      --
+      -- The SCALE can be expressed as SCALE = 1 + DELTA with 0 <= DELTA < 1
+      --
+      -- If we renormalize DELTA * ONE  (with ONE = 2**(FACT_W_C - 1), since the multiplier is a signed
+      -- multiplier) and use the FACT_W_C most significant bits of an input X (with wordlength W)
+      --
+      --   PROD = (X >> (W - FACT_W_C)) * (DELTA * ONE)
+      --
+      -- the result has to be re-scaled
+      --
+      --   (PROD << (W - FACT_W_C)) >> (FACT_W_C - 1)       (the RHS undes the scaling with ONE)
+      --  = PROD >> (2*FACT_W_C - W - 1)
+      --
+      -- In summary:
+      --   X = CIC_OUT << SHIFT  (right-shift if SHIFT < 0)
+      --   P = (X >> (W - FACT_W_C)) * (DELTA * ONE)
+      --   X = X + ( P >> (2*FACT_W_C - W -1) )
+      --
+      -- Assume 'SHIFT' and 'DELTA' are prepared by the user and provided in a register
       P_SCALE : process ( clk ) is
-         -- represents 'one' but does not directly fit
-         -- into the multiplier (largest positive number is ONE_M_C - 1).
-         constant ONE_M_C  : unsigned(FACT_W_C -1 downto 0) := ( (FACT_W_C - 1) => '1', others => '0' );
-
-         function POW(constant x : unsigned; constant y : natural) return unsigned is
-            variable v : unsigned(x'range) := to_unsigned(1, x'length);
-         begin
-            for i in 1 to y loop
-               v := resize(v * x, v'length);
-	    end loop;
-            return v;
-         end function POW;
-
-         -- scale as a real number full-scale => 2**LD_GROWTH_C - 1
-         -- RSCALE_C = ((full_scale/growth) - 1) * ONE_M_C, i.e., the deviation from one normalized to ONE_M_C
-         -- (so that we can perform integer multiplication)
-
-         function RSCALE_F return unsigned is
-            variable grow     : unsigned(LD_GROWTH_C - 1 downto 0);
-            variable diff     : unsigned(grow'range);
-            -- one extra bit for rounding
-            variable mulp     : unsigned(LD_GROWTH_C + FACT_W_C downto 0);
-            constant FULLS_C  : unsigned(grow'range)  := (others => '1');
-         begin
-             grow := POW(to_unsigned(AUDIO_DECM_G, grow'length), STAGES);
-             -- 2**LD_GROWTH_C - 1 - AUDIO_DECM_G**STAGES
-             diff := FULLS_C - grow;
-             -- 2 * diff * one
-             mulp := shift_left( resize( diff * ONE_M_C, mulp'length ), 1 );
-             mulp := mulp / resize( grow, mulp'length );
-             -- round
-             mulp := shift_right( mulp + 1, 1 );
-             return resize(mulp, FACT_W_C);
-         end function RSCALE_F;
-
-         -- scale factor, renormalized to ONE_M_C, as a signed number matching the multiplier port width
-         -- (FACT_W_C).
-         constant SCALE_C  : signed(FACT_W_C - 1 downto 0) := signed(RSCALE_F);
+         variable scale    : signed(FACT_W_C - 1 downto 0);
+	 variable shift    : integer := 0;
       begin
          if ( rising_edge(clk) ) then
-            -- prod = (scale - 1)*ONE_M_C * data
-            prod           <= SCALE_C * cicData(cicData'left downto cicData'length - FACT_W_C);
+            -- prod = (scale - 1)*ONE_M_C * data  (ONE_M_C, max positive number representable in multiplier)
+            if ( shift >= 0 ) then
+               cicData     <= resize( shift_left( cicDataOu,   shift ), cicData'length );
+            else
+               cicData     <= resize( shift_right( cicDataOu, -shift ), cicData'length );
+            end if;
+            prod           <= scale * cicData(cicData'left downto cicData'length - FACT_W_C);
             -- delay the data while the product is computed
             cicDataDly     <= cicData;
             -- add data + product; (1 + (scale - 1))*data = data + (scale-1)*data
             audCic(STAGES) <= cicDataDly + mapPart(prod, audCic(STAGES)'length, 1);
             -- delay the strobe by the number of pipeline stages (2)
             cicCenDly      <= cicCenDlyIn & cicCenDly(cicCenDly'left downto 1);
+            scale          := audScales(STAGES)(ScaleType'left downto ScaleType'left - ( scale'length - 1 ));
+	    -- with min. decimation ~ 50 at 1 stage the shift is 23 - 6 = 17
+	    -- with max. decimation ~ 300 at 4 stages the shift is -10
+	    shift          := to_integer( audShifts(STAGES)( 5 downto 0 ) );
          end if;
       end process P_SCALE;
+
+      process (clk) is
+        variable s : string(1 to cicDataOu'length);
+      begin
+	      if ( rising_edge( clk )  and (cicCenDlyIn = '1') ) then
+--        for i in s'left to s'right loop
+--	  if ( cicDataOu(cicDataOu'left + 1 - i) = '1' ) then
+--             s(i) := '1';
+--	  else
+--             s(i) := '0';
+--	  end if;
+--	end loop;
+--        report "0b" & s;
+                report integer'image(to_integer(cicDataIn));
+end if;
+      end process;
 
       cicCen(STAGES) <= cicCenDly(0);
 
@@ -280,5 +357,6 @@ begin
    end process P_AUD_MUX;
 
    micCen       <= micCenLoc;
+   micClk       <= micClkLoc;
       
 end architecture rtl;
