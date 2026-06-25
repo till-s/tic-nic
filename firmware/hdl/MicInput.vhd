@@ -162,7 +162,7 @@ begin
            -- deactivate the clock; may cause a glitch
            -- but who cares.
            v.mic_clk   := MIC_SEL_G;
-           if ( not MIC_SEL_G ) then
+           if ( not MIC_SEL_G = '1' ) then
               v.prescaler := shift_right(r.perLo, 1);
            else
               v.prescaler := shift_right(r.perHi, 1);
