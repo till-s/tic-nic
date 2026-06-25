@@ -22,6 +22,7 @@ entity MicWrapper is
       rst                 : in  std_logic;
       micInputRst         : in  std_logic;
       micDat              : in  std_logic;
+      micDatSync          : out std_logic;
       micClk              : out std_logic;
       micSync             : in  std_logic := '0';
       micSynced           : out std_logic;
@@ -114,6 +115,7 @@ begin
          rst                 => micInputRst,
          mic_dat             => micDat,
          mic_clk             => micClk,
+         mic_dat_sync        => micDatSync,
          mic_cen             => micCenLoc,
 	 prescPeriodLo       => micPrescPeriodLo,
 	 prescPeriodHi       => micPrescPeriodHi,
