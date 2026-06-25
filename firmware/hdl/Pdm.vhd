@@ -21,17 +21,19 @@ end entity PDModulator;
 architecture rtl of PDModulator is
 
    function ONE_F(constant w : natural) return signed is
-      variable v : signed(w - 1 downto 0) := ('0', others => '1');
+      variable v : signed(w - 1 downto 0) := (others => '1');
    begin
       v(v'left) := '0';
       return v;
    end function ONE_F;
 
-   constant ONE_C : signed := ONE_F(sig'length);
 
    type RegType is record
-      accu           : signed(sig'range);
+      -- guard bit; see below
+      accu           : signed(SIG_WIDTH_G downto 0);
    end record RegType;
+
+   constant ONE_C : signed := ONE_F(SIG_WIDTH_G);
 
    constant REG_INIT_C : RegType := (
       accu           => ( others => '0' )
@@ -46,10 +48,15 @@ begin
       variable v : RegType;
    begin
       v          := r;
+      -- if 'accu' is small but positive and the input signal is
+      -- large but negative then the result becomes up to sig - ONE_C
+      -- and we need a guard bit. Assuming the signal changes slowly
+      -- further iterations will find 'accu' < 0 but keep adding
+      -- (sig + ONE_C) which is positive (|sig| <= ONE_C)
       if ( r.accu >= 0 ) then
-         v.accu := r.accu + (sig - ONE_C);
+         v.accu := r.accu + (resize(sig, r.accu'length) - resize(ONE_C, r.accu'length));
       else
-         v.accu := r.accu + (sig + ONE_C);
+         v.accu := r.accu + (resize(sig, r.accu'length) + resize(ONE_C, r.accu'length));
       end if;
 
       rin        <= v;
@@ -58,9 +65,10 @@ begin
    P_SEQ : process ( clk ) is
    begin
       if ( rising_edge( clk ) ) then
-         if ( rst = '1' ) then
+         if    ( rst = '1' ) then
             r <= REG_INIT_C;
-         else
+         elsif ( cen = '1' ) then
+            report "input " & integer'image(to_integer(sig)) & " accu " & integer'image(to_integer(rin.accu));
             r <= rin;
          end if;
       end if;
@@ -69,5 +77,3 @@ begin
    pdm <= r.accu(r.accu'left);
    
 end architecture rtl;
-
-
