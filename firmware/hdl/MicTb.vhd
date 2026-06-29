@@ -7,6 +7,7 @@ end entity micTb;
 
 architecture sim of micTb is
    constant EXT_REG_C : boolean   := false;
+   constant HPER_C    : unsigned(7 downto 0) := to_unsigned(15, 8);
 
    signal clk         : std_logic := '0';
    signal mic_dat     : std_logic_vector(63 downto 0) := x"0716253443526170";
@@ -35,8 +36,8 @@ begin
       if ( not run ) then
          wait;
       else
-	 wait for 8.333 ns;
-	 clk <= not clk;
+         wait for 8.333 ns;
+         clk <= not clk;
       end if;
    end process P_CLK;
 
@@ -59,30 +60,39 @@ begin
 
 
    P_CTL : process ( clk ) is
-      variable cnt : integer := 0;
+      variable cnt : integer := -1;
    begin
       if ( rising_edge( clk ) ) then
          lst_clk  <= mic_xclk;
-	 if ( (not mic_xclk and lst_clk) = '1' ) then
-            mic_dat <= '0' & mic_dat(mic_dat'left downto 1);
+         if ( (not mic_xclk and lst_clk) = '1' ) then
+            mic_dat <= mic_dat(0) & mic_dat(mic_dat'left downto 1);
          end if;
-         if ( cnt > 10 ) then
-            run <= false;
-         elsif ( fifo_wen = '1' ) then
-            cnt := cnt + 1;
-	 end if;
+         if ( fifo_wen = '1' ) then
+            if ( 8*cnt >= mic_dat'length ) then
+               report "Test PASSED";
+               run <= false;
+            else
+               -- after reset there is a first fifo_wen cycle that
+	       -- should be ignored; mic_dat is rotated!
+               assert cnt < 0  or mic_dat(63 downto 56) = fifo_dat severity failure;
+               cnt := cnt + 1;
+            end if;
+         end if;
       end if;
    end process P_CTL;
 
    U_DUT : entity work.MicInput
       generic map (
-         CEN_DLY_G => CEN_DLY_F
+         CEN_DLY_G       => CEN_DLY_F
       )
       port map (
-         clk       => clk,
-         mic_dat   => mic_xdat,
-         mic_clk   => mic_clk,
-         fifo_dat  => fifo_dat,
-         fifo_wen  => fifo_wen
+         clk             => clk,
+         rst             => '0',
+         micDat          => mic_xdat,
+         micClk          => mic_clk,
+         prescPeriodLo   => HPER_C,
+         prescPeriodHi   => HPER_C,
+         fifoDat         => fifo_dat,
+         fifoWen         => fifo_wen
       );
 end architecture sim;

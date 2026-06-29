@@ -160,14 +160,14 @@ begin
       port map (
          clk                 => clk,
          rst                 => micInputRst,
-         mic_dat             => micDat,
-         mic_clk             => micClkLoc,
-         mic_dat_sync        => micDatSync,
-         mic_cen             => micCenLoc,
+         micDat              => micDat,
+         micClk              => micClkLoc,
+         micDatSync          => micDatSync,
+         micCen              => micCenLoc,
 	 prescPeriodLo       => micPrescPeriodLo,
 	 prescPeriodHi       => micPrescPeriodHi,
-         fifo_dat            => micFifoDat,
-         fifo_wen            => micFifoWen,
+         fifoDat             => micFifoDat,
+         fifoWen             => micFifoWen,
 	 resync              => micSync,
 	 synced              => micSynced
       );
